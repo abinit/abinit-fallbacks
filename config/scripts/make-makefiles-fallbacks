@@ -57,7 +57,7 @@ all-local:%s
 
 
 # Fallback template
-def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None):
+def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None):
 
   tmp_patches = ""
   for diff in pkg_patches:
@@ -65,6 +65,11 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None):
       (pkg,diff)
   if ( tmp_patches == "" ):
     tmp_patches = "\n\t@echo \"No patch to apply\""
+
+  if ( pkg_deps ):
+    tmp_deplibs = "$(lib_" + "_libs) $(lib_".join(pkg_deps) + "_libs)"
+  else:
+    tmp_deplibs = ""
 
   return """\
 
@@ -100,7 +105,7 @@ stamps/%s-config-stamp: stamps/%s-patch-stamp
 	  FC="$(FC)" \\
 	  FCFLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(INCLUDES)" \\
 	  LDFLAGS="$(FC_LDFLAGS_EXTRA) $(LDFLAGS_%s)" \\
-	  LIBS="$(LIBS_%s)" \\
+	  LIBS="$(LIBS_%s) %s" \\
 	  AR="$(AR)" \\
 	  ARFLAGS="$(ARFLAGS)" \\
 	  RANLIB="$(RANLIB)" \\
@@ -133,7 +138,8 @@ endif
   pkg,pkg,pkg,pkg_make,pkg,
   pkg,pkg,pkg,
   pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),
-  pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),
+  pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),tmp_deplibs,
+  pkg.upper(),
   pkg,
   pkg,pkg,tmp_patches,pkg,
   pkg,pkg,pkg,
@@ -228,6 +234,7 @@ pkg_list = cnf.sections()
 pkg_list.sort()
 
 # Sort fallbacks by dependencies
+all_deps = dict()
 pkg_num = dict()
 i = 0
 for pkg in pkg_list:
@@ -236,10 +243,13 @@ for pkg in pkg_list:
 for i in range(len(pkg_list)):
   for pkg in pkg_list:
     if ( cnf.has_option(pkg,"depends") ):
-      pkg_deps = cnf.get(pkg,"depends").split()
+      all_deps[pkg] = cnf.get(pkg,"depends").split()
+      pkg_deps = all_deps[pkg]
       for dep in pkg_deps:
         if ( pkg_num[dep] >= pkg_num[pkg] ):
           pkg_num[pkg] = pkg_num[dep] + 1
+    else:
+      all_deps[pkg] = None
 pkg_ranks = pkg_num.values()
 pkg_ranks = list(set(pkg_ranks))
 pkg_ranks.sort()
@@ -278,7 +288,7 @@ for pkg in abinit_fallbacks:
   pkg_patches.sort()
 
   # Generate templates
-  makefile += fallback_template(pkg,pkg_name,pkg_make,pkg_patches)
+  makefile += fallback_template(pkg,pkg_name,pkg_make,pkg_patches,all_deps[pkg])
   makefile += fallback_clean_template(pkg,pkg_name,pkg_bins,pkg_hdrs,
                 pkg_libs,pkg_mods)
 
