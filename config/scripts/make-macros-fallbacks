@@ -171,73 +171,66 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   AC_MSG_RESULT([${enable_@pkg_nick@}])
   if test "${enable_@pkg_nick@}" = "yes"; then
 
-    dnl Check whether command-line fallback options have been specified
-    if test @INCS_TEST@"${with_@pkg_nick@_libs}" = ""; then
-
-      dnl Check for a tarball repository
-      dnl Check MD5 sum of source tarball
-      AC_MSG_CHECKING([for a source tarball of @PKG_NICK@])
-      if test -s "${abinit_tardir}/@PKG_NAME@.tar.gz"; then
-        AC_MSG_RESULT([yes])
-        AX_CHECK_MD5SUM([${abinit_tardir}/@PKG_NAME@.tar.gz],[@MD5SUM@])
-        case "${abi_md5_ok}" in
-          yes)
-            afb_tarball="yes"
-            AC_MSG_NOTICE([tarball MD5 check succeeded])
-            ;;
-          unknown)
-            afb_tarball="yes"
-            AC_MSG_WARN([could not check integrity of tarball])
-            ;;
-          no)
-            AC_MSG_WARN([tarball MD5 check failed])
-            ;;
-        esac
-      else
-        AC_MSG_RESULT([no])
-      fi
-
-      dnl Get the package
-      if test "${afb_ready}" = "no"; then
-        for dl_url in @PKG_URLS@; do
-          if test "${afb_tarball}" = "no"; then
-            AC_MSG_NOTICE([downloading @PKG_NICK@ - this may take a while])
-            rm -f "${abinit_tardir}/@PKG_NAME@.tar.gz"
-            ${afb_downloader} ${afb_dlopts} \
-              "${abinit_tardir}/@PKG_NAME@.tar.gz" \
-              "${dl_url}"
-            if test -s "${abinit_tardir}/@PKG_NAME@.tar.gz"; then
-              AX_CHECK_MD5SUM([${abinit_tardir}/@PKG_NAME@.tar.gz],[@MD5SUM@])
-              case "${abi_md5_ok}" in
-                yes)
-                  afb_tarball="yes"
-                  AC_MSG_NOTICE([tarball MD5 check succeeded])
-                ;;
-                unknown)
-                  afb_tarball="yes"
-                  AC_MSG_WARN([could not check integrity of tarball])
-                  ;;
-                no)
-                  AC_MSG_WARN([tarball MD5 check failed])
-                  ;;
-              esac
-            fi
-          fi
-        done
-
-        dnl Enable fallback support only if the download was successful
-        if test "${afb_tarball}" = "yes"; then
-          lib_@pkg_nick@_incs="@INCS_PATH@"
-          lib_@pkg_nick@_libs="@LIBS_SPECS@"
-        else
-          AC_MSG_ERROR([could not download @PKG_NICK@ fallback tarball
-    Disable support for @PKG_NICK@ or download the tarball manually to
-    ${abinit_tardir}])
-        fi
-      fi
+    dnl Check for a tarball repository
+    dnl Check MD5 sum of source tarball
+    AC_MSG_CHECKING([for a source tarball of @PKG_NICK@])
+    if test -s "${abinit_tardir}/@PKG_NAME@.tar.gz"; then
+      AC_MSG_RESULT([yes])
+      AX_CHECK_MD5SUM([${abinit_tardir}/@PKG_NAME@.tar.gz],[@MD5SUM@])
+      case "${abi_md5_ok}" in
+        yes)
+          afb_tarball="yes"
+          AC_MSG_NOTICE([tarball MD5 check succeeded])
+          ;;
+        unknown)
+          afb_tarball="yes"
+          AC_MSG_WARN([could not check integrity of tarball])
+          ;;
+        no)
+          AC_MSG_WARN([tarball MD5 check failed])
+          ;;
+      esac
     else
-      lib_@pkg_nick@_incs="${with_@pkg_nick@_incs}"
-      lib_@pkg_nick@_libs="${with_@pkg_nick@_libs}"
+      AC_MSG_RESULT([no])
+    fi
+
+    dnl Get the package
+    if test "${afb_ready}" = "no"; then
+      for dl_url in @PKG_URLS@; do
+        if test "${afb_tarball}" = "no"; then
+          AC_MSG_NOTICE([downloading @PKG_NICK@ - this may take a while])
+          rm -f "${abinit_tardir}/@PKG_NAME@.tar.gz"
+          ${afb_downloader} ${afb_dlopts} \
+            "${abinit_tardir}/@PKG_NAME@.tar.gz" \
+            "${dl_url}"
+          if test -s "${abinit_tardir}/@PKG_NAME@.tar.gz"; then
+            AX_CHECK_MD5SUM([${abinit_tardir}/@PKG_NAME@.tar.gz],[@MD5SUM@])
+            case "${abi_md5_ok}" in
+              yes)
+                afb_tarball="yes"
+                AC_MSG_NOTICE([tarball MD5 check succeeded])
+              ;;
+              unknown)
+                afb_tarball="yes"
+                AC_MSG_WARN([could not check integrity of tarball])
+                ;;
+              no)
+                AC_MSG_WARN([tarball MD5 check failed])
+                ;;
+            esac
+          fi
+        fi
+      done
+
+      dnl Enable fallback support only if the download was successful
+      if test "${afb_tarball}" = "yes"; then
+        lib_@pkg_nick@_incs="@INCS_PATH@"
+        lib_@pkg_nick@_libs="@LIBS_SPECS@"
+      else
+        AC_MSG_ERROR([could not download @PKG_NICK@ fallback tarball
+  Disable support for @PKG_NICK@ or download the tarball manually to
+  ${abinit_tardir}])
+      fi
     fi
 
   fi
@@ -246,10 +239,6 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   if test "${enable_@pkg_nick@}" = "yes"; then
     ABI_TRICKS_@PKG_NICK@(@TRICKS@)
   fi
-
-  dnl Substitute variables needed for the use of the fallback
-  AC_SUBST(lib_@pkg_nick@_incs)
-  AC_SUBST(lib_@pkg_nick@_libs)
 
   dnl Inform Automake
   AM_CONDITIONAL(DO_TEST_@PKG_NICK@,test "${enable_@pkg_nick@}" = "yes")
@@ -309,19 +298,43 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
 
   # Define --with-* options
   with_opts = ""
+  with_tcon = ""
+  with_tdef = ""
   if ( is_preq ):
     if ( bins ):
       with_opts += "  AC_ARG_WITH([%s-bins],\n" % nick
       with_opts += "    AC_HELP_STRING([--with-%s-bins],\n" % nick
       with_opts += "      [Path to external %s executables]))\n" % nick
+      with_opts += "  AC_SUBST(with_@pkg_nick@_bins)\n"
+      with_tcon += " -a \\\n          \"${with_@pkg_nick@_bins}\" = \"\""
+      with_tdef += " -o \\\n            \"${with_@pkg_nick@_bins}\" != \"\""
     if ( include ):
       with_opts += "  AC_ARG_WITH([%s-incs],\n" % nick
       with_opts += "    AC_HELP_STRING([--with-%s-incs],\n" % nick
       with_opts += "      [Include flags for an external %s]))\n" % nick
+      with_opts += "  AC_SUBST(with_@pkg_nick@_incs)\n"
+      with_tcon += " -a \\\n          \"${with_@pkg_nick@_incs}\" = \"\""
+      with_tdef += " -o \\\n            \"${with_@pkg_nick@_incs}\" != \"\""
     if ( libs ):
       with_opts += "  AC_ARG_WITH([%s-libs],\n" % nick
       with_opts += "    AC_HELP_STRING([--with-%s-libs],\n" % nick
       with_opts += "      [Library flags for an external %s]))\n" % nick
+      with_opts += "  AC_SUBST(with_@pkg_nick@_libs)\n"
+      with_tcon += " -a \\\n          \"${with_@pkg_nick@_libs}\" = \"\""
+      with_tdef += " -o \\\n            \"${with_@pkg_nick@_libs}\" != \"\""
+    with_opts += "  if test \"${enable_@pkg_nick@}\" = \"\"; then\n"
+    with_opts += "    if test \"0\" = \"1\""
+    with_opts += with_tdef + "; then\n"
+    with_opts += "      enable_@pkg_nick@=\"no\"\n"
+    with_opts += "    fi\n"
+    with_opts += "  fi\n"
+    with_opts += "  if test \"${enable_@pkg_nick@}\" = \"yes\""
+    with_opts += with_tcon + "; then\n"
+    with_opts += "    AC_MSG_NOTICE([options for @pkg_nick@ are consistent])\n"
+    with_opts += "  else\n"
+    with_opts += "    AC_MSG_ERROR([inconsistent options for @pkg_nick@!\n"
+    with_opts += "        use --enable-@pkg_nick@ or --with-@pkg_nick@-*, not both])\n"
+    with_opts += "  fi"
 
   # Transform template (the order is important)
   ret = re.sub("@INCS_TEST@",incs_test,ret)
