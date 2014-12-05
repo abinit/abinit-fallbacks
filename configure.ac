@@ -24,9 +24,9 @@
 #
 
 # Initialize Autoconf
-AC_PREREQ(2.62)
-AC_INIT([ABINIT-Fallbacks],[1.0],
-  [https://bugs.launchpad.net/abinit/],[abinit-fallbacks])
+AC_PREREQ(2.68)
+AC_INIT([ABINIT-Fallbacks],[8.0.0],
+  [https://bugs.launchpad.net/abinit-fallbacks/],[abinit-fallbacks])
 AC_REVISION([Autotools support for the ABINIT Fallbacks])
 AC_CONFIG_AUX_DIR([config/gnu])
 AC_CONFIG_SRCDIR([.])
@@ -40,7 +40,7 @@ _AC_SRCDIRS(["."])
 
 # Initial setup
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE(1.10)
+AM_INIT_AUTOMAKE(1.12)
 
 # Check for common programs
 AC_PROG_MAKE_SET
@@ -143,16 +143,10 @@ elif test "${CURL}" != ""; then
   afb_dlopts="--connect-time 15 --retry 1 -s -S -o"
 fi
 
-# Make sure ~/.abinit/tarballs exists
-if test "${with_tardir}" != ""; then
-  abinit_tardir="${with_tardir}"
-fi
-if test "${abinit_tardir}" = ""; then
-  abinit_tardir="${HOME}/.abinit/tarballs"
-  if test ! -e "${abinit_tardir}"; then
-    AC_MSG_NOTICE([creating ${abinit_tardir}])
-    ${INSTALL} -d -m 755 "${abinit_tardir}"
-  fi
+# Make sure the tarball directory exists
+if test ! -e "${abinit_tardir}"; then
+  AC_MSG_NOTICE([creating tarball repository ${abinit_tardir}])
+  ${INSTALL} -d -m 755 "${abinit_tardir}"
 fi
 AC_MSG_NOTICE([using tarball repository ${abinit_tardir}])
 AC_SUBST(abinit_tardir)
@@ -164,22 +158,11 @@ AC_SUBST(abinit_tardir)
 #
 
 # Init installation directory
-fallbacks_instdir="${ac_abs_top_builddir}/exports"
+test "${prefix}" = "" && fallbacks_instdir="${ac_abs_top_builddir}/exports"
 AC_SUBST(fallbacks_instdir)
 
-# Check for patch
-AC_CHECK_PROGS([PATCH],[patch])
-
-# Stop if patch is not available
-if test "${PATCH}" = ""; then
-  AC_MSG_WARN([no 'patch' command available])
-  if test "${enable_bigdft}" = "yes"; then
-    AC_MSG_ERROR([BigDFT requires patch - disable BigDFT or install patch])
-  fi
-  if test "${enable_wannier90}" = "yes"; then
-    AC_MSG_ERROR([Wannier90 requires patch - disable Wannier90 or install patch])
-  fi
-fi
+# Stop if patch is required and not available
+ABI_FALLBACKS_PATCHES
 
 # ---------------------------------------------------------------------------- #
 
