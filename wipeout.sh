@@ -26,20 +26,22 @@ fi
 echo "[fbkclean]   Removing temporary directories and files"
 rm -rf tmp*
 find . -depth -name 'tmp-*' -exec rm -rf {} \;
-
-# Remove autotools files
-echo "[fbkclean]   Removing autotools files"
-rm -f core config.log config.status stamp-h1 config.h config.h.in*
-rm -rf aclocal.m4 autom4te.cache configure confstat*
-(cd config/gnu && rm -f config.guess config.sub depcomp install-sh ltmain.sh missing)
-(cd config/m4 && rm -f libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4 auto-*.m4)
+find . -depth -name '*.tmp' -exec rm -rf {} \;
 
 # Remove Makefiles and machine-generated files
 echo "[fbkclean]   Removing files produced by the configure script"
-rm -f libtool
 find . -name Makefile -exec rm {} \;
-find . -name Makefile.in -exec rm {} \;
+rm -f core config.log config.status stamp-h1 config.h config.h.in*
+rm -f libtool
 
 # Remove object files, libraries and programs
 echo "[fbkclean]   Removing object files, libraries and programs"
 rm -rf exports/* sources/* stamps/*
+
+# Remove autotools files
+echo "[fbkclean]   Removing autotools files"
+find . -name Makefile.in -exec rm {} \;
+find . -name Makefile.am -exec rm {} \;
+rm -rf aclocal.m4 autom4te.cache configure confstat*
+(cd config/gnu && rm -f compile config.guess config.sub depcomp install-sh ltmain.sh missing)
+(cd config/m4 && rm -f libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4 auto-*.m4)
