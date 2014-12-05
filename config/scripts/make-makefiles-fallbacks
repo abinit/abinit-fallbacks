@@ -304,9 +304,6 @@ for d in ("scripts", "specs", "wannier90"):
 for f in os.listdir("patches"):
   if ( re.search("\.patch$",f) ):
     makefile += " \\\n\t%s" % (os.path.join("patches",f))
-for f in os.listdir("transient"):
-  if ( re.search("\.tar\.gz$",f) ):
-    makefile += " \\\n\t%s" % (os.path.join("transient",f))
 makefile += "\n\n"
 
 # Write makefile
