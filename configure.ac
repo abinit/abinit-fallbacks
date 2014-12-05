@@ -65,35 +65,20 @@ ${MKDIR_P} exports/include sources stamps
 # Define global options
 #
 
-# FIXME: properly manage compiler vendors
-AC_ARG_WITH([fc-vendor],
-  AC_HELP_STRING([--with-fc-vendor],[Fortran compiler vendor]))
-if test "${with_fc_vendor}" = ""; then
-  fc_vendor="gnu"
-else
-  AC_MSG_NOTICE([setting Fortran compiler vendor to ${with_fc_vendor}])
-  fc_vendor="${with_fc_vendor}"
-fi
-AC_SUBST(fc_vendor)
+#ABI_FALLBACKS_ENV_BACKUP
+ABI_FALLBACKS_OPTIONS_DEFINE
+ABI_FALLBACKS_OPTIONS_BACKUP
+ABI_FALLBACKS_OPTIONS_SETUP
+ABI_FALLBACKS_OPTIONS_CHANGED
+ABI_FALLBACKS_OPTIONS_PARSE
+#ABI_FALLBACKS_ENV_INIT
 
-AC_ARG_WITH([fc-version],
-  AC_HELP_STRING([--with-fc-version],[Fortran compiler version]))
-if test "${with_fc_version}" = ""; then
-  fc_version="4.4"
-else
-  AC_MSG_NOTICE([setting Fortran compiler version to ${with_fc_version}])
-  fc_version="${with_fc_version}"
-fi
-AC_SUBST(fc_version)
-
-AC_ARG_WITH([tardir],
-  AC_HELP_STRING([--with-tardir],[Repository containing source tarballs]))
 if test "${with_tardir}" = ""; then
   abinit_tardir="${HOME}/.abinit/tarballs"
 else
-  AC_MSG_NOTICE([setting tarball repository to ${with_tardir}])
   abinit_tardir="${with_tardir}"
 fi
+AC_MSG_NOTICE([setting tarball repository to ${abinit_tardir}])
 AC_SUBST(abinit_tardir)
 
 AC_ARG_VAR([RANLIB],[Archive indexer])
@@ -190,66 +175,10 @@ AC_PROG_FC
 # ---------------------------------------------------------------------------- #
 
 #
-# Linear algebra support
+# Final configuration of fallbacks
 #
 
-ABI_FALLBACK_LINALG
-
-# ---------------------------------------------------------------------------- #
-
-#
-# XML file I/O support
-#
-
-ABI_FALLBACK_FOX
-
-# ---------------------------------------------------------------------------- #
-
-#
-# NetCDF support
-#
-
-ABI_FALLBACK_NETCDF
-
-# ---------------------------------------------------------------------------- #
-
-#
-# ETSF I/O library support
-#
-
-ABI_FALLBACK_ETSF_IO
-
-# ---------------------------------------------------------------------------- #
-
-#
-# TDDFT.org exchange-correlation library support
-#
-
-ABI_FALLBACK_LIBXC
-
-# ---------------------------------------------------------------------------- #
-
-#
-# AtomPAW support
-#
-
-ABI_FALLBACK_ATOMPAW
-
-# ---------------------------------------------------------------------------- #
-
-#
-# Wavelets support - BigDFT project
-#
-
-ABI_FALLBACK_BIGDFT
-
-# ---------------------------------------------------------------------------- #
-
-#
-# Wannier90 support
-#
-
-ABI_FALLBACK_WANNIER90
+ABI_FALLBACKS_SETUP
 
 # ---------------------------------------------------------------------------- #
 
@@ -258,4 +187,3 @@ ABI_FALLBACK_WANNIER90
 #
 
 AC_OUTPUT([Makefile])
-
