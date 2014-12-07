@@ -183,7 +183,9 @@ ABI_FALLBACKS_SETUP
 # ---------------------------------------------------------------------------- #
 
 #
-# Output configuration
+# Output configuration and report
 #
 
 AC_OUTPUT([Makefile])
+
+ABI_FALLBACKS_INFO

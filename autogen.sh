@@ -22,6 +22,7 @@ mkdir -p config/gnu
 # Generate M4 macros
 echo "[fbkbuild]   Generating M4 macros"
 ./config/scripts/make-macros-fallbacks
+./config/scripts/make-macros-info
 ./config/scripts/make-macros-options
 ./config/scripts/make-macros-patches
 

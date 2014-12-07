@@ -75,8 +75,8 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   afb_@pkg_nick@_bins=""
   afb_@pkg_nick@_incs=""
   afb_@pkg_nick@_libs=""
-  afb_download="no"
-  afb_tarball="no"
+  afb_@pkg_nick@_custom="no"
+  afb_tarball="no"@SET_VARS@
 
   dnl Define variables needed to build the package
   @pkg_nick@_pkg_name="@PKG_NAME@"
@@ -89,7 +89,6 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     AC_HELP_STRING([--disable-@pkg_nick@],
       [Disable @PKG_DESC@ support]))
   AC_SUBST(enable_@pkg_nick@)@WITH_OPTS@
-  AC_MSG_NOTICE([@pkg_nick@ prout])
 
   dnl Make sure all required options are set
   if test "${enable_@pkg_nick@}" = ""; then
@@ -137,33 +136,49 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   dnl Set environment variables for the package
   if test -z "${CFGFLAGS_@PKG_NICK@}"; then
     CFGFLAGS_@PKG_NICK@=""
+  else
+    afb_@pkg_nick@_custom="yes"
   fi
   if test -z "${CPPFLAGS_@PKG_NICK@}"; then
     CPPFLAGS_@PKG_NICK@="${CPPFLAGS}"
+  else
+    afb_@pkg_nick@_custom="yes"
   fi
   if test -z "${CFLAGS_@PKG_NICK@}"; then
     CFLAGS_@PKG_NICK@="${CFLAGS}"
+  else
+    afb_@pkg_nick@_custom="yes"
   fi
   if test -z "${CXXFLAGS_@PKG_NICK@}"; then
     CXXFLAGS_@PKG_NICK@="${CXXFLAGS}"
+  else
+    afb_@pkg_nick@_custom="yes"
   fi
   if test -z "${FPPFLAGS_@PKG_NICK@}"; then
     FPPFLAGS_@PKG_NICK@="${FPPFLAGS}"
+  else
+    afb_@pkg_nick@_custom="yes"
   fi
   if test -z "${FCFLAGS_@PKG_NICK@}"; then
     FCFLAGS_@PKG_NICK@="${FCFLAGS}"
+  else
+    afb_@pkg_nick@_custom="yes"
   fi
   if test -z "${LDFLAGS_@PKG_NICK@}"; then
     LDFLAGS_@PKG_NICK@="${LDFLAGS}"
+  else
+    afb_@pkg_nick@_custom="yes"
   fi
   if test -z "${LIBS_@PKG_NICK@}"; then
     LIBS_@PKG_NICK@="${LIBS}"
+  else
+    afb_@pkg_nick@_custom="yes"
   fi@BINS_SPECS@
 
   dnl Check whether to activate fallback
   AC_MSG_CHECKING([whether to enable the @PKG_NICK@ fallback])
   AC_MSG_RESULT([${enable_@pkg_nick@}])
-  if test "${enable_@pkg_nick@}" = "yes"; then
+  if test "${enable_@pkg_nick@}" = "yes"; then@CHK_DEPS@
 
     dnl Get the package
     for dl_url in LOCAL @PKG_URLS@; do
@@ -208,16 +223,33 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
 ]) # _ABI_FALLBACK_@PKG_NICK@
 """ % ("-"*len(nick))
 
+  # Fill-in set-up sequence
+  set_vars = ""
+  if ( libs is None ):
+    set_vars += "\n  unset with_%s_libs" % pkg
+
   # Set include specs
   incs_specs = ""
   if ( include is None ):
     incs_test = ""
     incs_path = ""
+    set_vars += "\n  unset with_%s_incs" % pkg
   else:
     incs_test = "\"${with_@pkg_nick@_incs}\" = \"\" -o "
     incs_path = "-I\$(fallbacks_instdir)/include"
+
+  # Check dependencies
+  chk_deps = ""
   if ( not deps is None ):
+    chk_deps += "\n\n    dnl Check for dependencies"
     for dep in dep_ranks:
+      chk_deps += "\n    if test \"${enable_%s}\" = \"no\" -a \\\n" % dep
+      chk_deps += "            \"${with_%s_bins}\" = \"\" -a \\\n" % dep
+      chk_deps += "            \"${with_%s_incs}\" = \"\" -a \\\n" % dep
+      chk_deps += "            \"${with_%s_libs}\" = \"\"; then\n" % dep
+      chk_deps += "      AC_MSG_ERROR([@PKG_NICK@ depends on disabled %s\n" % dep.upper()
+      chk_deps += "        Solution: disable @PKG_NICK@ or provide --with-%s-* options])\n" % dep
+      chk_deps += "    fi"
       incs_specs += """
   if test "${enable_%s}" = "no"; then
     CPPFLAGS_@PKG_NICK@="${CPPFLAGS_@PKG_NICK@} ${afb_%s_incs}"
@@ -239,7 +271,9 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
 
   # Set bin specs
   bins_specs = ""
-  if ( (not bins is None) and ( not deps is None) ):
+  if ( bins is None ):
+    set_vars += "\n  unset with_%s_bins" % pkg
+  elif ( not deps is None ):
     for dep in dep_ranks:
       tmp_libs = ""
       for lib in deps[dep]:
@@ -299,11 +333,13 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     with_opts += "  fi"
 
   # Transform template (the order is important)
+  ret = re.sub("@SET_VARS@",set_vars,ret)
   ret = re.sub("@INCS_TEST@",incs_test,ret)
   ret = re.sub("@INCS_PATH@",incs_path,ret)
   ret = re.sub("@PKG_SPECS@",pkg_specs,ret)
   ret = re.sub("@BINS_SPECS@",bins_specs,ret)
   ret = re.sub("@WITH_OPTS@",with_opts,ret)
+  ret = re.sub("@CHK_DEPS@",chk_deps,ret)
   ret = re.sub("@MD5SUM@",md5s,ret)
   ret = re.sub("@TRICKS@",tricks,ret)
   ret = re.sub("@PKG_NAME@",name,ret)
