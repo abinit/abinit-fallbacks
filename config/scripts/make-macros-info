@@ -69,15 +69,20 @@ Global parameters
 Fallbacks status
 ----------------
 
-The following table indicates whether the fallbacks will be installed and
-if their build parameters have been customized through environment variables.
+The following summary table indicates whether the fallbacks will be installed
+and if their build parameters have been customized through environment
+variables.
 
 @FBK_STATUS@
 
+Full information about the current configuration can be found in the
+fallbacks.dump file.
+
 Configuration complete.
 You may now type "make" to build the Abinit Fallbacks.
-("make -j<n>" may or may not work, depending on the design of the individual
-packages, and can be fixed by the upstream developers only, not us)
+Note: "make -j<n>" may or may not work, depending on the design of the
+individual packages. Please contact their upstream developers directly
+for any issue related to parallel builds.
 
 EOF
 ]) # ABI_FALLBACKS_INFO

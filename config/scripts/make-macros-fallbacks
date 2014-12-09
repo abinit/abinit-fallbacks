@@ -56,10 +56,45 @@ AC_DEFUN([ABI_FALLBACKS_SETUP],[@FBK_CALLS@]) # ABI_FALLBACKS_SETUP
 
 
 
+# Snippet for environment variables
+def snippet_envvars(pkg_langs,lang_specs,group="fallbacks"):
+
+  # Init
+  ret = ""
+  if ( group == "fallbacks" ):
+    suffix = "_@PKG_NICK@"
+    docstr = " of @pkg_nick@"
+  else:
+    suffix = ""
+    docstr = ""
+
+  # Create environment variables
+  for lang in lang_specs["languages"][group]:
+    for stage in lang_specs[lang]["envs"]:
+      if ( (lang in pkg_langs) and lang_specs[lang][stage] ):
+        for item in lang_specs[lang][stage]:
+          ret += "\n  AC_ARG_VAR([%s%s],\n" % (item,suffix)
+          ret += "    [%s%s])\n" % (lang_specs["descriptions"][item],docstr)
+          ret += "  AC_SUBST(%s%s)\n" % (item,suffix)
+          if ( group == "fallbacks" ):
+            ret += "  if test -z \"${%s%s}\"; then\n" % (item,suffix)
+            ret += "    %s%s=\"${%s}\"\n" % (item,suffix,item)
+            ret += "  else\n"
+            ret += "    afb_@pkg_nick@_custom=\"yes\"\n"
+            ret += "  fi"
+      else:
+        if ( lang_specs[lang][stage] ):
+          for item in lang_specs[lang][stage]:
+            ret += "\n  unset %s%s" % (item,suffix)
+
+  return ret
+
+
+
 # Individual macro template
 def macro_fallback(nick,name,desc,libs,bins,md5s,urls,deps=None,
   dep_ranks=None,include=None,tricks="[${fc_vendor}],[${fc_version}]",
-  is_preq=False):
+  is_preq=False,env_vars=""):
 
   # Create template
   ret = """
@@ -95,85 +130,9 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     enable_@pkg_nick@="yes"
   fi
 
-  dnl Define environment variables for the package
-  AC_ARG_VAR([CFGFLAGS_@PKG_NICK@],
-    [Configuration options for @pkg_nick@])
-  AC_SUBST(CFGFLAGS_@PKG_NICK@)
-  AC_ARG_VAR([CPP],
-    [C preprocessor])
-  AC_SUBST(CPP)
-  AC_ARG_VAR([CPPFLAGS_@PKG_NICK@],
-    [C preprocessing flags for @pkg_nick@])
-  AC_SUBST(CPPFLAGS_@PKG_NICK@)
-  AC_ARG_VAR([CC],
-    [C compiler])
-  AC_SUBST(CC)
-  AC_ARG_VAR([CFLAGS_@PKG_NICK@],
-    [C flags for @pkg_nick@])
-  AC_SUBST(CFLAGS_@PKG_NICK@)
-  AC_ARG_VAR([CXX],
-    [C++ compiler])
-  AC_SUBST(CC)
-  AC_ARG_VAR([CXXFLAGS_@PKG_NICK@],
-    [C++ flags for @pkg_nick@])
-  AC_SUBST(CXXFLAGS_@PKG_NICK@)
-  AC_ARG_VAR([FC],
-    [Fortran compiler])
-  AC_SUBST(FC)
-  AC_ARG_VAR([FPPFLAGS_@PKG_NICK@],
-    [Fortran preprocessor flags for @pkg_nick@ (not implemented)])
-  AC_SUBST(FPPFLAGS_@PKG_NICK@)
-  AC_ARG_VAR([FCFLAGS_@PKG_NICK@],
-    [Fortran flags for @pkg_nick@])
-  AC_SUBST(FCFLAGS_@PKG_NICK@)
-  AC_ARG_VAR([LDFLAGS_@PKG_NICK@],
-    [Link flags for @pkg_nick@])
-  AC_SUBST(LDFLAGS_@PKG_NICK@)
-  AC_ARG_VAR([LIBS_@PKG_NICK@],
-    [Additional libraries for @pkg_nick@])
-  AC_SUBST(LIBS_@PKG_NICK@)
+  dnl Define and set environment variables for the package@ENV_VARS@
 
-  dnl Set environment variables for the package
-  if test -z "${CFGFLAGS_@PKG_NICK@}"; then
-    CFGFLAGS_@PKG_NICK@=""
-  else
-    afb_@pkg_nick@_custom="yes"
-  fi
-  if test -z "${CPPFLAGS_@PKG_NICK@}"; then
-    CPPFLAGS_@PKG_NICK@="${CPPFLAGS}"
-  else
-    afb_@pkg_nick@_custom="yes"
-  fi
-  if test -z "${CFLAGS_@PKG_NICK@}"; then
-    CFLAGS_@PKG_NICK@="${CFLAGS}"
-  else
-    afb_@pkg_nick@_custom="yes"
-  fi
-  if test -z "${CXXFLAGS_@PKG_NICK@}"; then
-    CXXFLAGS_@PKG_NICK@="${CXXFLAGS}"
-  else
-    afb_@pkg_nick@_custom="yes"
-  fi
-  if test -z "${FPPFLAGS_@PKG_NICK@}"; then
-    FPPFLAGS_@PKG_NICK@="${FPPFLAGS}"
-  else
-    afb_@pkg_nick@_custom="yes"
-  fi
-  if test -z "${FCFLAGS_@PKG_NICK@}"; then
-    FCFLAGS_@PKG_NICK@="${FCFLAGS}"
-  else
-    afb_@pkg_nick@_custom="yes"
-  fi
-  if test -z "${LDFLAGS_@PKG_NICK@}"; then
-    LDFLAGS_@PKG_NICK@="${LDFLAGS}"
-  else
-    afb_@pkg_nick@_custom="yes"
-  fi
-  if test -z "${LIBS_@PKG_NICK@}"; then
-    LIBS_@PKG_NICK@="${LIBS}"
-  else
-    afb_@pkg_nick@_custom="yes"
-  fi@BINS_SPECS@
+  dnl Adjust build flags to the current situation@BINS_SPECS@
 
   dnl Check whether to activate fallback
   AC_MSG_CHECKING([whether to enable the @PKG_NICK@ fallback])
@@ -286,6 +245,8 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   else
     LIBS_@PKG_NICK@="${afb_%s_libs} ${LIBS_@PKG_NICK@}"
   fi""" % (dep,tmp_libs,dep)
+  if ( bins_specs == "" ):
+    bins_specs = "\n  dnl Note: nothing to do for @pkg_nick@"
 
   # Set URL specs
   urls_specs = '"' + '" "'.join(urls) + '"'
@@ -337,6 +298,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   ret = re.sub("@INCS_TEST@",incs_test,ret)
   ret = re.sub("@INCS_PATH@",incs_path,ret)
   ret = re.sub("@PKG_SPECS@",pkg_specs,ret)
+  ret = re.sub("@ENV_VARS@",env_vars,ret)
   ret = re.sub("@BINS_SPECS@",bins_specs,ret)
   ret = re.sub("@WITH_OPTS@",with_opts,ret)
   ret = re.sub("@CHK_DEPS@",chk_deps,ret)
@@ -360,7 +322,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
 
 # Initial setup
 my_name    = "make-macros-fallbacks"
-my_configs = ["config/specs/fallbacks.conf"]
+my_configs = ["config/specs/fallbacks.conf","config/specs/languages.conf"]
 my_output  = "config/m4/auto-fallbacks.m4"
 
 # Check if we are in the top of the ABINIT source tree
@@ -391,6 +353,27 @@ abinit_fallbacks.sort()
 m4_all = macro_template(my_name,now)
 m4_fbk = ""
 m4_ord = ""
+
+# Define environment variables
+lcf = MyConfigParser()
+lcf.read(my_configs[1])
+lng_specs = {}
+lng_specs["languages"] = {}
+lng_specs["descriptions"] = {}
+for lang in lcf.sections():
+  if ( lang == "languages" ):
+    lng_specs["languages"]["fallbacks"] = lcf.get("languages","fallbacks").split()
+    lng_specs["languages"]["global"] = lcf.get("languages","fallbacks").split()
+  elif (lang == "descriptions" ):
+    for item in lcf.options(lang):
+      lng_specs["descriptions"][item] = lcf.get(lang,item)
+  else:
+    lng_specs[lang] = {"envs":lcf.get(lang,"envs").split()}
+    for stage in lng_specs[lang]["envs"]:
+      if ( lcf.has_option(lang,stage) ):
+        lng_specs[lang][stage] = lcf.get(lang,stage).split()
+      else:
+        lng_specs[lang][stage] = None
 
 # Sort fallbacks by dependencies
 is_preq = {}
@@ -434,6 +417,7 @@ for pkg in abinit_fallbacks:
   pkg_desc = cnf.get(pkg,"description")
   pkg_md5s = cnf.get(pkg,"md5sum")
   pkg_urls = cnf.get(pkg,"urls").split()
+  pkg_lngs = ["CONFIG"] + cnf.get(pkg,"languages").split() + ["LINK"]
 
   # Extract optional package information
   try:
@@ -471,9 +455,13 @@ for pkg in abinit_fallbacks:
   else:
     pkg_incs = "yes"
 
-  # Write macro
+  # Define environment variables
+  pkg_vars = snippet_envvars(pkg_lngs,lng_specs)
+
+  # Generate macro
   m4_fbk += macro_fallback(pkg,pkg_name,pkg_desc,pkg_libs,pkg_bins,
-    pkg_md5s,pkg_urls,pkg_dep_libs,pkg_deps,pkg_incs,is_preq=is_preq[pkg])
+    pkg_md5s,pkg_urls,pkg_dep_libs,pkg_deps,pkg_incs,is_preq=is_preq[pkg],
+    env_vars=pkg_vars)
 
 # Substitute global template and write down macro file
 m4_all = re.sub("@FALLBACKS@", m4_fbk, m4_all)

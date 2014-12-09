@@ -68,7 +68,7 @@ lcf.read(my_configs[1])
 fallbacks_langs = lcf.get("languages","fallbacks").split()
 global_langs = lcf.get("languages","global").split()
 for lang in lcf.sections():
-  if ( lang != "languages" ):
+  if ( not lang in ("languages","descriptions") ):
     global_envvars[lang] = {"envs":lcf.get(lang,"envs").split()}
     for stage in global_envvars[lang]["envs"]:
       if ( lcf.has_option(lang,stage) ):

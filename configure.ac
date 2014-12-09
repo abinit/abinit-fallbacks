@@ -65,13 +65,13 @@ ${MKDIR_P} exports/include sources stamps
 # Define global options
 #
 
-#ABI_FALLBACKS_ENV_BACKUP
+ABI_FALLBACKS_ENV_BACKUP
 ABI_FALLBACKS_OPTIONS_DEFINE
 ABI_FALLBACKS_OPTIONS_BACKUP
 ABI_FALLBACKS_OPTIONS_SETUP
 ABI_FALLBACKS_OPTIONS_CHANGED
 ABI_FALLBACKS_OPTIONS_PARSE
-#ABI_FALLBACKS_ENV_INIT
+ABI_FALLBACKS_ENV_INIT
 
 if test "${with_tardir}" = ""; then
   abinit_tardir="${HOME}/.abinit/tarballs"
@@ -83,19 +83,6 @@ AC_SUBST(abinit_tardir)
 
 AC_ARG_VAR([RANLIB],[Archive indexer])
 AC_SUBST(RANLIB)
-
-# ---------------------------------------------------------------------------- #
-
-#
-# Check option consistency
-#
-
-AC_MSG_NOTICE([checking consistency of fallback options])
-
-# The ETSF I/O library requires NetCDF support
-if test "${enable_etsf_io}" = "yes" -a "${enable_netcdf}" != "yes"; then
-  AC_MSG_WARN([ETSF I/O requires NetCDF])
-fi
 
 # ---------------------------------------------------------------------------- #
 
@@ -156,6 +143,7 @@ ABI_FALLBACKS_PATCHES
 #
 
 AC_PROG_CC
+AC_PROG_CPP
 
 # LibXC sometimes requires C99
 if test "${with_fc_vendor}" = "ibm"; then
@@ -167,10 +155,27 @@ fi
 # ---------------------------------------------------------------------------- #
 
 #
+# C++ support
+#
+
+AC_PROG_CXX
+
+# ---------------------------------------------------------------------------- #
+
+#
 # Fortran support
 #
 
 AC_PROG_FC
+
+# ---------------------------------------------------------------------------- #
+
+#
+# Archiver support
+#
+
+AC_CHECK_PROGS([AR],[ar xiar])
+AC_PROG_RANLIB
 
 # ---------------------------------------------------------------------------- #
 
