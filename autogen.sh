@@ -19,6 +19,10 @@ fi
 # Create possibly missing directories
 mkdir -p config/gnu
 
+# Generate input files for configure
+echo "[fbkbuild]   Generating configure inputs"
+./config/scripts/make-config-dumper
+
 # Generate M4 macros
 echo "[fbkbuild]   Generating M4 macros"
 ./config/scripts/make-macros-fallbacks

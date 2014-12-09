@@ -24,8 +24,8 @@ ui_*.py
 /aclocal.m4
 /autom4te.cache
 /configure
-/config.dump
-/config.dump.in
+/fallbacks.dump
+/fallbacks.dump.in
 /config.log
 /config.mk
 /config.pc

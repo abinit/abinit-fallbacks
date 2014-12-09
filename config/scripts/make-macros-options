@@ -569,8 +569,9 @@ if ( tmp != "" ):
   print tmp
 
 # Write option dumper (for debugging)
-dumper = file("config.dump.in","a")
-dumper.write("# Command-line options (script: %s)\n" % (my_name))
+dumper = file("fallbacks.dump.in","a")
+dumper.write("\n                    # ----------------------------------- #\n")
+dumper.write("\n# Command-line options (script: %s)\n" % (my_name))
 for arg in all_args:
   arg_stat = cnf.get(arg,"status")
   if ( (arg_stat != "hidden") and \

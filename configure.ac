@@ -186,6 +186,7 @@ ABI_FALLBACKS_SETUP
 # Output configuration and report
 #
 
-AC_OUTPUT([Makefile])
+AC_CONFIG_FILES([fallbacks.dump Makefile])
+AC_OUTPUT
 
 ABI_FALLBACKS_INFO
