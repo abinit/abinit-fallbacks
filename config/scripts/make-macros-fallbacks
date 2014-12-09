@@ -79,8 +79,10 @@ def snippet_envvars(pkg_langs,lang_specs,group="fallbacks"):
           if ( group == "fallbacks" ):
             ret += "  if test -z \"${%s%s}\"; then\n" % (item,suffix)
             ret += "    %s%s=\"${%s}\"\n" % (item,suffix,item)
+            ret += "    afb_@pkg_nick@_%s_custom=\"no\"\n" % item.lower()
             ret += "  else\n"
             ret += "    afb_@pkg_nick@_custom=\"yes\"\n"
+            ret += "    afb_@pkg_nick@_%s_custom=\"yes\"\n" % item.lower()
             ret += "  fi"
       else:
         if ( lang_specs[lang][stage] ):
@@ -93,7 +95,7 @@ def snippet_envvars(pkg_langs,lang_specs,group="fallbacks"):
 
 # Individual macro template
 def macro_fallback(nick,name,desc,libs,bins,md5s,urls,deps=None,
-  dep_ranks=None,include=None,tricks="[${fc_vendor}],[${fc_version}]",
+  dep_ranks=None,include=None,tricks="[${afb_fc_vendor}],[${afb_fc_version}]",
   is_preq=False,env_vars=""):
 
   # Create template
@@ -154,14 +156,14 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
           case "${abi_md5_ok}" in
             yes)
               afb_tarball="yes"
-              AC_MSG_NOTICE([tarball MD5 check succeeded])
+              AC_MSG_NOTICE([@PKG_NAME@ tarball MD5 check succeeded])
             ;;
             unknown)
               afb_tarball="yes"
-              AC_MSG_WARN([could not check integrity of tarball])
+              AC_MSG_WARN([could not check integrity of @PKG_NAME@ tarball])
               ;;
             no)
-              AC_MSG_WARN([tarball MD5 check failed])
+              AC_MSG_WARN([@PKG_NAME@ tarball MD5 check failed])
               ;;
           esac
         fi
