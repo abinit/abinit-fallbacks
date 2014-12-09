@@ -120,8 +120,8 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   AC_SUBST(@pkg_nick@_pkg_string)
 
   dnl Define options associated to the package
-  AC_ARG_ENABLE([@pkg_nick@],
-    AC_HELP_STRING([--disable-@pkg_nick@],
+  AC_ARG_ENABLE([@pkg_opt@],
+    AC_HELP_STRING([--disable-@pkg_opt@],
       [Disable @PKG_DESC@ support]))
   AC_SUBST(enable_@pkg_nick@)@WITH_OPTS@
 
@@ -257,22 +257,22 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   with_tdef = ""
   if ( is_preq ):
     if ( bins ):
-      with_opts += "\n    AC_ARG_WITH([%s-bins],\n" % nick
-      with_opts += "    AC_HELP_STRING([--with-%s-bins],\n" % nick
+      with_opts += "\n    AC_ARG_WITH([@pkg_opt@-bins],\n"
+      with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-bins],\n"
       with_opts += "      [Path to external %s executables]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_bins)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_bins}\" = \"\""
       with_tdef += " -o \\\n            \"${with_@pkg_nick@_bins}\" != \"\""
     if ( include ):
-      with_opts += "  AC_ARG_WITH([%s-incs],\n" % nick
-      with_opts += "    AC_HELP_STRING([--with-%s-incs],\n" % nick
+      with_opts += "  AC_ARG_WITH([@pkg_opt@-incs],\n"
+      with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-incs],\n"
       with_opts += "      [Include flags for an external %s]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_incs)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_incs}\" = \"\""
       with_tdef += " -o \\\n            \"${with_@pkg_nick@_incs}\" != \"\""
     if ( libs ):
-      with_opts += "  AC_ARG_WITH([%s-libs],\n" % nick
-      with_opts += "    AC_HELP_STRING([--with-%s-libs],\n" % nick
+      with_opts += "  AC_ARG_WITH([@pkg_opt@-libs],\n"
+      with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-libs],\n"
       with_opts += "      [Library flags for an external %s]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_libs)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_libs}\" = \"\""
@@ -309,6 +309,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   ret = re.sub("@PKG_NICK@",nick.upper(),ret)
   ret = re.sub("@PKG_URLS@",urls_specs,ret)
   ret = re.sub("@pkg_nick@",nick,ret)
+  ret = re.sub("@pkg_opt@",re.sub("_","-",nick),ret)
 
   return ret
 
