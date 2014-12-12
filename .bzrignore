@@ -42,6 +42,8 @@ ui_*.py
 /config/gnu/ltmain.sh
 /config/gnu/missing
 /config/gnu/mkinstalldirs
+/src/abinit-fallbacks-config
+/src/abinit-fallbacks-config.in
 /exports
 /sources
 /stamps

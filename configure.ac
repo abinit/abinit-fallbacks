@@ -192,7 +192,13 @@ ABI_FALLBACKS_SETUP
 # Output configuration and report
 #
 
-AC_CONFIG_FILES([fallbacks.dump Makefile])
+AC_CONFIG_COMMANDS([script-perms],[chmod u+x src/abinit-fallbacks-config])
+
+AC_CONFIG_FILES([
+  fallbacks.dump
+  src/abinit-fallbacks-config
+  Makefile
+  src/Makefile])
 AC_OUTPUT
 
 ABI_FALLBACKS_INFO

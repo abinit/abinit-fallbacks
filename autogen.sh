@@ -31,6 +31,10 @@ echo "[fbkbuild]   Generating M4 macros"
 ./config/scripts/make-macros-options
 ./config/scripts/make-macros-patches
 
+# Generate source files
+echo "[fbkbuild]   Generating source files"
+./config/scripts/make-fallbacks-config-in
+
 # Generate makefiles
 echo "[fbkbuild]   Generating makefiles"
 ./config/scripts/make-makefiles-fallbacks
