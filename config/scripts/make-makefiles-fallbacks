@@ -47,9 +47,7 @@ def makefile_header(name,stamp,pkgs):
 # Please modify the %s script or its config file instead.
 #
 
-AM_CPPFLAGS = -I$(fallbacks_instdir)/include
-
--include config.mk
+AM_CPPFLAGS = -I$(prefix)/include
 
 SUBDIRS = src
 
@@ -69,7 +67,7 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None):
     tmp_patches = "\n\t@echo \"No patch to apply\""
 
   if ( pkg_deps ):
-    tmp_deplibs = "$(lib_" + "_libs) $(lib_".join(pkg_deps) + "_libs)"
+    tmp_deplibs = "$(afb_" + "_libs) $(afb_".join(pkg_deps) + "_libs)"
   else:
     tmp_deplibs = ""
 
@@ -94,28 +92,28 @@ stamps/%s-build-stamp: stamps/%s-config-stamp
 stamps/%s-config-stamp: stamps/%s-patch-stamp
 	cd sources/$(%s_pkg_name) && \\
 	  CPP="$(CPP)" \\
-	  CPPFLAGS="$(CPPFLAGS_%s) $(INCLUDES)" \\
+	  CPPFLAGS="$(CPPFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  CC="$(CC)" \\
 	  CFLAGS="$(CFLAGS_%s)" \\
 	  CXX="$(CXX)" \\
 	  CXXFLAGS="$(CXXFLAGS_%s)" \\
           FCCPP="$(TRUE_CPP)" \\
 	  F77="$(FC)" \\
-	  FFLAGS="$(FCFLAGS_FIXEDFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(INCLUDES)" \\
+	  FFLAGS="$(FCFLAGS_FIXEDFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  F90="$(FC)" \\
-	  F90FLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(INCLUDES)" \\
+	  F90FLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  FC="$(FC)" \\
-	  FCFLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(INCLUDES)" \\
+	  FCFLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  LDFLAGS="$(FC_LDFLAGS_EXTRA) $(LDFLAGS_%s)" \\
 	  LIBS="$(LIBS_%s) %s" \\
 	  AR="$(AR)" \\
-	  ARFLAGS="$(ARFLAGS)" \\
+	  ARFLAGS="$(ARFLAGS) $(ARFLAGS_CMD)" \\
 	  RANLIB="$(RANLIB)" \\
 	  ac_fc_srcext="F90" \\
 	  /bin/sh ./configure \\
-	    --prefix="$(fallbacks_instdir)" \\
-	    --bindir="$(fallbacks_instdir)/bin" \\
-	    --libdir="$(fallbacks_instdir)/lib" \\
+	    --prefix="@prefix@" \\
+	    --bindir="@prefix@/bin" \\
+	    --libdir="@prefix@/lib" \\
 	    --program-suffix="-abinit" \\
 	    $(CFGFLAGS_%s)
 	@touch stamps/%s-config-stamp

@@ -57,7 +57,7 @@ AC_PROG_EGREP
 AX_PROG_MKDIR_P
 
 # Make sure the source tree is complete
-${MKDIR_P} exports/include sources stamps
+${MKDIR_P} sources stamps
 
 # ---------------------------------------------------------------------------- #
 
@@ -65,6 +65,7 @@ ${MKDIR_P} exports/include sources stamps
 # Define global options
 #
 
+# Manage environment variables and command-line options
 ABI_FALLBACKS_ENV_BACKUP
 ABI_FALLBACKS_OPTIONS_DEFINE
 ABI_FALLBACKS_OPTIONS_BACKUP
@@ -73,16 +74,30 @@ ABI_FALLBACKS_OPTIONS_CHANGED
 ABI_FALLBACKS_OPTIONS_PARSE
 ABI_FALLBACKS_ENV_INIT
 
+# set-up tarball directory
 if test "${with_tardir}" = ""; then
   abinit_tardir="${HOME}/.abinit/tarballs"
 else
   abinit_tardir="${with_tardir}"
 fi
 AC_MSG_NOTICE([setting tarball repository to ${abinit_tardir}])
-AC_SUBST(abinit_tardir)
 
-AC_ARG_VAR([RANLIB],[Archive indexer])
-AC_SUBST(RANLIB)
+# Make sure the tarball directory exists
+if test ! -e "${abinit_tardir}"; then
+  AC_MSG_NOTICE([creating tarball repository ${abinit_tardir}])
+  ${INSTALL} -d -m 755 "${abinit_tardir}"
+fi
+AC_MSG_NOTICE([using tarball repository ${abinit_tardir}])
+
+# Set-up installation directory
+if test "${enable_local_build}" = "yes"; then
+  AC_MSG_NOTICE([tuning install parameters for local build])
+  prefix="${ac_abs_top_builddir}/exports"
+  ${MKDIR_P} exports/include
+fi
+
+# Substitutions
+AC_SUBST(abinit_tardir)
 
 # ---------------------------------------------------------------------------- #
 
@@ -115,25 +130,13 @@ elif test "${CURL}" != ""; then
   afb_dlopts="--connect-time 15 --retry 1 -s -S -o"
 fi
 
-# Make sure the tarball directory exists
-if test ! -e "${abinit_tardir}"; then
-  AC_MSG_NOTICE([creating tarball repository ${abinit_tardir}])
-  ${INSTALL} -d -m 755 "${abinit_tardir}"
-fi
-AC_MSG_NOTICE([using tarball repository ${abinit_tardir}])
-AC_SUBST(abinit_tardir)
-
 # ---------------------------------------------------------------------------- #
 
 #
 # Source code management
 #
 
-# Init installation directory
-test "${prefix}" = "" && fallbacks_instdir="${ac_abs_top_builddir}/exports"
-AC_SUBST(fallbacks_instdir)
-
-# Stop if patch is required and not available
+# Make sure required patches can be applied
 ABI_FALLBACKS_PATCHES
 
 # ---------------------------------------------------------------------------- #
@@ -146,11 +149,8 @@ AC_PROG_CC
 AC_PROG_CPP
 
 # LibXC sometimes requires C99
-if test "${with_fc_vendor}" = "ibm"; then
-  AC_PROG_CC_C99
-else
-  ac_cv_prog_cc_c99="no"
-fi
+# Note: if problem, set ac_cv_prog_cc_c99="no"
+AC_PROG_CC_C99
 
 # ---------------------------------------------------------------------------- #
 

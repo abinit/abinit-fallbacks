@@ -197,7 +197,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     set_vars += "\n  unset with_%s_incs" % pkg
   else:
     incs_test = "\"${with_@pkg_nick@_incs}\" = \"\" -o "
-    incs_path = "-I\$(fallbacks_instdir)/include"
+    incs_path = "-I\$(prefix)/include"
 
   # Check dependencies
   chk_deps = ""
@@ -221,14 +221,17 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   pkg_specs = ""
   if ( is_preq ):
     if ( bins ):
-      pkg_specs += "\n      afb_@pkg_nick@_bins=\"\\$(fallbacks_instdir)/bin\""
+      pkg_specs += "\n      afb_@pkg_nick@_bins=\"\\$(prefix)/bin\""
+      pkg_specs += "\n      AC_SUBST(afb_@pkg_nick@_bins)"
     if ( include ):
-      pkg_specs += "\n      afb_@pkg_nick@_incs=\"\\$(fallbacks_instdir)/include\""
+      pkg_specs += "\n      afb_@pkg_nick@_incs=\"-I\\$(prefix)/include\""
+      pkg_specs += "\n      AC_SUBST(afb_@pkg_nick@_incs)"
     if ( libs ):
       for lib in libs:
         if ( re.match("lib.*\.a",lib) ):
           tmp_libs = " -l%s" % (re.sub(r"lib(.*)\.a",r"\1",lib)) + tmp_libs
-      pkg_specs += "\n      afb_@pkg_nick@_libs=\"-L\\$(fallbacks_instdir)/lib%s\"" % tmp_libs
+      pkg_specs += "\n      afb_@pkg_nick@_libs=\"-L\\$(prefix)/lib%s\"" % tmp_libs
+      pkg_specs += "\n      AC_SUBST(afb_@pkg_nick@_libs)"
 
   # Set bin specs
   bins_specs = ""
@@ -240,7 +243,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
       for lib in deps[dep]:
         if ( re.match("lib.*\.a",lib) ):
           tmp_libs = " -l%s" % (re.sub(r"lib(.*)\.a",r"\1",lib)) + tmp_libs
-      tmp_libs = "-L\\$(fallbacks_instdir)/lib" + tmp_libs
+      tmp_libs = "-L\\$(prefix)/lib" + tmp_libs
       bins_specs += """
   if test "${enable_%s}" = "yes"; then
     LIBS_@PKG_NICK@="%s ${LIBS_@PKG_NICK@}"

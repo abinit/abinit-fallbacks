@@ -82,7 +82,8 @@ information desired.
                (except includes, see "incs" below);
   * incs     : get include flags to package C headers and/or Fortran modules;
   * ldflags  : get link flags used to build the package;
-  * libs     : get library flags to link against the package.
+  * libs     : get library flags to link against the package;
+  * suffix   : get program suffix for the package.
 
 <package> can be:
 @FBK_LIST@
@@ -144,6 +145,10 @@ case "${my_cmd}" in
       echo "Error: no '${my_cmd}' item for package '${my_pkg}'" >&2
       exit 1
     fi
+    ;;
+
+  suffix)
+    echo "-abinit"
     ;;
 
   *)

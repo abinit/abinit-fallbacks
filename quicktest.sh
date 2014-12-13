@@ -4,4 +4,7 @@
 ./autogen.sh && \
 mkdir tmp && \
 cd tmp && \
-../configure
+../configure \
+  --enable-local-build \
+&& \
+make -j4
