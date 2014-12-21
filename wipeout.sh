@@ -24,8 +24,7 @@ fi
 
 # Remove temporary directories and files
 echo "[fbkclean]   Removing temporary directories and files"
-rm -rf tmp*
-find . -depth -name 'tmp-*' -exec rm -rf {} \;
+find . -depth -name 'tmp*' -exec rm -rf {} \;
 find . -depth -name '*.tmp' -exec rm -rf {} \;
 
 # Remove Makefiles and machine-generated files

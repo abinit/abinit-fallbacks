@@ -113,7 +113,9 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   afb_@pkg_nick@_incs=""
   afb_@pkg_nick@_libs=""
   afb_@pkg_nick@_custom="no"
-  afb_tarball="no"@SET_VARS@
+  afb_@pkg_nick@_ok="unknown"
+  afb_@pkg_nick@_tarball="${abinit_tardir}/@PKG_NAME@.tar.gz"
+  tmp_tarball_ok="no"@SET_VARS@
 
   dnl Define variables needed to build the package
   @pkg_nick@_pkg_name="@PKG_NAME@"
@@ -134,32 +136,31 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
 
   dnl Define and set environment variables for the package@ENV_VARS@
 
-  dnl Adjust build flags to the current situation@BINS_SPECS@
-
   dnl Check whether to activate fallback
   AC_MSG_CHECKING([whether to enable the @PKG_NICK@ fallback])
   AC_MSG_RESULT([${enable_@pkg_nick@}])
   if test "${enable_@pkg_nick@}" = "yes"; then@CHK_DEPS@
 
+    dnl Adjust build flags to the actual situation@BINS_SPECS@
+
     dnl Get the package
     for dl_url in LOCAL @PKG_URLS@; do
-      if test "${afb_tarball}" = "no"; then
+      if test "${tmp_tarball_ok}" = "no"; then
         if test "${dl_url}" != "LOCAL"; then
-          rm -f "${abinit_tardir}/@PKG_NAME@.tar.gz"
+          rm -f "${afb_@pkg_nick@_tarball}"
           AC_MSG_NOTICE([downloading @PKG_NICK@ - this may take a while])
           ${afb_downloader} ${afb_dlopts} \\
-            "${abinit_tardir}/@PKG_NAME@.tar.gz" \\
+            "${afb_@pkg_nick@_tarball}" \\
             "${dl_url}"
         fi
-        if test -s "${abinit_tardir}/@PKG_NAME@.tar.gz"; then
-          AX_CHECK_MD5SUM([${abinit_tardir}/@PKG_NAME@.tar.gz],[@MD5SUM@])
-          case "${abi_md5_ok}" in
+        if test -s "${afb_@pkg_nick@_tarball}"; then
+          ABI_FALLBACKS_CHECK_MD5SUM([${afb_@pkg_nick@_tarball}],[@MD5SUM@])
+          case "${afb_md5_ok}" in
             yes)
-              afb_tarball="yes"
-              AC_MSG_NOTICE([@PKG_NAME@ tarball MD5 check succeeded])
+              tmp_tarball_ok="yes"
             ;;
             unknown)
-              afb_tarball="yes"
+              tmp_tarball_ok="yes"
               AC_MSG_WARN([could not check integrity of @PKG_NAME@ tarball])
               ;;
             no)
@@ -171,7 +172,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     done
 
     dnl Enable fallback support only if the download was successful
-    if test "${afb_tarball}" = "yes"; then
+    if test "${tmp_tarball_ok}" = "yes"; then
       afb_@pkg_nick@_ok="yes"@PKG_SPECS@
       ABI_TRICKS_@PKG_NICK@(@TRICKS@)
     else
@@ -180,8 +181,11 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     manually to ${abinit_tardir}])
     fi
 
-  fi
-]) # _ABI_FALLBACK_@PKG_NICK@
+@PKG_XFER@  fi
+
+  dnl Substitutions
+  AC_SUBST(afb_@pkg_nick@_tarball)
+@PKG_SUBST@]) # _ABI_FALLBACK_@PKG_NICK@
 """ % ("-"*len(nick))
 
   # Fill-in set-up sequence
@@ -219,19 +223,20 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   # Set package specs
   tmp_libs = ""
   pkg_specs = ""
+  pkg_subst = ""
   if ( is_preq ):
     if ( bins ):
       pkg_specs += "\n      afb_@pkg_nick@_bins=\"\\$(prefix)/bin\""
-      pkg_specs += "\n      AC_SUBST(afb_@pkg_nick@_bins)"
+      pkg_subst += "  AC_SUBST(afb_@pkg_nick@_bins)\n"
     if ( include ):
       pkg_specs += "\n      afb_@pkg_nick@_incs=\"-I\\$(prefix)/include\""
-      pkg_specs += "\n      AC_SUBST(afb_@pkg_nick@_incs)"
+      pkg_subst += "  AC_SUBST(afb_@pkg_nick@_incs)\n"
     if ( libs ):
       for lib in libs:
         if ( re.match("lib.*\.a",lib) ):
           tmp_libs = " -l%s" % (re.sub(r"lib(.*)\.a",r"\1",lib)) + tmp_libs
       pkg_specs += "\n      afb_@pkg_nick@_libs=\"-L\\$(prefix)/lib%s\"" % tmp_libs
-      pkg_specs += "\n      AC_SUBST(afb_@pkg_nick@_libs)"
+      pkg_subst += "  AC_SUBST(afb_@pkg_nick@_libs)\n"
 
   # Set bin specs
   bins_specs = ""
@@ -245,13 +250,13 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
           tmp_libs = " -l%s" % (re.sub(r"lib(.*)\.a",r"\1",lib)) + tmp_libs
       tmp_libs = "-L\\$(prefix)/lib" + tmp_libs
       bins_specs += """
-  if test "${enable_%s}" = "yes"; then
-    LIBS_@PKG_NICK@="%s ${LIBS_@PKG_NICK@}"
-  else
-    LIBS_@PKG_NICK@="${afb_%s_libs} ${LIBS_@PKG_NICK@}"
-  fi""" % (dep,tmp_libs,dep)
+    if test "${enable_%s}" = "yes"; then
+      LIBS_@PKG_NICK@="%s ${LIBS_@PKG_NICK@}"
+    else
+      LIBS_@PKG_NICK@="${afb_%s_libs} ${LIBS_@PKG_NICK@}"
+    fi""" % (dep,tmp_libs,dep)
   if ( bins_specs == "" ):
-    bins_specs = "\n  dnl Note: nothing to do for @pkg_nick@"
+    bins_specs = "\n    dnl Note: nothing to do for @pkg_nick@"
 
   # Set URL specs
   urls_specs = '"' + '" "'.join(urls) + '"'
@@ -260,6 +265,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   with_opts = ""
   with_tcon = ""
   with_tdef = ""
+  with_xfer = ""
   if ( is_preq ):
     if ( bins ):
       with_opts += "\n    AC_ARG_WITH([@pkg_opt@-bins],\n"
@@ -268,6 +274,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
       with_opts += "  AC_SUBST(with_@pkg_nick@_bins)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_bins}\" = \"\""
       with_tdef += " -o \\\n            \"${with_@pkg_nick@_bins}\" != \"\""
+      with_xfer += "    afb_@pkg_nick@_bins=\"${with_@pkg_nick@_bins}\"\n"
     if ( include ):
       with_opts += "  AC_ARG_WITH([@pkg_opt@-incs],\n"
       with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-incs],\n"
@@ -275,6 +282,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
       with_opts += "  AC_SUBST(with_@pkg_nick@_incs)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_incs}\" = \"\""
       with_tdef += " -o \\\n            \"${with_@pkg_nick@_incs}\" != \"\""
+      with_xfer += "    afb_@pkg_nick@_incs=\"${with_@pkg_nick@_incs}\"\n"
     if ( libs ):
       with_opts += "  AC_ARG_WITH([@pkg_opt@-libs],\n"
       with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-libs],\n"
@@ -282,6 +290,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
       with_opts += "  AC_SUBST(with_@pkg_nick@_libs)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_libs}\" = \"\""
       with_tdef += " -o \\\n            \"${with_@pkg_nick@_libs}\" != \"\""
+      with_xfer += "    afb_@pkg_nick@_libs=\"${with_@pkg_nick@_libs}\"\n"
     with_opts += "  if test \"${enable_@pkg_nick@}\" = \"\"; then\n"
     with_opts += "    if test \"0\" = \"1\""
     with_opts += with_tdef + "; then\n"
@@ -297,12 +306,16 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     with_opts += "        use --enable-@pkg_nick@ or --with-@pkg_nick@-*, not both])\n"
     with_opts += "    fi\n"
     with_opts += "  fi"
+  if ( with_xfer != "" ):
+    with_xfer = "  else\n\n%s\n" % with_xfer
 
   # Transform template (the order is important)
   ret = re.sub("@SET_VARS@",set_vars,ret)
   ret = re.sub("@INCS_TEST@",incs_test,ret)
   ret = re.sub("@INCS_PATH@",incs_path,ret)
   ret = re.sub("@PKG_SPECS@",pkg_specs,ret)
+  ret = re.sub("@PKG_XFER@",with_xfer,ret)
+  ret = re.sub("@PKG_SUBST@",pkg_subst,ret)
   ret = re.sub("@ENV_VARS@",env_vars,ret)
   ret = re.sub("@BINS_SPECS@",bins_specs,ret)
   ret = re.sub("@WITH_OPTS@",with_opts,ret)

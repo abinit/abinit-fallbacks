@@ -509,7 +509,7 @@ AC_DEFUN([ABI_TRICKS_WANNIER90],[
     AC_MSG_NOTICE([applying Wannier90 tricks (vendor: $1, version: $2, flags: libraries)])
 
     dnl Linear algebra
-    tmplibs_wannier90='$(lib_linalg_libs)'
+    tmplibs_wannier90='$(afb_linalg_libs)'
     LIBS_WANNIER90="${tmplibs_wannier90} ${LIBS_WANNIER90}"
     unset tmplibs_wannier90
 
