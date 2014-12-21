@@ -96,7 +96,7 @@ def snippet_envvars(pkg_langs,lang_specs,group="fallbacks"):
 # Individual macro template
 def macro_fallback(nick,name,desc,libs,bins,md5s,urls,deps=None,
   dep_ranks=None,include=None,tricks="[${afb_fc_vendor}],[${afb_fc_version}]",
-  is_preq=False,env_vars=""):
+  is_preq=False,env_vars="",chk_api=None):
 
   # Create template
   ret = """
@@ -113,6 +113,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   afb_@pkg_nick@_incs=""
   afb_@pkg_nick@_libs=""
   afb_@pkg_nick@_custom="no"
+  afb_@pkg_nick@_tricks="unknown"
   afb_@pkg_nick@_ok="unknown"
   afb_@pkg_nick@_tarball="${abinit_tardir}/@PKG_NAME@.tar.gz"
   tmp_tarball_ok="no"@SET_VARS@
@@ -176,6 +177,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
       afb_@pkg_nick@_ok="yes"@PKG_SPECS@
       ABI_TRICKS_@PKG_NICK@(@TRICKS@)
     else
+      afb_@pkg_nick@_ok="no"
       AC_MSG_ERROR([could not download @PKG_NICK@ fallback tarball
     Solution: disable support for @PKG_NICK@ or download the tarball
     manually to ${abinit_tardir}])
@@ -183,7 +185,18 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
 
 @PKG_XFER@  fi
 
+  dnl Inform Automake
+  AM_CONDITIONAL(DO_BUILD_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
+  AM_CONDITIONAL(DO_TEST_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
+
+  dnl Warn user about broken packages
+  if test "${afb_@pkg_nick@_ok}" != "yes"; then
+    AC_MSG_WARN([@PKG_NICK@ is broken, which will prevent the build of all
+                    its possible dependencies])
+  fi
+
   dnl Substitutions
+  AC_SUBST(afb_@pkg_nick@_ok)
   AC_SUBST(afb_@pkg_nick@_tarball)
 @PKG_SUBST@]) # _ABI_FALLBACK_@PKG_NICK@
 """ % ("-"*len(nick))
@@ -208,12 +221,9 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   if ( not deps is None ):
     chk_deps += "\n\n    dnl Check for dependencies"
     for dep in dep_ranks:
-      chk_deps += "\n    if test \"${enable_%s}\" = \"no\" -a \\\n" % dep
-      chk_deps += "            \"${with_%s_bins}\" = \"\" -a \\\n" % dep
-      chk_deps += "            \"${with_%s_incs}\" = \"\" -a \\\n" % dep
-      chk_deps += "            \"${with_%s_libs}\" = \"\"; then\n" % dep
-      chk_deps += "      AC_MSG_ERROR([@PKG_NICK@ depends on disabled %s\n" % dep.upper()
-      chk_deps += "        Solution: disable @PKG_NICK@ or provide --with-%s-* options])\n" % dep
+      chk_deps += "\n    if test \"${afb_%s_ok}\" = \"no\"; then\n" % dep
+      chk_deps += "      AC_MSG_ERROR([@PKG_NICK@ depends on broken %s\n" % dep.upper()
+      chk_deps += "        Solution: disable @PKG_NICK@ or fix %s])\n" % dep.upper()
       chk_deps += "    fi"
       incs_specs += """
   if test "${enable_%s}" = "no"; then
@@ -249,12 +259,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
         if ( re.match("lib.*\.a",lib) ):
           tmp_libs = " -l%s" % (re.sub(r"lib(.*)\.a",r"\1",lib)) + tmp_libs
       tmp_libs = "-L\\$(prefix)/lib" + tmp_libs
-      bins_specs += """
-    if test "${enable_%s}" = "yes"; then
-      LIBS_@PKG_NICK@="%s ${LIBS_@PKG_NICK@}"
-    else
-      LIBS_@PKG_NICK@="${afb_%s_libs} ${LIBS_@PKG_NICK@}"
-    fi""" % (dep,tmp_libs,dep)
+      bins_specs += "\n    LIBS_@PKG_NICK@=\"${afb_%s_libs} ${LIBS_@PKG_NICK@}\"" % dep
   if ( bins_specs == "" ):
     bins_specs = "\n    dnl Note: nothing to do for @pkg_nick@"
 
@@ -265,8 +270,11 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   with_opts = ""
   with_tcon = ""
   with_tdef = ""
-  with_xfer = ""
+  pkg_xfer = ""
+  chk_args = ""
   if ( is_preq ):
+    if ( chk_api ):
+      chk_args = "(%d,%d,%d)" % (chk_api["maj"],chk_api["min"],chk_api["max"])
     if ( bins ):
       with_opts += "\n    AC_ARG_WITH([@pkg_opt@-bins],\n"
       with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-bins],\n"
@@ -274,7 +282,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
       with_opts += "  AC_SUBST(with_@pkg_nick@_bins)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_bins}\" = \"\""
       with_tdef += " -o \\\n            \"${with_@pkg_nick@_bins}\" != \"\""
-      with_xfer += "    afb_@pkg_nick@_bins=\"${with_@pkg_nick@_bins}\"\n"
+      pkg_xfer += "    afb_@pkg_nick@_bins=\"${with_@pkg_nick@_bins}\"\n"
     if ( include ):
       with_opts += "  AC_ARG_WITH([@pkg_opt@-incs],\n"
       with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-incs],\n"
@@ -282,7 +290,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
       with_opts += "  AC_SUBST(with_@pkg_nick@_incs)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_incs}\" = \"\""
       with_tdef += " -o \\\n            \"${with_@pkg_nick@_incs}\" != \"\""
-      with_xfer += "    afb_@pkg_nick@_incs=\"${with_@pkg_nick@_incs}\"\n"
+      pkg_xfer += "    afb_@pkg_nick@_incs=\"${with_@pkg_nick@_incs}\"\n"
     if ( libs ):
       with_opts += "  AC_ARG_WITH([@pkg_opt@-libs],\n"
       with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-libs],\n"
@@ -290,7 +298,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
       with_opts += "  AC_SUBST(with_@pkg_nick@_libs)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_libs}\" = \"\""
       with_tdef += " -o \\\n            \"${with_@pkg_nick@_libs}\" != \"\""
-      with_xfer += "    afb_@pkg_nick@_libs=\"${with_@pkg_nick@_libs}\"\n"
+      pkg_xfer += "    afb_@pkg_nick@_libs=\"${with_@pkg_nick@_libs}\"\n"
     with_opts += "  if test \"${enable_@pkg_nick@}\" = \"\"; then\n"
     with_opts += "    if test \"0\" = \"1\""
     with_opts += with_tdef + "; then\n"
@@ -306,15 +314,16 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     with_opts += "        use --enable-@pkg_nick@ or --with-@pkg_nick@-*, not both])\n"
     with_opts += "    fi\n"
     with_opts += "  fi"
-  if ( with_xfer != "" ):
-    with_xfer = "  else\n\n%s\n" % with_xfer
+  if ( pkg_xfer != "" ):
+    pkg_xfer = "  else\n\n    dnl Check whether the external package works\n%s    ABI_FALLBACKS_CHECK_@PKG_NICK@@CHK_ARGS@\n    afb_@pkg_nick@_ok=\"${afb_@pkg_nick@_ext_ok}\"\n" % pkg_xfer
 
   # Transform template (the order is important)
   ret = re.sub("@SET_VARS@",set_vars,ret)
   ret = re.sub("@INCS_TEST@",incs_test,ret)
   ret = re.sub("@INCS_PATH@",incs_path,ret)
   ret = re.sub("@PKG_SPECS@",pkg_specs,ret)
-  ret = re.sub("@PKG_XFER@",with_xfer,ret)
+  ret = re.sub("@PKG_XFER@",pkg_xfer,ret)
+  ret = re.sub("@CHK_ARGS@",chk_args,ret)
   ret = re.sub("@PKG_SUBST@",pkg_subst,ret)
   ret = re.sub("@ENV_VARS@",env_vars,ret)
   ret = re.sub("@BINS_SPECS@",bins_specs,ret)
@@ -423,8 +432,6 @@ for rnk in pkg_ranks:
   for pkg in pkg_num:
     if ( pkg_num[pkg] == rnk ):
       m4_ord += "\n  _ABI_FALLBACK_%s\n" % pkg.upper()
-      m4_ord += """  AM_CONDITIONAL(DO_BUILD_%s,[test "${enable_%s}" = "yes"])\n""" % (pkg.upper(),pkg)
-      m4_ord += """  AM_CONDITIONAL(DO_TEST_%s,[test "${enable_%s}" = "yes"])\n""" % (pkg.upper(),pkg)
 
 m4_all = re.sub("@FBK_CALLS@",m4_ord,m4_all)
 
@@ -437,6 +444,7 @@ for pkg in abinit_fallbacks:
   pkg_md5s = cnf.get(pkg,"md5sum")
   pkg_urls = cnf.get(pkg,"urls").split()
   pkg_lngs = ["CONFIG"] + cnf.get(pkg,"languages").split() + ["LINK"]
+  pkg_chka = cnf.get(pkg,"check_api")
 
   # Extract optional package information
   try:
@@ -477,10 +485,19 @@ for pkg in abinit_fallbacks:
   # Define environment variables
   pkg_vars = snippet_envvars(pkg_lngs,lng_specs)
 
+  # Check whether we want to check the package's API
+  chk_api = None
+  if ( pkg_chka == "yes" ):
+    api_version = pkg_name.split("-")[1].split(".")[0:2]
+    chk_api = {}
+    chk_api["maj"] = int(api_version[0])
+    chk_api["min"] = int(api_version[1])
+    chk_api["max"] = int(api_version[1])
+
   # Generate macro
   m4_fbk += macro_fallback(pkg,pkg_name,pkg_desc,pkg_libs,pkg_bins,
     pkg_md5s,pkg_urls,pkg_dep_libs,pkg_deps,pkg_incs,is_preq=is_preq[pkg],
-    env_vars=pkg_vars)
+    env_vars=pkg_vars,chk_api=chk_api)
 
 # Substitute global template and write down macro file
 m4_all = re.sub("@FALLBACKS@", m4_fbk, m4_all)

@@ -69,9 +69,10 @@ Global parameters
 Fallbacks status
 ----------------
 
-The following summary table indicates whether the fallbacks will be installed,
-if their build parameters have been customized through environment variables,
-and whether tricks have been internally applied to their build parameters.
+The following summary table indicates the status of the fallbacks, whether
+they will be installed, if their build parameters have been customized
+through environment variables, and whether tricks have been internally
+applied to their build parameters.
 
 @FBK_STATUS@
 
@@ -90,16 +91,17 @@ EOF
 
   # Report status of each package
   fbk_form  = ""
-  fbk_stat  = "  +----------------+--------+--------+--------+\n"
-  fbk_stat += "  |Fallback        |Install |Custom  |Tricks  |\n"
-  fbk_stat += "  +----------------+--------+--------+--------+\n"
+  fbk_stat  = "  +----------------+--------+--------+--------+--------+\n"
+  fbk_stat += "  |Fallback        |Status  |Install |Custom  |Tricks  |\n"
+  fbk_stat += "  +----------------+--------+--------+--------+--------+\n"
   for pkg in fbk_list:
+    fbk_form += "  tmp_s_%s=`echo \"${afb_%s_ok}\" | sed -e 's/^yes/ok/;s/^no/broken/' | awk '{printf(\"%%-8s\",[$]1);}'`\n" % (pkg,pkg)
     fbk_form += "  tmp_i_%s=`echo \"${enable_%s}\" | awk '{printf(\"%%-8s\",[$]1);}'`\n" % (pkg,pkg)
     fbk_form += "  tmp_c_%s=`echo \"${afb_%s_custom}\" | awk '{printf(\"%%-8s\",[$]1);}'`\n" % (pkg,pkg)
     fbk_form += "  tmp_t_%s=`echo \"${afb_%s_tricks}\" | awk '{printf(\"%%-8s\",[$]1);}'`\n" % (pkg,pkg)
-    fbk_stat += "  |%-16s|${tmp_i_%s}|${tmp_c_%s}|${tmp_t_%s}|\n" % \
-      (pkg,pkg,pkg,pkg)
-  fbk_stat += "  +----------------+--------+--------+--------+"
+    fbk_stat += "  |%-16s|${tmp_s_%s}|${tmp_i_%s}|${tmp_c_%s}|${tmp_t_%s}|\n" % \
+      (pkg,pkg,pkg,pkg,pkg)
+  fbk_stat += "  +----------------+--------+--------+--------+--------+"
 
   # Substitute macro
   ret = re.sub("@FBK_FORMAT@",fbk_form,ret)

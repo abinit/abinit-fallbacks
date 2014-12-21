@@ -104,6 +104,7 @@ for pkg in abinit_fallbacks:
   dumper += "\n                    # ------------------------------------ #\n"
   dumper += "\n# %s - use variables\n" % pkg_desc
   dumper += "enable_%s='@enable_%s@'\n" % (pkg,pkg)
+  dumper += "afb_%s_ok='@afb_%s_ok@'\n" % (pkg,pkg)
 
   # Extract optional package information
   if ( is_preq[pkg] ):
