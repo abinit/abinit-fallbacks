@@ -1,11 +1,13 @@
 #!/bin/sh
 
+set -e
+
 cmd="${1}"
 
-./wipeout.sh && \
-./autogen.sh && \
-mkdir tmp && \
-cd tmp && \
+./wipeout.sh
+./autogen.sh
+mkdir tmp
+cd tmp
 ../configure \
   --enable-local-build
 
