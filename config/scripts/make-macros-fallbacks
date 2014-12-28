@@ -183,17 +183,17 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     manually to ${abinit_tardir}])
     fi
 
+    dnl Warn user about broken packages
+    if test "${afb_@pkg_nick@_ok}" != "yes"; then
+      AC_MSG_WARN([@PKG_NICK@ is broken, which will prevent the build of all
+                      its possible dependencies])
+    fi
+
 @PKG_XFER@  fi
 
   dnl Inform Automake
   AM_CONDITIONAL(DO_BUILD_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
   AM_CONDITIONAL(DO_TEST_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
-
-  dnl Warn user about broken packages
-  if test "${afb_@pkg_nick@_ok}" != "yes"; then
-    AC_MSG_WARN([@PKG_NICK@ is broken, which will prevent the build of all
-                    its possible dependencies])
-  fi
 
   dnl Substitutions
   AC_SUBST(afb_@pkg_nick@_ok)
