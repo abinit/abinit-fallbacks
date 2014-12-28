@@ -77,6 +77,7 @@ information desired.
   * deps     : get a list of packages the selected one depends on;
   * depincs  : get include flags for the package dependencies;
   * deplibs  : get library flags for the package dependencies;
+  * enabled  : tell whether the package has been enabled;
   * fcflags  : get Fortran flags used to build the package;
   * fppflags : get Fortran preprocessing flags used to build the package;
                (except includes, see "incs" below);
@@ -135,6 +136,11 @@ case "${my_cmd}" in
       echo "Error: no '${my_cmd}' item for package '${my_pkg}'" >&2
       exit 1
     fi
+    ;;
+
+  enabled)
+    pkg_enabled=`eval echo \$\{enable_${my_pkg}\}`
+    echo "${pkg_enabled}"
     ;;
 
   @FBK_CASE@)
