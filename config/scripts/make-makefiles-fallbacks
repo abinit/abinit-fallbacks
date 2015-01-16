@@ -99,12 +99,12 @@ stamps/%s-config-stamp: stamps/%s-patch-stamp
 	  CXXFLAGS="$(CXXFLAGS_%s)" \\
           FCCPP="$(TRUE_CPP)" \\
 	  F77="$(FC)" \\
-	  FFLAGS="$(FCFLAGS_FIXEDFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
+	  FFLAGS="$(FCFLAGS_FIXEDFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  F90="$(FC)" \\
-	  F90FLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
+	  F90FLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  FC="$(FC)" \\
-	  FCFLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s_EXT) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
-	  LDFLAGS="$(FC_LDFLAGS_EXTRA) $(LDFLAGS_%s)" \\
+	  FCFLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
+	  LDFLAGS="$(FC_LDFLAGS) $(LDFLAGS_%s)" \\
 	  LIBS="$(LIBS_%s) %s" \\
 	  AR="$(AR)" \\
 	  ARFLAGS="$(ARFLAGS) $(ARFLAGS_CMD)" \\
@@ -137,8 +137,8 @@ endif
   pkg,pkg,pkg,pkg,
   pkg,pkg,pkg,pkg_make,pkg,
   pkg,pkg,pkg,
-  pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),
-  pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),tmp_deplibs,
+  pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),
+  pkg.upper(),pkg.upper(),pkg.upper(),tmp_deplibs,
   pkg.upper(),
   pkg,
   pkg,pkg,tmp_patches,pkg,
