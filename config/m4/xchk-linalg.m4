@@ -63,6 +63,7 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_LINALG],[
   dnl BLAS AXPBY extensions?
   if test "${afb_linalg_has_blas}" = "yes"; then
     AC_MSG_CHECKING([for BLAS AXPBY support in specified libraries])
+    AC_LANG_PUSH([Fortran])
     AC_LINK_IFELSE([AC_LANG_PROGRAM([],
       [[
         call saxpby
@@ -70,23 +71,27 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_LINALG],[
         call caxpby
         call zaxpby
       ]])], [afb_linalg_has_blas_axpby="yes"], [afb_linalg_has_blas_axpby="no"])
+    AC_LANG_POP([Fortran])
     AC_MSG_RESULT([${afb_linalg_has_blas_axpby}])
   fi
 
   dnl BLAS GEMM3M extensions?
   if test "${afb_linalg_has_blas}" = "yes"; then
     AC_MSG_CHECKING([for GEMM3M support in specified libraries])
+    AC_LANG_PUSH([Fortran])
     AC_LINK_IFELSE([AC_LANG_PROGRAM([],
       [[
         call cgemm3m
         call zgemm3m
       ]])], [afb_linalg_has_blas_gemm3m="yes"], [afb_linalg_has_blas_gemm3m="no"])
+    AC_LANG_POP([Fortran])
     AC_MSG_RESULT([${afb_linalg_has_blas_gemm3m}])
   fi
 
   dnl BLAS MKL IMATCOPY extensions?
   if test "${afb_linalg_has_blas}" = "yes"; then
     AC_MSG_CHECKING([for MKL IMATCOPY support in specified libraries])
+    AC_LANG_PUSH([Fortran])
     AC_LINK_IFELSE([AC_LANG_PROGRAM([],
       [[
         call mkl_simatcopy
@@ -94,12 +99,14 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_LINALG],[
         call mkl_cimatcopy
         call mkl_zimatcopy
       ]])], [afb_linalg_has_blas_mkl_imatcopy="yes"], [afb_linalg_has_blas_mkl_imatcopy="no"])
+    AC_LANG_POP([Fortran])
     AC_MSG_RESULT([${afb_linalg_has_blas_mkl_imatcopy}])
   fi
 
   dnl BLAS MKL OMATCOPY extensions?
   if test "${afb_linalg_has_blas}" = "yes"; then
     AC_MSG_CHECKING([for MKL OMATCOPY support in specified libraries])
+    AC_LANG_PUSH([Fortran])
     AC_LINK_IFELSE([AC_LANG_PROGRAM([],
       [[
         call mkl_somatcopy
@@ -107,12 +114,14 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_LINALG],[
         call mkl_comatcopy
         call mkl_zomatcopy
       ]])], [afb_linalg_has_blas_mkl_omatcopy="yes"], [afb_linalg_has_blas_mkl_omatcopy="no"])
+    AC_LANG_POP([Fortran])
     AC_MSG_RESULT([${afb_linalg_has_blas_mkl_omatcopy}])
   fi
 
   dnl BLAS MKL OMATADD extensions?
   if test "${afb_linalg_has_blas}" = "yes"; then
     AC_MSG_CHECKING([for MKL OMATADD support in specified libraries])
+    AC_LANG_PUSH([Fortran])
     AC_LINK_IFELSE([AC_LANG_PROGRAM([],
       [[
         call mkl_somatadd
@@ -120,6 +129,7 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_LINALG],[
         call mkl_comatadd
         call mkl_zomatadd
       ]])], [afb_linalg_has_blas_mkl_omatadd="yes"], [afb_linalg_has_blas_mkl_omatadd="no"])
+    AC_LANG_POP([Fortran])
     AC_MSG_RESULT([${afb_linalg_has_blas_mkl_omatadd}])
   fi
 
