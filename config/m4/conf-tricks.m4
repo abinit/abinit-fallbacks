@@ -135,6 +135,7 @@ AC_DEFUN([AFB_TRICKS_ETSF_IO],[
     dnl Finish
     tmp_etsf_io_cnt_tricks=`expr ${tmp_etsf_io_cnt_tricks} \+ 1`
     afb_etsf_io_tricky_vars="${afb_etsf_io_tricky_vars} CFGFLAGS"
+    unset tmpflags_etsf_io
   else
     AC_MSG_NOTICE([CFGFLAGS_ETSF_IO set => skipping ETSF_IO config tricks])
   fi
@@ -152,7 +153,6 @@ AC_DEFUN([AFB_TRICKS_ETSF_IO],[
     dnl Finish
     tmp_etsf_io_cnt_tricks=`expr ${tmp_etsf_io_cnt_tricks} \+ 1`
     afb_etsf_io_tricky_vars="${afb_etsf_io_tricky_vars} FCFLAGS"
-    unset tmpflags_etsf_io
   else
     AC_MSG_NOTICE([FCFLAGS_ETSF_IO set => skipping ETSF_IO Fortran tricks])
   fi
