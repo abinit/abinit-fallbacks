@@ -175,7 +175,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     dnl Enable fallback support only if the download was successful
     if test "${tmp_tarball_ok}" = "yes"; then
       afb_@pkg_nick@_ok="yes"@PKG_SPECS@
-      ABI_TRICKS_@PKG_NICK@(@TRICKS@)
+      AFB_TRICKS_@PKG_NICK@(@TRICKS@)
     else
       afb_@pkg_nick@_ok="no"
       AC_MSG_ERROR([could not download @PKG_NICK@ fallback tarball

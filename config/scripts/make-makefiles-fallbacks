@@ -52,6 +52,10 @@ AM_CPPFLAGS = -I$(prefix)/include
 SUBDIRS = src
 
 all-local:%s
+	@echo ""
+	@echo "All requested fallbacks have been built."
+	@echo "you may now type 'make install' to finish the installation."
+	@echo ""
 """ % (name,stamp,name,tmp_cmds)
 
 

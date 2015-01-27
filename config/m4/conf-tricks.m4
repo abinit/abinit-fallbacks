@@ -13,13 +13,13 @@
 
 
 
-# ABI_TRICKS_ATOMPAW(FC_VENDOR,FC_VERSION)
+# AFB_TRICKS_ATOMPAW(FC_VENDOR,FC_VERSION)
 # ----------------------------------------
 #
 # Applies tricks and workarounds to have the AtomPAW library correctly
 # linked to the binaries.
 #
-AC_DEFUN([ABI_TRICKS_ATOMPAW],[
+AC_DEFUN([AFB_TRICKS_ATOMPAW],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
   m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
@@ -54,17 +54,17 @@ AC_DEFUN([ABI_TRICKS_ATOMPAW],[
     AC_MSG_NOTICE([CFGFLAGS_ATOMPAW set => skipping AtomPAW config tricks])
     test "${afb_atompaw_tricks}" = "yes" && afb_atompaw_tricks="partial"
   fi
-]) # ABI_TRICKS_ATOMPAW
+]) # AFB_TRICKS_ATOMPAW
 
 
 
-# ABI_TRICKS_BIGDFT(FC_VENDOR,FC_VERSION)
+# AFB_TRICKS_BIGDFT(FC_VENDOR,FC_VERSION)
 # ---------------------------------------
 #
 # Applies tricks and workarounds to have the BigDFT library correctly
 # linked to the binaries.
 #
-AC_DEFUN([ABI_TRICKS_BIGDFT],[
+AC_DEFUN([AFB_TRICKS_BIGDFT],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
   m4_if([$2], , [AC_FATAL([$0: missing argument 2])])dnl
@@ -97,17 +97,17 @@ AC_DEFUN([ABI_TRICKS_BIGDFT],[
     AC_MSG_NOTICE([CFGFLAGS_BIGDFT set => skipping BigDFT config tricks])
     test "${afb_bigdft_tricks}" = "yes" && afb_bigdft_tricks="partial"
   fi
-]) # ABI_TRICKS_BIGDFT
+]) # AFB_TRICKS_BIGDFT
 
 
 
-# ABI_TRICKS_ETSF_IO(FC_VENDOR,FC_VERSION)
+# AFB_TRICKS_ETSF_IO(FC_VENDOR,FC_VERSION)
 # ----------------------------------------
 #
 # Applies tricks and workarounds to have the ETSF I/O library correctly
 # linked to the binaries.
 #
-AC_DEFUN([ABI_TRICKS_ETSF_IO],[
+AC_DEFUN([AFB_TRICKS_ETSF_IO],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
   m4_if([$2], , [AC_FATAL([$0: missing argument 2])])dnl
@@ -171,17 +171,17 @@ AC_DEFUN([ABI_TRICKS_ETSF_IO],[
   esac
   unset tmp_etsf_io_cnt_tricks
   unset tmp_etsf_io_num_tricks
-]) # ABI_TRICKS_ETSF_IO
+]) # AFB_TRICKS_ETSF_IO
 
 
 
-# ABI_TRICKS_FOX(FC_VENDOR,FC_VERSION)
+# AFB_TRICKS_FOX(FC_VENDOR,FC_VERSION)
 # ------------------------------------
 #
 # Applies tricks and workarounds to have the FoX library correctly
 # linked to the binaries.
 #
-AC_DEFUN([ABI_TRICKS_FOX],[
+AC_DEFUN([AFB_TRICKS_FOX],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
   m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
@@ -236,17 +236,17 @@ AC_DEFUN([ABI_TRICKS_FOX],[
   esac
   unset tmp_fox_cnt_tricks
   unset tmp_fox_num_tricks
-]) # ABI_TRICKS_FOX
+]) # AFB_TRICKS_FOX
 
 
 
-# ABI_TRICKS_LIBXC(FC_VENDOR,FC_VERSION)
+# AFB_TRICKS_LIBXC(FC_VENDOR,FC_VERSION)
 # --------------------------------------
 #
 # Applies tricks and workarounds to have the LIBXC library correctly
 # linked to the binaries.
 #
-AC_DEFUN([ABI_TRICKS_LIBXC],[
+AC_DEFUN([AFB_TRICKS_LIBXC],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
   m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
@@ -302,17 +302,17 @@ AC_DEFUN([ABI_TRICKS_LIBXC],[
   esac
   unset tmp_libxc_cnt_tricks
   unset tmp_libxc_num_tricks
-]) # ABI_TRICKS_LIBXC
+]) # AFB_TRICKS_LIBXC
 
 
 
-# ABI_TRICKS_LINALG(FC_VENDOR,FC_VERSION)
+# AFB_TRICKS_LINALG(FC_VENDOR,FC_VERSION)
 # ---------------------------------------
 #
 # Applies tricks and workarounds to have the optimized linear algebra
 # libraries correctly linked to the binaries.
 #
-AC_DEFUN([ABI_TRICKS_LINALG],[
+AC_DEFUN([AFB_TRICKS_LINALG],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
   m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
@@ -337,17 +337,17 @@ AC_DEFUN([ABI_TRICKS_LINALG],[
   else
     AC_MSG_NOTICE([FCFLAGS_LINALG set => skipping linear algebra Fortran tricks])
   fi
-]) # ABI_TRICKS_LINALG
+]) # AFB_TRICKS_LINALG
 
 
 
-# ABI_TRICKS_NETCDF(FC_VENDOR,FC_VERSION)
+# AFB_TRICKS_NETCDF(FC_VENDOR,FC_VERSION)
 # ---------------------------------------
 #
 # Applies tricks and workarounds to have the optimized linear algebra
 # libraries correctly linked to the binaries.
 #
-AC_DEFUN([ABI_TRICKS_NETCDF],[
+AC_DEFUN([AFB_TRICKS_NETCDF],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
   m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
@@ -467,17 +467,17 @@ AC_DEFUN([ABI_TRICKS_NETCDF],[
   esac
   unset tmp_netcdf_cnt_tricks
   unset tmp_netcdf_num_tricks
-]) # ABI_TRICKS_NETCDF
+]) # AFB_TRICKS_NETCDF
 
 
 
-# ABI_TRICKS_WANNIER90(FC_VENDOR,FC_VERSION)
+# AFB_TRICKS_WANNIER90(FC_VENDOR,FC_VERSION)
 # ------------------------------------------
 #
 # Applies tricks and workarounds to have the Wannier90 bindings correctly
 # linked to the binaries.
 #
-AC_DEFUN([ABI_TRICKS_WANNIER90],[
+AC_DEFUN([AFB_TRICKS_WANNIER90],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
   m4_if([$2], , [AC_FATAL([$0: missing argument 2])])dnl
@@ -551,4 +551,4 @@ AC_DEFUN([ABI_TRICKS_WANNIER90],[
   esac
   unset tmp_wannier90_cnt_tricks
   unset tmp_wannier90_num_tricks
-]) # ABI_TRICKS_WANNIER90
+]) # AFB_TRICKS_WANNIER90
