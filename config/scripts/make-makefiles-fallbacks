@@ -118,7 +118,6 @@ stamps/%s-config-stamp: stamps/%s-patch-stamp
 	    --prefix="@prefix@" \\
 	    --bindir="@prefix@/bin" \\
 	    --libdir="@prefix@/lib" \\
-	    --program-suffix="-abinit" \\
 	    $(CFGFLAGS_%s)
 	@touch stamps/%s-config-stamp
 
