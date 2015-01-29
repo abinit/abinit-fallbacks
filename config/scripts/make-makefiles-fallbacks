@@ -312,7 +312,7 @@ makefile += makefile_footer(abinit_fallbacks)
 
 # FIXME: add other files to distribute
 makefile += "EXTRA_DIST ="
-for d in ("scripts", "specs", "wannier90"):
+for d in ("scripts", "specs"):
   for f in os.listdir(os.path.join("config", d)):
     makefile += "  \\\n\t%s" % os.path.join("config", d, f)
 for f in os.listdir("patches"):
