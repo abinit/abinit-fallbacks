@@ -388,6 +388,11 @@ AC_DEFUN([AFB_TRICKS_NETCDF],[
           4.4|4.5|4.6|4.7)
             CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
             ;;
+          *)
+            if test "${target_os}" = "cygwin"; then
+              CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
+            fi
+            ;;
         esac
         ;;
       ibm)
