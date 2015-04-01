@@ -637,7 +637,6 @@ AC_DEFUN([ABI_FALLBACKS_PROG_FC],[
   dnl Init
   afb_fc_vendor="${with_fc_vendor}"
   afb_fc_version="${with_fc_version}"
-  tmp_fc_info_file="${ac_abs_top_builddir}/config.fc_info.tmp"
 
   if test "${afb_fc_vendor}" = ""; then
     afb_fc_vendor="unknown"
@@ -651,85 +650,68 @@ AC_DEFUN([ABI_FALLBACKS_PROG_FC],[
   AC_MSG_CHECKING([which type of Fortran compiler we have])
 
   dnl Clear temporary info file
-  rm -f "${tmp_fc_info_file}"
 
   dnl Get rid of that one as early as possible
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_IBM(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   dnl Should be checked before gfortran because it mimics its behaviour
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_INTEL(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_G95(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_GNU(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_PATHSCALE(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   #if test "${afb_fc_vendor}" = "unknown"; then
   #  _ABI_FALLBACKS_CHECK_FC_COMPAQ(${FC})
   #fi
-  #echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_ABSOFT(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_MIPSPRO(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_OPEN64(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_FUJITSU(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_SUN(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_HITACHI(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_NAG(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _ABI_FALLBACKS_CHECK_FC_PGI(${FC})
   fi
-  echo "${fc_info_string}" >>"${tmp_fc_info_file}"
 
   dnl Fall back to generic when detection fails
   if test "${afb_fc_vendor}" = "unknown"; then
     afb_fc_vendor="generic"
-  #else
-  #  rm -f "${tmp_fc_info_file}"
   fi
 
   dnl Normalize Fortran compiler version

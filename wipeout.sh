@@ -22,6 +22,10 @@ if test ! -s "./configure.ac" -o ! -s "config/specs/fallbacks.conf"; then
   exit 1
 fi
 
+# Make sure the directory tree is writeable (some directories can be left
+# read-only after a failed 'make distcheck')
+chmod -R u+w .
+
 # Remove temporary directories and files
 echo "[fbkclean]   Removing temporary directories and files"
 find . -depth -name 'tmp*' -exec rm -rf {} \;
