@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Check that we are in the right directory
+if test ! -s "./configure.ac" -o ! -s "config/specs/fallbacks.conf"; then
+  echo "[fbkexport]   This is not an Abinit Fallbacks source tree - aborting now" >&2
+  exit 1
+fi
+
+# Accept one and only one existing Abinit source tree as argument
+abinit_srcdir=`readlink -e "${1}"`
+test -d "${abinit_srcdir}" || exit 1
+test -d "${abinit_srcdir}/.bzr" || exit 1
+test -s "${abinit_srcdir}/src/98_main/abinit.F90" || exit 1
+
+# Stop at first error
+set -e
+
+# Create fallbacks source tarball
+fbk_clean=`bzr version-info --custom --template "{clean}\n"`
+if test "${fbk_clean}" = "1"; then
+  ./wipeout.sh
+  ./autogen.sh
+  mkdir tmp-export
+  cd tmp-export
+  ../configure
+  make dist
+  fbk_tarball=`ls "${PWD}"/abinit-fallbacks-*.tar.gz`
+else
+  echo "[fbkexport]   Error: Fallbacks source tree has uncommitted changes" >&2
+  echo "[fbkexport]   Please commit them first and rerun this script" >&2
+  exit 1
+fi
+
+# Resume normal execution
+set +e
+
+# Ask for confirmation
+echo ""
+echo "*********************************************"
+echo -n "Overwrite '${abinit_srcdir}/fallbacks' (y/N)? "
+read yesno
+echo "*********************************************"
+echo ""
+
+# Replace old fallbacks directory 
+if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
+  rm -rf "${abinit_srcdir}/fallbacks"
+  cd "${abinit_srcdir}"
+  abi_clean=`bzr version-info --custom --template "{clean}\n"`
+  if test "${abi_clean}" = "1"; then
+    tar xzf "${fbk_tarball}"
+    mv abinit-fallbacks-[0-9]* fallbacks
+  else
+    echo "[fbkexport]   Error: Abinit source tree has uncommitted changes" >&2
+    echo "[fbkexport]   Please commit them first and rerun this script" >&2
+    exit 1
+  fi
+fi
+
+#
