@@ -15,8 +15,12 @@ test -s "${abinit_srcdir}/src/98_main/abinit.F90" || exit 1
 # Stop at first error
 set -e
 
+# Get fallbacks branch information
+fbk_branch=`basename "${PWD}"`
+fbk_revno=`bzr version-info --custom --template '{revno}\n'`
+fbk_clean=`bzr version-info --custom --template '{clean}\n'`
+
 # Create fallbacks source tarball
-fbk_clean=`bzr version-info --custom --template "{clean}\n"`
 if test "${fbk_clean}" = "1"; then
   ./wipeout.sh
   ./autogen.sh
@@ -30,10 +34,6 @@ else
   echo "[fbkexport]   Please commit them first and rerun this script" >&2
   exit 1
 fi
-
-# Get fallbacks branch information
-fbk_branch=`basename "${PWD}"`
-fbk_revno=`bzr version-info --custom --template '{revno}\n'`
 
 # Ask for confirmation
 echo ""
