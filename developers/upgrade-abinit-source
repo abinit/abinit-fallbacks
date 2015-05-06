@@ -31,23 +31,23 @@ else
   exit 1
 fi
 
-# Resume normal execution
-set +e
+# Get fallbacks branch information
+fbk_branch=`basename "${PWD}"`
+fbk_revno=`bzr version-info --custom --template '{revno}\n'`
 
 # Ask for confirmation
 echo ""
-echo "*********************************************"
+echo "******************************************************************************"
 echo -n "Overwrite '${abinit_srcdir}/fallbacks' (y/N)? "
 read yesno
-echo "*********************************************"
-echo ""
+echo "******************************************************************************"
 
 # Replace old fallbacks directory 
 if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
-  rm -rf "${abinit_srcdir}/fallbacks"
   cd "${abinit_srcdir}"
   abi_clean=`bzr version-info --custom --template "{clean}\n"`
   if test "${abi_clean}" = "1"; then
+    rm -r fallbacks
     tar xzf "${fbk_tarball}"
     mv abinit-fallbacks-[0-9]* fallbacks
   else
@@ -57,4 +57,16 @@ if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
   fi
 fi
 
-#
+# Commit changes
+msg_commit="Imported fallbacks/${fbk_branch}/${fbk_revno}"
+bzr status
+echo ""
+echo "Commit message: '${msg_commit}'"
+echo ""
+echo "******************************************************************************"
+echo -n "Commit above changes (y/N)? "
+read yesno
+echo "******************************************************************************"
+if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
+  bzr commit -m "${msg_commit}"
+fi
