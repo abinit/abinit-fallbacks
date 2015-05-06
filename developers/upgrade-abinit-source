@@ -58,7 +58,7 @@ if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
 fi
 
 # Commit changes
-msg_commit="Imported fallbacks/${fbk_branch}/${fbk_revno}"
+msg_commit="Imported abinit-fallbacks/${fbk_branch}/${fbk_revno}"
 bzr status
 echo ""
 echo "Commit message: '${msg_commit}'"
