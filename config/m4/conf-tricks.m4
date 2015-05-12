@@ -81,7 +81,8 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
     tmpflags_libxc='--disable-internal-libxc --with-libxc-incs="$(afb_libxc_incs)" --with-libxc-libs="$(afb_libxc_libs)"'
 
     dnl Internal BigDFT parameters
-    tmpflags_libyaml='--enable-internal-libyaml --disable-shared'
+    dnl FIXME: disabled YAML because PyYAML requires shared objects
+    tmpflags_libyaml='--disable-internal-libyaml --disable-shared'
     tmpflags_options='--without-archives --with-moduledir="$(includedir)"'
     tmpflags_bigdft='--disable-binaries --disable-bindings --enable-libbigdft'
     CFGFLAGS_BIGDFT="${CFGFLAGS_BIGDFT} ${tmpflags_bigdft} ${tmpflags_options} ${tmpflags_libyaml} ${tmpflags_libxc}"
