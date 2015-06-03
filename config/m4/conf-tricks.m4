@@ -85,7 +85,7 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
     tmpflags_libyaml='--disable-internal-libyaml --disable-shared'
     tmpflags_options='--without-archives --with-moduledir="$(includedir)"'
     tmpflags_bigdft='--disable-binaries --disable-bindings --enable-libbigdft'
-    CFGFLAGS_BIGDFT="${CFGFLAGS_BIGDFT} ${tmpflags_bigdft} ${tmpflags_options} ${tmpflags_libyaml} ${tmpflags_libxc}"
+    CFGFLAGS_BIGDFT="${CFGFLAGS_BIGDFT} ${tmpflags_bigdft} ${tmpflags_options} ${tmpflags_libyaml} ${tmpflags_libxc} --program-suffix='-abinit'"
 
     dnl Finish
     test "${afb_bigdft_tricks}" = "no" && afb_bigdft_tricks="yes"
