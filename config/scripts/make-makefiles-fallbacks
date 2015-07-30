@@ -58,7 +58,7 @@ all-local:%s
 	  echo ""; \
 	  echo "You may point Abinit to them through one of the following choices:"; \
 	  echo ""; \
-	  echo "  - export FALLBACKS_ROOT='${DESTDIR}${prefix}' in your shell;"; \
+	  echo "  - export ABINIT_FALLBACKS_ROOT='${DESTDIR}${prefix}' in your shell;"; \
 	  echo ""; \
           echo "  - set with_fallbacks_prefix='${DESTDIR}${prefix}' in your Abinit config file;"; \
 	  echo ""; \
