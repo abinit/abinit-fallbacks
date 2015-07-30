@@ -385,16 +385,7 @@ AC_DEFUN([AFB_TRICKS_NETCDF],[
         CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -Df2cFortran"
         ;;
       gnu)
-        case "$2" in
-          4.4|4.5|4.6|4.7)
-            CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
-            ;;
-          *)
-            if test "${target_os}" = "cygwin"; then
-              CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
-            fi
-            ;;
-        esac
+        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
         ;;
       ibm)
         CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DIBMR2Fortran"
