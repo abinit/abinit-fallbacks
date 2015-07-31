@@ -78,7 +78,7 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
     AC_MSG_NOTICE([applying BigDFT tricks (vendor: $1, version: $2, flags: config)])
 
     dnl LibXC
-    tmpflags_libxc='--disable-internal-libxc --with-libxc-incs="$(afb_libxc_incs)" --with-libxc-libs="$(afb_libxc_libs)"'
+    tmpflags_libxc='--disable-internal-libxc --with-libxc-incs="$(afb_libxc_incs)" --with-libxc-libs="$(afb_libxc_libs) ${LIBS}"'
 
     dnl Internal BigDFT parameters
     dnl FIXME: disabled YAML because PyYAML requires shared objects
