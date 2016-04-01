@@ -139,6 +139,13 @@ case "${my_cmd}" in
     fi
     ;;
 
+  deps)
+    pkg_deps=`eval echo \$\{afb_${my_pkg}_${my_cmd}\}`
+    if test "${pkg_deps}" != ""; then
+      echo "${pkg_deps}"
+    fi
+    ;;
+
   enabled)
     pkg_enabled=`eval echo \$\{enable_${my_pkg}\}`
     echo "${pkg_enabled}"
