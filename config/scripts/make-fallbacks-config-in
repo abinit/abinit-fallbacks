@@ -84,8 +84,7 @@ information desired.
   * ldflags  : get link flags used to build the package;
   * libs     : get library flags to link against the package;
   * pkgver   : get package version;
-  * shell    : get shell code to use the package;
-  * suffix   : get program suffix for the package.
+  * shell    : get shell code to use the package.
 
 <package> can be:
 @FBK_LIST@
@@ -180,10 +179,6 @@ case "${my_cmd}" in
       echo 'PATH="@prefix@/bin:${PATH}"'
       echo 'export PATH'
     fi
-    ;;
-
-  suffix)
-    echo "-abinit"
     ;;
 
   *)
