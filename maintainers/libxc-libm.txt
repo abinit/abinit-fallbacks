@@ -1,0 +1,18 @@
+Dependencies of LibXC 2.2 wrt Libm
+==================================
+
+sincos
+atan2
+logl
+expl
+sin
+atan
+exp
+cbrt
+cos
+log
+pow
+sqrt
+asinh
+erf
+erfc
