@@ -172,7 +172,7 @@ def fallback_clean_template(pkg,name,bins=None,hdrs=None,libs=None,mods=None):
   if ( libs ):
     cleans += "\trm -rf exports/lib/%s\n" % \
       (" exports/lib/".join(libs))
-  if ( hdrs ):
+  if ( mods ):
     cleans += "\trm -rf exports/include/%s\n" % \
       (" exports/include/".join(mods))
 
