@@ -399,5 +399,7 @@ for pkg in abinit_fallbacks:
     fbk_libs[pkg] = cnf.get(pkg,"libraries").split()
 
 # Write down macro
+if ( not os.path.exists("src") ):
+  os.mkdir("src")
 file(my_output,"w").write(config_script(my_name,now,fbk_versions,fbk_items,fbk_order,
   fbk_vars,fbk_deps,fbk_libs,fbk_prqs))

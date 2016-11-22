@@ -294,11 +294,12 @@ for pkg in abinit_fallbacks:
     pkg_mods = cnf.get(pkg,"modules").split()
 
   # Get patch list
-  pkg_patches = list()
-  for diff in os.listdir("./patches"):
-    if ( re.match(pkg_name,diff) ):
-        pkg_patches.append(diff)
-  pkg_patches.sort()
+  pkg_patches = []
+  if ( os.path.exists("./patches") ):
+    for diff in os.listdir("./patches"):
+      if ( re.match(pkg_name,diff) ):
+          pkg_patches.append(diff)
+    pkg_patches.sort()
 
   # Generate templates
   makefile += fallback_template(pkg,pkg_name,pkg_make,pkg_patches,all_deps[pkg])
@@ -310,9 +311,10 @@ makefile += makefile_footer(abinit_fallbacks)
 
 # FIXME: add other files to distribute
 makefile += "EXTRA_DIST ="
-for f in os.listdir("patches"):
-  if ( re.search("\.patch$",f) ):
-    makefile += " \\\n\t%s" % (os.path.join("patches",f))
+if ( os.path.exists("patches") ):
+  for f in os.listdir("patches"):
+    if ( re.search("\.patch$",f) ):
+      makefile += " \\\n\t%s" % (os.path.join("patches",f))
 makefile += "\n\n"
 
 # Write top makefile

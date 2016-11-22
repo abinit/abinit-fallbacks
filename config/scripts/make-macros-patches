@@ -111,7 +111,10 @@ cnf = MyConfigParser()
 cnf.read(my_configs[0])
 abinit_fallbacks = cnf.sections()
 abinit_fallbacks.sort()
-patch_list = os.listdir("patches")
+if ( os.path.exists("patches") ):
+  patch_list = os.listdir("patches")
+else:
+  patch_list = []
 patch_list.sort()
 fbk_patches = {}
 
