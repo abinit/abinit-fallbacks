@@ -48,5 +48,5 @@ echo "[fbkclean]   Removing autotools files"
 find . -name Makefile.in -exec rm {} \;
 find . -name Makefile.am -exec rm {} \;
 rm -rf aclocal.m4 autom4te.cache configure confstat*
-(cd config/gnu && rm -f compile config.guess config.sub depcomp install-sh ltmain.sh missing)
-(cd config/m4 && rm -f libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4 auto-*.m4)
+(test -d config/gnu && cd config/gnu && rm -f compile config.guess config.sub depcomp install-sh ltmain.sh missing)
+(test -d config/m4 && cd config/m4 && rm -f libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4 auto-*.m4)

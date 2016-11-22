@@ -17,7 +17,7 @@ if test ! -s "./configure.ac" -o ! -s "config/specs/fallbacks.conf"; then
 fi
 
 # Create possibly missing directories
-mkdir -p config/gnu
+mkdir -p config/gnu config/m4
 
 # Generate input files for configure
 echo "[fbkbuild]   Generating configure inputs"
