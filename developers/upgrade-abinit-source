@@ -8,17 +8,47 @@ fi
 
 # Accept one and only one existing Abinit source tree as argument
 abinit_srcdir=`readlink -e "${1}"`
+test "${#}" -gt 1 && exit 1
 test -d "${abinit_srcdir}" || exit 1
-test -d "${abinit_srcdir}/.bzr" || exit 1
+test -d "${abinit_srcdir}/.git" || exit 1
 test -s "${abinit_srcdir}/src/98_main/abinit.F90" || exit 1
+
+# Checks whether a Git work tree is clean
+check_work_tree () {
+  # Update the index
+  git update-index -q --ignore-submodules --refresh
+  ret=1
+
+  # Check for unstaged changes in the working tree
+  git diff-files --quiet --ignore-submodules --
+  wtdf="${?}"
+  if test "${wtdf}" != "0"; then
+    ret=0
+  fi
+
+  # Check for uncommitted changes in the index
+  git diff-index --cached --quiet HEAD --ignore-submodules --
+  wtdi="${?}"
+  if test "${wtdi}" != "0"; then
+    ret=0
+  fi
+
+  # Check for untracked files
+  wtuf=`git ls-files --other --exclude-standard`
+  if test -n "${wtuf}"; then
+    ret=0
+  fi
+
+  echo "${ret}"
+}
 
 # Stop at first error
 set -e
 
 # Get fallbacks branch information
-fbk_branch=`basename "${PWD}"`
-fbk_revno=`bzr version-info --custom --template '{revno}\n'`
-fbk_clean=`bzr version-info --custom --template '{clean}\n'`
+fbk_branch=`git branch | awk '{print $2}'`
+fbk_clean=`check_work_tree`
+fbk_revno=`git rev-parse HEAD | sed -e 's/\(.......\).*/\1/'`
 
 # Create fallbacks source tarball
 if test "${fbk_clean}" = "1"; then
@@ -45,7 +75,7 @@ echo "**************************************************************************
 # Replace old fallbacks directory 
 if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
   cd "${abinit_srcdir}"
-  abi_clean=`bzr version-info --custom --template "{clean}\n"`
+  abi_clean=`check_work_tree`
   if test "${abi_clean}" = "1"; then
     rm -r fallbacks
     tar xzf "${fbk_tarball}"
@@ -55,11 +85,13 @@ if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
     echo "[fbkexport]   Please commit them first and rerun this script" >&2
     exit 1
   fi
+else
+  exit 0
 fi
 
 # Commit changes
 msg_commit="Imported abinit-fallbacks/${fbk_branch}/${fbk_revno}"
-bzr status
+git status
 echo ""
 echo "Commit message: '${msg_commit}'"
 echo ""
@@ -68,5 +100,8 @@ echo -n "Commit above changes (y/N)? "
 read yesno
 echo "******************************************************************************"
 if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
-  bzr commit -m "${msg_commit}"
+  git add fallbacks
+  git commit -m "${msg_commit}"
+else
+  exit 0
 fi
