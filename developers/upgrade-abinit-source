@@ -100,7 +100,7 @@ echo -n "Commit above changes (y/N)? "
 read yesno
 echo "******************************************************************************"
 if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
-  git add fallbacks
+  git add --force fallbacks
   git commit -m "${msg_commit}"
 else
   exit 0
