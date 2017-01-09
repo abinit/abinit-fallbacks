@@ -466,7 +466,7 @@ AC_DEFUN([AFB_TRICKS_WANNIER90],[
 
     dnl Finish
     tmp_wannier90_cnt_tricks=`expr ${tmp_wannier90_cnt_tricks} \+ 1`
-    afb_wannier90_tricky_vars="${afb_wannier90_tricky_vars} CFGFLAGS"
+    afb_wannier90_tricky_vars="${afb_wannier90_tricky_vars} LIBS"
   else
     AC_MSG_NOTICE([LIBS_WANNIER90 set => skipping Wannier90 libraries tricks])
   fi
