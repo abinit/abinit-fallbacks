@@ -51,7 +51,7 @@ fbks_sorted_list=[]   # list of fbks sorted by number of dependencies
 for fallback in fallbacks:
   cnf_vars = dict(cnf.items(fallback))
   list_depends=[]
-  if cnf_vars['depends'] != "none":
+  if cnf_vars['depends'] != "":
        list_depends=cnf_vars['depends'].split(" ")
   version=cnf_vars['name'].split("-")[1]
   if fallback == "linalg":
@@ -217,7 +217,14 @@ for fb in will_be_installed:
               continue
           fn.write('--disable-%s ' % f)
       fn.write('\\\n')
-      fn.write('  FC=%s CC=%s CXX=%s \nmake -j 4 install\n\n' % (fbk_options['FC'],fbk_options['CC'],fbk_options['CXX']))
+      fn.write('  FC=%s CC=%s CXX=%s  \\\n' % (fbk_options['FC'],fbk_options['CC'],fbk_options['CXX']))
+      for opt in ['FCFLAGS_EXTRA','FPPFLAGS','CPP','CPPFLAGS','CFLAGS','CXXFLAGS','FCCPP','F77','F90','FFLAGS','F90FLAGS','FCFLAGS','LDFLAGS','LIBS']:
+        try:
+           if fbk_options[opt] != "":
+              fn.write('%s=%s ' % (opt,fbk_options[opt]))
+        except:
+           pass
+      fn.write('\n  make -j 4 install\n\n')
 
 subprocess.call(['chmod', '0750', filename])
 

@@ -79,17 +79,17 @@ if not link:
     print("Exit...")
     sys.exit()
 
+#############################################
+# create links
+# TODO : rm old links before
+
 for fb in fallbacks:
     print(fb)
-    for f in ['bin','lib','include']:
-      # go to directory
-      os.chdir("%s/%s" % (fbk_prefix_base,f))
-      #print("target : ",os.getcwd())
-      folder="%s/%s/%s/%s" % (fbk_prefix_base,fb,fbks_version[fb],f)
+    for d in ['bin','lib','include']:
+      os.chdir("%s/%s" % (fbk_prefix_base,d))
+      folder="../%s/%s/%s" % (fb,fbks_version[fb],d)
       if os.path.exists(folder) :
          for file in os.listdir(folder):
              if file == 'abinit-fallbacks-config' or file == 'pkgconfig':
                  continue
-             #print("ln -s %s/%s" % (folder,file))
              subprocess.call(['ln', '-s', "%s/%s" % (folder,file)])
-
