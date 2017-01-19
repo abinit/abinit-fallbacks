@@ -221,7 +221,7 @@ for fb in will_be_installed:
       for opt in ['FCFLAGS_EXTRA','FPPFLAGS','CPP','CPPFLAGS','CFLAGS','CXXFLAGS','FCCPP','F77','F90','FFLAGS','F90FLAGS','FCFLAGS','LDFLAGS','LIBS']:
         try:
            if fbk_options[opt] != "":
-              fn.write('%s=%s ' % (opt,fbk_options[opt]))
+              fn.write('%s=\"%s\" ' % (opt,fbk_options[opt]))
         except:
            pass
       fn.write('\n  make -j 4 install\n\n')

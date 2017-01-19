@@ -12,6 +12,7 @@ import sys,os,re
 import argparse
 import subprocess
 import glob
+import socket
 
 try:
     from ConfigParser import ConfigParser
@@ -25,6 +26,7 @@ def Check_If_Installed(basedir,fallback,version):
 
 my_name    = "dump_fb_version.py"
 my_config  = "config/specs/fallbacks.conf"
+hostname   = socket.gethostname().split(".")[0]
 
 # Check if we have a config file
 if ( not os.path.exists(my_config) ):
@@ -35,12 +37,18 @@ if ( not os.path.exists(my_config) ):
 # 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l","--link", action="store_true", help="create links")
-parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='*', help="name of builder ( == module name )")
+parser.add_argument("-y","--yes", action="store_true", help="yes answer by default")
+parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='?', help="name of builder ( == module name )")
 args = parser.parse_args()
 
 d = vars(args)
 link=d['link']
+yes=d['yes']
 builder=d['builder']
+if builder.split("_")[0] != hostname:
+   print("The builder name (%s) is not consistent whith the hostname : %s" % (builder,hostname) )
+   print("Aborting now...") 
+#sys.exit()
 
 # Process config file
 cnf = ConfigParser()
@@ -75,9 +83,11 @@ for f in fallbacks:
         print("%s missing" % f)
         link=False
 
-if not link:
-    print("Exit...")
-    sys.exit()
+if not link and not yes:
+    msg="Not all fallbacks are presents, proceed anyway ?"
+    if raw_input("%s (y/N) " % msg).lower() != 'y':
+       print("Exit...")
+       sys.exit()
 
 #############################################
 # create links
