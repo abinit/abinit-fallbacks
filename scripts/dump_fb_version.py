@@ -35,7 +35,7 @@ if ( not os.path.exists(my_config) ):
 # 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l","--link", action="store_true", help="create links")
-parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='*', help="name of builder ( == module name )")
+parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='?', help="name of builder ( == module name )")
 args = parser.parse_args()
 
 d = vars(args)
