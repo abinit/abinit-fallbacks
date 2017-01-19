@@ -47,6 +47,7 @@ A={} # working variable
 fbks_list_depends={}  # contains depends by fbks
 fbks_version={}       # version of fbks
 fbks_sorted_list=[]   # list of fbks sorted by number of dependencies
+fbks_external={}
 
 for fallback in fallbacks:
   cnf_vars = dict(cnf.items(fallback))
@@ -59,6 +60,7 @@ for fallback in fallbacks:
   A[fallback]=len(list_depends)
   fbks_list_depends[fallback]=list_depends
   fbks_version[fallback]=version
+  fbks_external[fallback]=False
 
 tmp=sorted(A.items(), key=lambda x: x[1])
 for i in range(0,len(fallbacks)):
@@ -131,13 +133,23 @@ fbk_options=db_builders.find_one({ 'name': builder })['fallback_options']
 #print fbk_options
 client.close()
 
-
 ##############################################
 # external linalg is used by defaut with BB
 try:
   if fbk_options['LINALG'] != "":
      print("\n*** Use external linalg : ",fbk_options['LINALG'])
      d.pop('linalg', None)
+     fbks_external['linalg']=True
+except:
+  pass
+
+##############################################
+# check if external netcdf is defined
+try:
+  if fbk_options['NETCDF_LIBS'] != "":
+     print("\n*** Use external netcdf ***\n")
+     fbks_external['netcdf']=True
+     d.pop('netcdf', None)
 except:
   pass
 
@@ -201,10 +213,21 @@ for fb in will_be_installed:
       fn.write('# build %s \n' % fb)
       fn.write('../configure \\\n')
       fn.write('  --prefix=%s \\\n' % fbk_prefix )
-      # list of depends
-      for f in  fbks_list_depends[fb]: 
-           if f == 'linalg':
-               fn.write('  --with-linalg-libs=\"%s\" \\\n' % fbk_options['LINALG'])
+      # list of depends extranl and not
+      for f in  fbks_list_depends[fb]:
+           if fbks_external[f]:
+               try:
+                  fn.write('  --with-%s-libs=\"%s\" \\\n' % (f,fbk_options[f.upper()]))
+               except:
+                  pass
+               try:
+                  fn.write('  --with-%s-libs=\"%s\" \\\n' % (f,fbk_options[f.upper()+"_LIBS"]))
+               except:
+                  pass
+               try:
+                  fn.write('  --with-%s-incs=\"%s\" \\\n' % (f,fbk_options[f.upper()+"_INCS"]))
+               except:
+                  pass
            else:
               fn.write('  --with-%s-libs=\"-L%s/%s/%s/lib %s\" \\\n' % (f,fbk_prefix_base,f,fbks_version[f],fbk_libs[f]))
               fn.write('  --with-%s-incs=\"-I%s/%s/%s/include\" \\\n' % (f,fbk_prefix_base,f,fbks_version[f]))

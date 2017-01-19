@@ -96,6 +96,8 @@ if not link and not yes:
 for fb in fallbacks:
     print(fb)
     for d in ['bin','lib','include']:
+      if not os.path.exists("%s/%s" % (fbk_prefix_base,d)):
+	os.makedirs("%s/%s" % (fbk_prefix_base,d))
       os.chdir("%s/%s" % (fbk_prefix_base,d))
       folder="../%s/%s/%s" % (fb,fbks_version[fb],d)
       if os.path.exists(folder) :
