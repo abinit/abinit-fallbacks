@@ -50,7 +50,7 @@ builder=d['builder']
 if builder.split("_")[0] != hostname:
    print("The builder name (%s) is not consistent whith the hostname : %s" % (builder,hostname) )
    print("Aborting now...") 
-#sys.exit()
+   sys.exit(3)
 
 # Process config file
 cnf = ConfigParser()
