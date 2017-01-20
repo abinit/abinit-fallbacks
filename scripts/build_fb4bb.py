@@ -143,6 +143,14 @@ try:
 except:
   pass
 
+try:
+  if fbk_options['LINALG_LIBS'] != "":
+     print("\n*** Use external linalg : ",fbk_options['LINALG_LIBS'])
+     d.pop('linalg', None)
+     fbks_external['linalg']=True
+except:
+  pass
+
 ##############################################
 # check if external netcdf is defined
 try:
