@@ -36,13 +36,15 @@ if ( not os.path.exists(my_config) ):
 
 # 
 parser = argparse.ArgumentParser()
-parser.add_argument("-l","--link", action="store_true", help="create links")
+parser.add_argument("-l","--link", action="store_true", help="create fallbacks links")
+parser.add_argument("-L","--Link", action="store_true", help="create main links")
 parser.add_argument("-y","--yes", action="store_true", help="yes answer by default")
 parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='?', help="name of builder ( == module name )")
 args = parser.parse_args()
 
 d = vars(args)
 link=d['link']
+Link=d['Link']
 yes=d['yes']
 builder=d['builder']
 if builder.split("_")[0] != hostname:
@@ -65,43 +67,74 @@ for fallback in fallbacks:
        version=cnf_vars['name'].split("_")[1]
   fbks_version[fallback]=version
 
-if not link:
+if not ( link or Link ):
   for k,v in fbks_version.iteritems():
     print("%s : %s" %(k,v))
   sys.exit()
 
+#############################################
 # create links
+
 slave,vendor,version,variant = builder.split('_')
 fbk_prefix_base="/usr/local/fallbacks/%s/%s/%s" % ( vendor,version,variant )
 
 fallbacks.remove('linalg')
 
-for f in fallbacks:
+LINK=True
+if not yes:
+  for f in fallbacks:
     if Check_If_Installed(fbk_prefix_base,f,fbks_version[f]):
-        print("%s exists" % f)
+        print("%s exists" % f) 
     else:
         print("%s missing" % f)
-        link=False
+        LINK=False
 
-if not link and not yes:
+if not LINK and not yes:
     msg="Not all fallbacks are presents, proceed anyway ?"
     if raw_input("%s (y/N) " % msg).lower() != 'y':
        print("Exit...")
        sys.exit()
 
-#############################################
-# create links
-# TODO : rm old links before
+# fallbacks links
+if link:
+  for fb in fallbacks:
+    base="%s/%s" % (fbk_prefix_base,fb)
+    #print("%s : %s" % (fb,base))
+    for d in ['bin','lib','include']:
+      if not os.path.exists("%s/%s" % (base,d)):
+	os.makedirs("%s/%s" % (base,d))
+      os.chdir("%s/%s" % (base,d))
+      # remove old links
+      files=os.listdir(".")
+      if len(files) != 0:
+          for file in files:
+              os.unlink(file)
+      folder="../%s/%s" % (fbks_version[fb],d)
+      if os.path.exists(folder) :
+         for file in os.listdir(folder):
+             if file == 'abinit-fallbacks-config' or file == 'pkgconfig':
+                 continue
+             subprocess.call(['ln', '-s', "%s/%s" % (folder,file)])
 
-for fb in fallbacks:
-    print(fb)
+# main links 
+if Link:
+  for fb in fallbacks:
+    #print(fb)
     for d in ['bin','lib','include']:
       if not os.path.exists("%s/%s" % (fbk_prefix_base,d)):
 	os.makedirs("%s/%s" % (fbk_prefix_base,d))
       os.chdir("%s/%s" % (fbk_prefix_base,d))
+      # remove old links
+      files=os.listdir(".")
+      if len(files) != 0:
+          for file in files:
+              os.unlink(file)
       folder="../%s/%s/%s" % (fb,fbks_version[fb],d)
       if os.path.exists(folder) :
          for file in os.listdir(folder):
              if file == 'abinit-fallbacks-config' or file == 'pkgconfig':
                  continue
              subprocess.call(['ln', '-s', "%s/%s" % (folder,file)])
+
+if not yes:
+    print("done...")
