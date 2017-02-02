@@ -47,8 +47,6 @@ def makefile_header(name,stamp,pkgs):
 # Please modify the %s script or its config file instead.
 #
 
-AM_CPPFLAGS = -I$(prefix)/include
-
 SUBDIRS = src
 
 all-local:%s
@@ -125,9 +123,10 @@ stamps/%s-config-stamp: stamps/%s-patch-stamp
 	  RANLIB="$(RANLIB)" \\
 	  ac_fc_srcext="F90" \\
 	  /bin/sh ./configure \\
-	    --prefix="@prefix@" \\
-	    --bindir="@prefix@/bin" \\
-	    --libdir="@prefix@/lib" \\
+	    --prefix="@prefix@/%s" \\
+	    --bindir="@prefix@/%s/bin" \\
+	    --includedir="@prefix@/%s/include" \\
+	    --libdir="@prefix@/%s/lib" \\
 	    $(CFGFLAGS_%s)
 	@touch stamps/%s-config-stamp
 
@@ -152,6 +151,7 @@ endif
   pkg,pkg,pkg,
   pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),
   pkg.upper(),pkg.upper(),pkg.upper(),tmp_deplibs,
+  pkg_name,pkg_name,pkg_name,pkg_name,
   pkg.upper(),
   pkg,
   pkg,pkg,tmp_patches,pkg,
@@ -162,29 +162,14 @@ endif
 
 # Fallback clean-up template
 def fallback_clean_template(pkg,name,bins=None,hdrs=None,libs=None,mods=None):
-  cleans  = ""
-  if ( bins ):
-    cleans += "\trm -rf exports/bin/%s-abinit\n" % \
-      ("-abinit exports/bin/".join(bins))
-  if ( hdrs ):
-    cleans += "\trm -rf exports/include/%s\n" % \
-      (" exports/include/".join(hdrs))
-  if ( libs ):
-    cleans += "\trm -rf exports/lib/%s\n" % \
-      (" exports/lib/".join(libs))
-  if ( mods ):
-    cleans += "\trm -rf exports/include/%s\n" % \
-      (" exports/include/".join(mods))
-
   return """\
 
                     ########################################
 
 # Package clean-up: %s
 clean_%s:
-	rm -rf sources/%s stamps/%s-*
-%s
-""" % (pkg,pkg,name,pkg,cleans)
+	rm -rf exports/%s sources/%s stamps/%s-*
+""" % (pkg,pkg,name,name,pkg)
 
 
 

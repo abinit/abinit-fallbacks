@@ -72,6 +72,8 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
   dnl Init
   afb_bigdft_tricks="no"
   afb_bigdft_tricky_vars=""
+  tmp_bigdft_num_tricks=3
+  tmp_bigdft_cnt_tricks=0
 
   dnl Configure tricks
   if test "${afb_bigdft_cfgflags_custom}" = "no"; then
@@ -82,15 +84,15 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
 
     dnl YAML
     dnl FIXME: disabled internal YAML because PyYAML requires shared objects
-    tmpflags_libyaml='--disable-internal-libyaml --disable-shared --with-yaml-path="$(afb_yaml_libs)"'
+    tmpflags_libyaml='--disable-internal-libyaml --disable-shared --with-yaml-path="$(prefix)/$(yaml_pkg_name)"'
 
     dnl Internal BigDFT parameters
-    tmpflags_options='--without-archives --with-moduledir="$(includedir)"'
+    tmpflags_options='--without-archives --with-moduledir="$(prefix)/$(bigdft_pkg_name)/include"'
     tmpflags_bigdft='--disable-binaries --disable-bindings --enable-libbigdft'
-    CFGFLAGS_BIGDFT="${CFGFLAGS_BIGDFT} ${tmpflags_bigdft} ${tmpflags_options} ${tmpflags_libyaml} ${tmpflags_libxc} --program-suffix='-abinit'"
+    CFGFLAGS_BIGDFT="${CFGFLAGS_BIGDFT} ${tmpflags_bigdft} ${tmpflags_options} ${tmpflags_libyaml} ${tmpflags_libxc}"
 
     dnl Finish
-    test "${afb_bigdft_tricks}" = "no" && afb_bigdft_tricks="yes"
+    tmp_bigdft_cnt_tricks=`expr ${tmp_bigdft_cnt_tricks} \+ 1`
     afb_bigdft_tricky_vars="${afb_bigdft_tricky_vars} CFGFLAGS"
     unset tmpflags_libxc
     unset tmpflags_libyaml
@@ -98,8 +100,48 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
     unset tmpflags_bigdft
   else
     AC_MSG_NOTICE([CFGFLAGS_BIGDFT set => skipping BigDFT config tricks])
-    test "${afb_bigdft_tricks}" = "yes" && afb_bigdft_tricks="partial"
   fi
+
+  dnl CPP tricks
+  if test "${afb_bigdft_cppflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying BigDFT tricks (vendor: $1, version: $2, flags: C preprocessing)])
+
+    CPPFLAGS_BIGDFT="${CPPFLAGS_BIGDFT} \$(afb_libxc_incs) \$(afb_yaml_incs)"
+
+    dnl Finish
+    tmp_bigdft_cnt_tricks=`expr ${tmp_bigdft_cnt_tricks} \+ 1`
+    afb_bigdft_tricky_vars="${afb_bigdft_tricky_vars} CPPFLAGS"
+  else
+    AC_MSG_NOTICE([CPPFLAGS_BIGDFT set => skipping BigDFT C preprocessing tricks])
+  fi
+
+  dnl Fortran tricks
+  if test "${afb_bigdft_fcflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying BigDFT tricks (vendor: $1, version: $2, flags: Fortran)])
+
+    FCFLAGS_BIGDFT="${CPPFLAGS_BIGDFT} ${FCFLAGS_BIGDFT}"
+
+    dnl Finish
+    tmp_bigdft_cnt_tricks=`expr ${tmp_bigdft_cnt_tricks} \+ 1`
+    afb_bigdft_tricky_vars="${afb_bigdft_tricky_vars} FCFLAGS"
+  else
+    AC_MSG_NOTICE([FCFLAGS_BIGDFT set => skipping BigDFT Fortran tricks])
+  fi
+
+  dnl Count applied tricks
+  case "${tmp_bigdft_cnt_tricks}" in
+    0)
+      afb_bigdft_tricks="no"
+      ;;
+    ${tmp_bigdft_num_tricks})
+      afb_bigdft_tricks="yes"
+      ;;
+    *)
+      afb_bigdft_tricks="partial"
+      ;;
+  esac
+  unset tmp_bigdft_cnt_tricks
+  unset tmp_bigdft_num_tricks
 ]) # AFB_TRICKS_BIGDFT
 
 

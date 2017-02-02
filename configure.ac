@@ -93,7 +93,6 @@ AC_MSG_NOTICE([using tarball repository ${abinit_tardir}])
 if test "${enable_local_build}" = "yes"; then
   AC_MSG_NOTICE([tuning install parameters for local build])
   prefix="${ac_abs_top_builddir}/exports"
-  ${MKDIR_P} exports/include
 fi
 
 # Substitutions
