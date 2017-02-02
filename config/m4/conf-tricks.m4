@@ -373,6 +373,26 @@ AC_DEFUN([AFB_TRICKS_NETCDF],[
 
 
 
+# AFB_TRICKS_PSML(FC_VENDOR,FC_VERSION)
+# -------------------------------------
+#
+# Applies tricks and workarounds to have the PSML library correctly
+# linked to the binaries.
+#
+AC_DEFUN([AFB_TRICKS_PSML],[
+  dnl Do some sanity checking of the arguments
+  m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
+  m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
+
+  dnl Init
+  afb_psml_tricks="no"
+  afb_psml_tricky_vars=""
+
+  AC_MSG_NOTICE([no tricks to apply for PSML])
+]) # AFB_TRICKS_PSML
+
+
+
 # AFB_TRICKS_WANNIER90(FC_VENDOR,FC_VERSION)
 # ------------------------------------------
 #
@@ -454,6 +474,26 @@ AC_DEFUN([AFB_TRICKS_WANNIER90],[
   unset tmp_wannier90_cnt_tricks
   unset tmp_wannier90_num_tricks
 ]) # AFB_TRICKS_WANNIER90
+
+
+
+# AFB_TRICKS_XMLF90(FC_VENDOR,FC_VERSION)
+# -------------------------------------
+#
+# Applies tricks and workarounds to have the XMLF90 library correctly
+# linked to the binaries.
+#
+AC_DEFUN([AFB_TRICKS_XMLF90],[
+  dnl Do some sanity checking of the arguments
+  m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
+  m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
+
+  dnl Init
+  afb_xmlf90_tricks="no"
+  afb_xmlf90_tricky_vars=""
+
+  AC_MSG_NOTICE([no tricks to apply for XMLF90])
+]) # AFB_TRICKS_XMLF90
 
 
 

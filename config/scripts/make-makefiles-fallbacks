@@ -69,7 +69,39 @@ all-local:%s
 
 
 # Fallback template
-def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None):
+def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_cfg=None):
+
+  tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build" % pkg
+  tmp_bdir    = "/tmp-build"
+  tmp_cfg_cmd = """\
+	  /bin/sh ../configure \\
+	    --prefix="@prefix@/%s" \\
+	    --bindir="@prefix@/%s/bin" \\
+	    --includedir="@prefix@/%s/include" \\
+	    --libdir="@prefix@/%s/lib" \\
+	    $(CFGFLAGS_%s)""" % (pkg_name,pkg_name,pkg_name,pkg_name,pkg.upper())
+  tmp_inst_pfx = ""
+
+  if ( pkg_cfg ):
+    if ( pkg_cfg["type"] == "autotools" ):
+      pass
+    elif ( pkg_cfg["type"] == "siesta" ):
+      tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build && cp $(builddir)/config/siesta/%s.mk sources/$(%s_pkg_name)/tmp-build/fortran.mk" % (pkg,pkg,pkg)
+      tmp_cfg_cmd = "\t  /bin/sh ../%s""" % pkg_cfg["script"]
+      tmp_inst_pfx = 'PREFIX="$(DESTDIR)@prefix@/$(%s_pkg_name)" ' % pkg
+    elif ( pkg_cfg["type"] == "obsolete" ):
+      tmp_mk_bdir = "$(LN_S) \\. sources/$(%s_pkg_name)/tmp-build" % pkg
+      tmp_bdir = ""
+      tmp_cfg_cmd = """\
+	  /bin/sh ./configure \\
+	    --prefix="@prefix@/%s" \\
+	    --bindir="@prefix@/%s/bin" \\
+	    --includedir="@prefix@/%s/include" \\
+	    --libdir="@prefix@/%s/lib" \\
+	    $(CFGFLAGS_%s)""" % (pkg_name,pkg_name,pkg_name,pkg_name,pkg.upper())
+    else:
+      sys.stderr.write("Error: undefined configuration type\n")
+      sys.exit(10)
 
   tmp_patches = ""
   for diff in pkg_patches:
@@ -94,15 +126,15 @@ if DO_BUILD_%s
 %s: stamps/%s-install-stamp
 
 stamps/%s-install-stamp: stamps/%s-build-stamp
-	cd sources/$(%s_pkg_name) && $(MAKE) install @SET_MAKE@
+	cd sources/$(%s_pkg_name)/tmp-build && $(MAKE) install %s@SET_MAKE@
 	@touch stamps/%s-install-stamp
 
 stamps/%s-build-stamp: stamps/%s-config-stamp
-	cd sources/$(%s_pkg_name) && $(MAKE) -j %s @SET_MAKE@
+	cd sources/$(%s_pkg_name)/tmp-build && $(MAKE) -j %s @SET_MAKE@
 	@touch stamps/%s-build-stamp
 
 stamps/%s-config-stamp: stamps/%s-patch-stamp
-	cd sources/$(%s_pkg_name) && \\
+	cd sources/$(%s_pkg_name)%s && \\
 	  CPP="$(CPP)" \\
 	  CPPFLAGS="$(CPPFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  CC="$(CC)" \\
@@ -122,12 +154,7 @@ stamps/%s-config-stamp: stamps/%s-patch-stamp
 	  ARFLAGS="$(ARFLAGS) $(ARFLAGS_CMD)" \\
 	  RANLIB="$(RANLIB)" \\
 	  ac_fc_srcext="F90" \\
-	  /bin/sh ./configure \\
-	    --prefix="@prefix@/%s" \\
-	    --bindir="@prefix@/%s/bin" \\
-	    --includedir="@prefix@/%s/include" \\
-	    --libdir="@prefix@/%s/lib" \\
-	    $(CFGFLAGS_%s)
+%s
 	@touch stamps/%s-config-stamp
 
 stamps/%s-patch-stamp: stamps/%s-unfold-stamp%s
@@ -136,6 +163,7 @@ stamps/%s-patch-stamp: stamps/%s-unfold-stamp%s
 stamps/%s-unfold-stamp:
 	cd sources && \\
 	  gzip -cd $(abinit_tardir)/$(%s_pkg_name).tar.gz | tar xf -
+	%s
 	@touch stamps/%s-unfold-stamp
 else
 %s:
@@ -146,16 +174,19 @@ endif
   pkg,pkg,
   pkg.upper(),
   pkg,pkg,
-  pkg,pkg,pkg,pkg,
+  pkg,pkg,pkg,
+  tmp_inst_pfx,
+  pkg,
   pkg,pkg,pkg,pkg_make,pkg,
   pkg,pkg,pkg,
+  tmp_bdir,
   pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),
   pkg.upper(),pkg.upper(),pkg.upper(),tmp_deplibs,
-  pkg_name,pkg_name,pkg_name,pkg_name,
-  pkg.upper(),
-  pkg,
+  tmp_cfg_cmd,pkg,
   pkg,pkg,tmp_patches,pkg,
-  pkg,pkg,pkg,
+  pkg,pkg,
+  tmp_mk_bdir,
+  pkg,
   pkg,pkg,pkg)
 
 
@@ -269,6 +300,7 @@ for pkg in abinit_fallbacks:
   pkg_name = cnf.get(pkg,"name")
   pkg_make = cnf.get(pkg,"makej")
   pkg_bins = pkg_hdrs = pkg_libs = pkg_mods = None
+  pkg_conf = {"type":cnf.get(pkg,"configure"), "script":cnf.get(pkg,"cfg_script")}
   if ( cnf.has_option(pkg,"binaries") ):
     pkg_bins = cnf.get(pkg,"binaries").split()
   if ( cnf.has_option(pkg,"headers") ):
@@ -287,7 +319,7 @@ for pkg in abinit_fallbacks:
     pkg_patches.sort()
 
   # Generate templates
-  makefile += fallback_template(pkg,pkg_name,pkg_make,pkg_patches,all_deps[pkg])
+  makefile += fallback_template(pkg,pkg_name,pkg_make,pkg_patches,all_deps[pkg],pkg_conf)
   makefile += fallback_clean_template(pkg,pkg_name,pkg_bins,pkg_hdrs,
                 pkg_libs,pkg_mods)
 

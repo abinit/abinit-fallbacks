@@ -2,6 +2,7 @@
 .deps
 .directory
 .tox
+.*.sw*
 __pycache__
 Makefile.am
 Makefile.in
@@ -42,6 +43,11 @@ ui_*.py
 /config/gnu/ltmain.sh
 /config/gnu/missing
 /config/gnu/mkinstalldirs
+/config/siesta/libxc.mk
+/config/siesta/psml.mk
+/config/siesta/psml.mk.in
+/config/siesta/xmlf90.mk
+/config/siesta/xmlf90.mk.in
 /src/abinit-fallbacks-config
 /src/abinit-fallbacks-config.in
 /exports

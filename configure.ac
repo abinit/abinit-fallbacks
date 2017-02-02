@@ -214,6 +214,7 @@ AC_CONFIG_COMMANDS([script-perms],[chmod u+x src/abinit-fallbacks-config])
 
 AC_CONFIG_FILES([
   fallbacks.dump
+  config/siesta/libxc.mk
   src/abinit-fallbacks-config
   Makefile
   src/Makefile])

@@ -34,6 +34,7 @@ find . -depth -name '*.tmp' -exec rm -rf {} \;
 # Remove Makefiles and machine-generated files
 echo "[fbkclean]   Removing files produced by the configure script"
 find . -name Makefile -exec rm {} \;
+rm -f config/siesta/psml.mk.in config/siesta/xmlf90.mk.in
 rm -f fallbacks.dump fallbacks.dump.in
 rm -f src/abinit-fallbacks-config.in
 rm -f core config.log config.status stamp-h1 config.h config.h.in*

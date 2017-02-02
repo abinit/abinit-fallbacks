@@ -96,7 +96,7 @@ def snippet_envvars(pkg_langs,lang_specs,group="fallbacks"):
 # Individual macro template
 def macro_fallback(nick,name,desc,libs,bins,md5s,urls,deps=None,
   dep_ranks=None,include=None,tricks="[${afb_fc_vendor}],[${afb_fc_version}]",
-  is_preq=False,env_vars="",chk_api=None):
+  is_preq=False,env_vars="",chk_api=None,siesta=False):
 
   # Create template
   ret = """
@@ -193,7 +193,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
 
   dnl Inform Automake
   AM_CONDITIONAL(DO_BUILD_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
-  AM_CONDITIONAL(DO_TEST_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
+  AM_CONDITIONAL(DO_TEST_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])@PKG_SIESTA@
 
   dnl Substitutions
   AC_SUBST(afb_@pkg_nick@_ok)
@@ -247,6 +247,8 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
           tmp_libs = " -l%s" % (re.sub(r"lib(.*)\.a",r"\1",lib)) + tmp_libs
       pkg_specs += "\n      afb_@pkg_nick@_libs=\"-L\\$(prefix)/%s/lib%s\"" % (pkg_name,tmp_libs)
       pkg_subst += "  AC_SUBST(afb_@pkg_nick@_libs)\n"
+  if ( siesta ):
+    pkg_subst += "  AC_SUBST(CPPFLAGS_@PKG_NICK@)\n"
 
   # Set bin specs
   bins_specs = ""
@@ -317,12 +319,20 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   if ( pkg_xfer != "" ):
     pkg_xfer = "  else\n\n    dnl Check whether the external package works\n%s    ABI_FALLBACKS_CHECK_@PKG_NICK@@CHK_ARGS@\n    afb_@pkg_nick@_ok=\"${afb_@pkg_nick@_ext_ok}\"\n" % pkg_xfer
 
+  pkg_siesta = ""
+  if ( siesta ):
+    pkg_siesta = """
+
+  dnl Inform Autoconf
+  AC_CONFIG_FILES([config/siesta/%s.mk])""" % nick
+
   # Transform template (the order is important)
   ret = re.sub("@SET_VARS@",set_vars,ret)
   ret = re.sub("@INCS_TEST@",incs_test,ret)
   ret = re.sub("@INCS_PATH@",incs_path,ret)
   ret = re.sub("@PKG_SPECS@",pkg_specs,ret)
   ret = re.sub("@PKG_XFER@",pkg_xfer,ret)
+  ret = re.sub("@PKG_SIESTA@",pkg_siesta,ret)
   ret = re.sub("@CHK_ARGS@",chk_args,ret)
   ret = re.sub("@PKG_SUBST@",pkg_subst,ret)
   ret = re.sub("@ENV_VARS@",env_vars,ret)
@@ -445,6 +455,7 @@ for pkg in abinit_fallbacks:
   pkg_urls = cnf.get(pkg,"urls").split()
   pkg_lngs = ["CONFIG"] + cnf.get(pkg,"languages").split() + ["LINK"]
   pkg_chka = cnf.get(pkg,"check_api")
+  pkg_ssta = ( cnf.get(pkg,"configure") == "siesta" )
 
   # Extract optional package information
   try:
@@ -497,7 +508,7 @@ for pkg in abinit_fallbacks:
   # Generate macro
   m4_fbk += macro_fallback(pkg,pkg_name,pkg_desc,pkg_libs,pkg_bins,
     pkg_md5s,pkg_urls,pkg_dep_libs,pkg_deps,pkg_incs,is_preq=is_preq[pkg],
-    env_vars=pkg_vars,chk_api=chk_api)
+    env_vars=pkg_vars,chk_api=chk_api,siesta=pkg_ssta)
 
 # Substitute global template and write down macro file
 m4_all = re.sub("@FALLBACKS@", m4_fbk, m4_all)

@@ -22,6 +22,7 @@ mkdir -p config/gnu config/m4
 # Generate input files for configure
 echo "[fbkbuild]   Generating configure inputs"
 ./config/scripts/make-config-dumper
+./config/scripts/make-config-siesta-in
 
 # Generate M4 macros
 echo "[fbkbuild]   Generating M4 macros"
