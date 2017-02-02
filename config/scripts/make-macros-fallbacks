@@ -46,6 +46,17 @@ def macro_template(name,stamp):
 
 
 
+# ABI_FALLBACKS_CONFIG_FILES()
+# ----------------------------
+#
+# Transmits additional config files to the configure script.
+#
+AC_DEFUN([ABI_FALLBACKS_CONFIG_FILES],[
+  AC_CONFIG_FILES([@FBK_CFGFILES@])
+]) # ABI_FALLBACKS_CONFIG_FILES
+
+
+
 # ABI_FALLBACKS_SETUP()
 # ---------------------
 #
@@ -193,7 +204,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
 
   dnl Inform Automake
   AM_CONDITIONAL(DO_BUILD_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
-  AM_CONDITIONAL(DO_TEST_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])@PKG_SIESTA@
+  AM_CONDITIONAL(DO_TEST_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
 
   dnl Substitutions
   AC_SUBST(afb_@pkg_nick@_ok)
@@ -319,20 +330,12 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   if ( pkg_xfer != "" ):
     pkg_xfer = "  else\n\n    dnl Check whether the external package works\n%s    ABI_FALLBACKS_CHECK_@PKG_NICK@@CHK_ARGS@\n    afb_@pkg_nick@_ok=\"${afb_@pkg_nick@_ext_ok}\"\n" % pkg_xfer
 
-  pkg_siesta = ""
-  if ( siesta ):
-    pkg_siesta = """
-
-  dnl Inform Autoconf
-  AC_CONFIG_FILES([config/siesta/%s.mk])""" % nick
-
   # Transform template (the order is important)
   ret = re.sub("@SET_VARS@",set_vars,ret)
   ret = re.sub("@INCS_TEST@",incs_test,ret)
   ret = re.sub("@INCS_PATH@",incs_path,ret)
   ret = re.sub("@PKG_SPECS@",pkg_specs,ret)
   ret = re.sub("@PKG_XFER@",pkg_xfer,ret)
-  ret = re.sub("@PKG_SIESTA@",pkg_siesta,ret)
   ret = re.sub("@CHK_ARGS@",chk_args,ret)
   ret = re.sub("@PKG_SUBST@",pkg_subst,ret)
   ret = re.sub("@ENV_VARS@",env_vars,ret)
@@ -441,9 +444,11 @@ pkg_ranks.sort()
 for rnk in pkg_ranks:
   for pkg in pkg_num:
     if ( pkg_num[pkg] == rnk ):
-      m4_ord += "\n  _ABI_FALLBACK_%s\n" % pkg.upper()
+      m4_ord += "\n  _ABI_FALLBACK_%s" % pkg.upper()
+m4_ord += "\n"
 
 m4_all = re.sub("@FBK_CALLS@",m4_ord,m4_all)
+m4_cfg = []
 
 # Process fallbacks individually
 for pkg in abinit_fallbacks:
@@ -510,6 +515,13 @@ for pkg in abinit_fallbacks:
     pkg_md5s,pkg_urls,pkg_dep_libs,pkg_deps,pkg_incs,is_preq=is_preq[pkg],
     env_vars=pkg_vars,chk_api=chk_api,siesta=pkg_ssta)
 
+  # Add config files
+  if ( pkg_ssta ):
+    m4_cfg.append(pkg)
+
 # Substitute global template and write down macro file
+m4_all = re.sub("@FBK_CFGFILES@",
+  "\n    config/siesta/" + ".mk\n    config/siesta/".join(m4_cfg) + ".mk",
+  m4_all)
 m4_all = re.sub("@FALLBACKS@", m4_fbk, m4_all)
 file(my_output,"w").write(m4_all)

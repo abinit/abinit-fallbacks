@@ -212,6 +212,8 @@ ABI_FALLBACKS_SETUP
 
 AC_CONFIG_COMMANDS([script-perms],[chmod u+x src/abinit-fallbacks-config])
 
+ABI_FALLBACKS_CONFIG_FILES
+
 AC_CONFIG_FILES([
   fallbacks.dump
   config/siesta/libxc.mk
