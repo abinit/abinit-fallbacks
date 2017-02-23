@@ -1,6 +1,6 @@
 # -*- Autoconf -*-
 #
-# Copyright (C) 2006-2014 ABINIT Group (Yann Pouillon)
+# Copyright (C) 2006-2017 ABINIT Group (Yann Pouillon)
 #
 # This file is part of the ABINIT software package. For license information,
 # please see the COPYING file in the top-level directory of the ABINIT source
@@ -146,6 +146,56 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
 
 
 
+# AFB_TRICKS_HDF5(FC_VENDOR,FC_VERSION)
+# -------------------------------------
+#
+# Applies tricks and workarounds to have the HDF5
+# libraries correctly linked to the binaries.
+#
+AC_DEFUN([AFB_TRICKS_HDF5],[
+  dnl Do some sanity checking of the arguments
+  m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
+  m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
+
+  dnl Init
+  afb_hdf5_tricks="no"
+  afb_hdf5_tricky_vars=""
+  tmp_hdf5_num_tricks=1
+  tmp_hdf5_cnt_tricks=0
+
+  dnl Configure tricks
+  if test "${afb_hdf5_cfgflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying HDF5 tricks (vendor: $1, version: $2, flags: config)])
+
+    dnl Internal HDF5 parameters
+    CFGFLAGS_HDF5="${CFGFLAGS_HDF5} --disable-cxx"
+    #CFGFLAGS_HDF5="${CFGFLAGS_HDF5} --enable-static --disable-shared"
+
+    dnl Finish
+    tmp_hdf5_cnt_tricks=`expr ${tmp_hdf5_cnt_tricks} \+ 1`
+    afb_hdf5_tricky_vars="${afb_hdf5_tricky_vars} CFGFLAGS"
+  else
+    AC_MSG_NOTICE([CFGFLAGS_HDF5 set => skipping HDF5 config tricks])
+  fi
+
+  dnl Count applied tricks
+  case "${tmp_hdf5_cnt_tricks}" in
+    0)
+      afb_hdf5_tricks="no"
+      ;;
+    ${tmp_hdf5_num_tricks})
+      afb_hdf5_tricks="yes"
+      ;;
+    *)
+      afb_hdf5_tricks="partial"
+      ;;
+  esac
+  unset tmp_hdf5_cnt_tricks
+  unset tmp_hdf5_num_tricks
+]) # AFB_TRICKS_HDF5
+
+
+
 # AFB_TRICKS_LIBXC(FC_VENDOR,FC_VERSION)
 # --------------------------------------
 #
@@ -250,7 +300,7 @@ AC_DEFUN([AFB_TRICKS_LINALG],[
 # AFB_TRICKS_NETCDF(FC_VENDOR,FC_VERSION)
 # ---------------------------------------
 #
-# Applies tricks and workarounds to have the optimized linear algebra
+# Applies tricks and workarounds to have the NetCDF C
 # libraries correctly linked to the binaries.
 #
 AC_DEFUN([AFB_TRICKS_NETCDF],[
@@ -261,7 +311,7 @@ AC_DEFUN([AFB_TRICKS_NETCDF],[
   dnl Init
   afb_netcdf_tricks="no"
   afb_netcdf_tricky_vars=""
-  tmp_netcdf_num_tricks=3
+  tmp_netcdf_num_tricks=1
   tmp_netcdf_cnt_tricks=0
 
   dnl Configure tricks
@@ -269,90 +319,14 @@ AC_DEFUN([AFB_TRICKS_NETCDF],[
     AC_MSG_NOTICE([applying NetCDF tricks (vendor: $1, version: $2, flags: config)])
 
     dnl Internal NetCDF parameters
-    CFGFLAGS_NETCDF="${CFGFLAGS_NETCDF} --disable-cxx --disable-cxx-4 --disable-dap --disable-hdf4 --disable-netcdf4 --enable-fortran"
-    CFGFLAGS_NETCDF="${CFGFLAGS_NETCDF} --enable-static --disable-shared"
+    CFGFLAGS_NETCDF="${CFGFLAGS_NETCDF} --disable-cxx --disable-cxx-4 --disable-dap --disable-hdf4"
+    #CFGFLAGS_NETCDF="${CFGFLAGS_NETCDF} --enable-static --disable-shared"
 
     dnl Finish
     tmp_netcdf_cnt_tricks=`expr ${tmp_netcdf_cnt_tricks} \+ 1`
     afb_netcdf_tricky_vars="${afb_netcdf_tricky_vars} CFGFLAGS"
   else
     AC_MSG_NOTICE([CFGFLAGS_NETCDF set => skipping NetCDF config tricks])
-  fi
-
-  dnl CPP tricks
-  if test "${afb_netcdf_cppflags_custom}" = "no"; then
-    AC_MSG_NOTICE([applying NetCDF tricks (vendor: $1, version: $2, flags: C preprocessing)])
-
-    CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DNDEBUG"
-
-    case "$1" in
-      g95)
-        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -Df2cFortran"
-        ;;
-      gnu)
-        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
-        ;;
-      ibm)
-        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DIBMR2Fortran"
-        ;;
-      intel)
-        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
-        ;;
-      pathscale)
-        case "$2" in
-          1.0|4.0|5.0)
-            CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
-            ;;
-          *)
-            CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -Df2cFortran"
-            ;;
-        esac
-        ;;
-      open64)
-        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -Df2cFortran -DF2CSTYLE"
-        ;;
-      pgi)
-        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
-        ;;
-      sun)
-        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DsunFortran"
-        ;;
-      *)
-        CPPFLAGS_NETCDF="${CPPFLAGS_NETCDF} -DpgiFortran"
-        ;;
-    esac
-
-    dnl Finish
-    tmp_netcdf_cnt_tricks=`expr ${tmp_netcdf_cnt_tricks} \+ 1`
-    afb_netcdf_tricky_vars="${afb_netcdf_tricky_vars} CPPFLAGS"
-  else
-    AC_MSG_NOTICE([CPPFLAGS_NETCDF set => skipping NetCDF C preprocessing tricks])
-  fi
-
-  dnl Fortran tricks
-  if test "${afb_netcdf_fcflags_custom}" = "no"; then
-    AC_MSG_NOTICE([applying NetCDF tricks (vendor: $1, version: $2, flags: Fortran)])
-
-    FCFLAGS_NETCDF="${CPPFLAGS_NETCDF} ${FCFLAGS_NETCDF}"
-
-    case "$1" in
-      ibm)
-        FCFLAGS_NETCDF="${FCFLAGS_NETCDF} -WF,-DIBMR2Fortran,-DNDEBUG"
-        ;;
-      intel)
-        case "$2" in
-          9.0|9.1)
-            FCFLAGS_NETCDF="${FCFLAGS_NETCDF} -mp"
-            ;;
-        esac
-        ;;
-    esac
-
-    dnl Finish
-    tmp_netcdf_cnt_tricks=`expr ${tmp_netcdf_cnt_tricks} \+ 1`
-    afb_netcdf_tricky_vars="${afb_netcdf_tricky_vars} FCFLAGS"
-  else
-    AC_MSG_NOTICE([FCFLAGS_NETCDF set => skipping NetCDF Fortran tricks])
   fi
 
   dnl Count applied tricks
@@ -370,6 +344,74 @@ AC_DEFUN([AFB_TRICKS_NETCDF],[
   unset tmp_netcdf_cnt_tricks
   unset tmp_netcdf_num_tricks
 ]) # AFB_TRICKS_NETCDF
+
+
+
+# AFB_TRICKS_NETCDF_FORTRAN(FC_VENDOR,FC_VERSION)
+# -----------------------------------------------
+#
+# Applies tricks and workarounds to have the NetCDF-Fortran
+# libraries correctly linked to the binaries.
+#
+AC_DEFUN([AFB_TRICKS_NETCDF_FORTRAN],[
+  dnl Do some sanity checking of the arguments
+  m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
+  m4_if([$2], [], [AC_FATAL([$0: missing argument 2])])dnl
+
+  dnl Init
+  afb_netcdf_fortran_tricks="no"
+  afb_netcdf_fortran_tricky_vars=""
+  tmp_netcdf_fortran_num_tricks=2
+  tmp_netcdf_fortran_cnt_tricks=0
+
+  dnl Configure tricks
+  if test "${afb_netcdf_fortran_cfgflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying NetCDF-Fortran tricks (vendor: $1, version: $2, flags: config)])
+
+    dnl Internal NetCDF-Fortran parameters
+    CFGFLAGS_NETCDF_FORTRAN="${CFGFLAGS_NETCDF_FORTRAN} --enable-static --enable-shared"
+
+    dnl Finish
+    tmp_netcdf_fortran_cnt_tricks=`expr ${tmp_netcdf_fortran_cnt_tricks} \+ 1`
+    afb_netcdf_fortran_tricky_vars="${afb_netcdf_fortran_tricky_vars} CFGFLAGS"
+  else
+    AC_MSG_NOTICE([CFGFLAGS_NETCDF_FORTRAN set => skipping NetCDF-Fortran config tricks])
+  fi
+
+  dnl Fortran tricks
+  if test "${afb_netcdf_fortran_fcflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying NetCDF-Fortran tricks (vendor: $1, version: $2, flags: Fortran)])
+
+    FCFLAGS_NETCDF_FORTRAN="${CPPFLAGS_NETCDF_FORTRAN} ${FCFLAGS_NETCDF_FORTRAN}"
+
+    case "$1" in
+      ibm)
+        FCFLAGS_NETCDF_FORTRAN="${FCFLAGS_NETCDF_FORTRAN} -WF,-DIBMR2Fortran,-DNDEBUG"
+        ;;
+    esac
+
+    dnl Finish
+    tmp_netcdf_fortran_cnt_tricks=`expr ${tmp_netcdf_fortran_cnt_tricks} \+ 1`
+    afb_netcdf_fortran_tricky_vars="${afb_netcdf_fortran_tricky_vars} FCFLAGS"
+  else
+    AC_MSG_NOTICE([FCFLAGS_NETCDF_FORTRAN set => skipping NetCDF-Fortran Fortran tricks])
+  fi
+
+  dnl Count applied tricks
+  case "${tmp_netcdf_fortran_cnt_tricks}" in
+    0)
+      afb_netcdf_fortran_tricks="no"
+      ;;
+    ${tmp_netcdf_fortran_num_tricks})
+      afb_netcdf_fortran_tricks="yes"
+      ;;
+    *)
+      afb_netcdf_fortran_tricks="partial"
+      ;;
+  esac
+  unset tmp_netcdf_fortran_cnt_tricks
+  unset tmp_netcdf_fortran_num_tricks
+]) # AFB_TRICKS_NETCDF_FORTRAN
 
 
 
