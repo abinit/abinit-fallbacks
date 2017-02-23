@@ -228,6 +228,10 @@ except OSError:
 
 # create prefix where installing fbk
 #
+with open(filename,"w") as fn:
+    fn.write('# rerun autogen.sh in case \n')
+    fn.write('WD=`pwd`;cd ..;./autogen.sh;cd $WD\n\n')
+
 for fb in will_be_installed:
 
   if prod_prefix:
@@ -237,8 +241,6 @@ for fb in will_be_installed:
       #fbk_prefix="%s/%s-%s" % (fbk_prefix_base,fb,fbks_version[fb])
 
   with open(filename,"a") as fn:
-      fn.write('# rerun autogen.sh in case \n')
-      fn.write('WD=`pwd`;cd ..;./autogen.sh;cd $WD\n\n')
       fn.write('# build %s \n' % fb)
       fn.write('../configure \\\n')
       fn.write('  --prefix=%s \\\n' % fbk_prefix )
