@@ -16,91 +16,68 @@
 #
 AC_DEFUN([ABI_FALLBACKS_CHECK_HDF5],[
   dnl Init
-  afb_hdf5_default_libs="-lhdf5f -lhdf5"
-  afb_hdf5_has_hdrs="unknown"
-  afb_hdf5_has_mods="unknown"
-  afb_hdf5_has_incs="unknown"
-  afb_hdf5_has_libs="unknown"
+  afb_hdf5_default_libs="-lhdf5_hl -lhdf5"
   afb_hdf5_has_par="unknown"
-  afb_hdf5_ext_ok="unknown"
+  afb_hdf5_ok="unknown"
+  afb_netcdf4_ok="unknown"
+  afb_netcdf4_cc=""
+  afb_netcdf4_cppflags=""
+  afb_netcdf4_cflags=""
+  afb_netcdf4_ldflags=""
+  afb_netcdf4_libs=""
 
   dnl Prepare environment
+  tmp_saved_with_hdf5="${with_hdf5}"
   tmp_saved_CPPFLAGS="${CPPFLAGS}"
   tmp_saved_FCFLAGS="${FCFLAGS}"
   tmp_saved_LIBS="${LIBS}"
   CPPFLAGS="${CPPFLAGS} ${afb_hdf5_incs}"
-  FCFLAGS="${FCFLAGS} ${afb_hdf5_incs}"
+  AC_MSG_CHECKING([for HDF5 libraries to try])
   if test "${afb_hdf5_libs}" = ""; then
-    AC_MSG_CHECKING([for HDF5 libraries to try])
     LIBS="${afb_hdf5_default_libs} ${LIBS}"
     AC_MSG_RESULT([${afb_hdf5_default_libs}])
   else
     LIBS="${afb_hdf5_libs} ${LIBS}"
+    AC_MSG_RESULT([${afb_hdf5_libs}])
   fi
 
-  dnl Look for C includes
+  dnl Look for prerequisites
   AC_LANG_PUSH([C])
-  AC_CHECK_HEADERS([hdf5.h],[afb_hdf5_has_hdrs="yes"],[afb_hdf5_has_hdrs="no"])
+  AC_CHECK_HEADERS([zlib.h curl/curl.h],
+    [afb_hdf5_has_preh="yes"],[afb_hdf5_has_preh="no"])
+  AC_SEARCH_LIBS([deflateInit], [z],
+    [afb_hdf5_has_zlib="yes"], [afb_hdf5_has_prel="no"])
+  AC_SEARCH_LIBS([curl_easy_init], [curl],
+    [afb_hdf5_has_prel="yes"], [afb_hdf5_has_prel="no"])
   AC_LANG_POP([C])
+  if test "${afb_hdf5_has_preh}" != "yes"; then
+    AC_MSG_WARN([missing prerequisite C headers])
+  fi
+  if test "${afb_hdf5_has_prel}" != "yes"; then
+    AC_MSG_WARN([missing prerequisite libraries])
+  fi
 
-  dnl Look for Fortran includes
-  AC_MSG_CHECKING([for HDF5 Fortran modules])
-  AC_LANG_PUSH([Fortran])
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
-    [[
-      use hdf5
-    ]])], [afb_hdf5_has_mods="yes"], [afb_hdf5_has_mods="no"])
-  AC_LANG_POP([Fortran])
-  AC_MSG_RESULT([${afb_hdf5_has_mods}])
+  dnl Use existing HDF5 macro from Autoconf Archive,
+  dnl first parallel, then serial if it fails
+  dnl We have to do this because we prefer parallel, while the macro
+  dnl prefers serial
+  AX_LIB_HDF5([parallel])
+  if test "${with_hdf5}" = "no"; then
+    AC_MSG_NOTICE([no parallel HDF5 found, looking for a serial one])
+    with_hdf5="${tmp_saved_with_hdf5}"
+    AX_LIB_HDF5([serial])
+  fi
 
-  dnl Check status of include files
-  if test "${afb_hdf5_has_hdrs}" = "yes" -a \
-          "${afb_hdf5_has_mods}" = "yes"; then
-    afb_hdf5_has_incs="yes"
+  dnl Set internal variables according to the results of AX_LIB_HDF5
+  dnl See ax_lib_hdf5.m4 for more information
+  if test "${with_hdf5}" = "yes"; then
+    afb_hdf5_ok="yes"
   else
-    afb_hdf5_has_incs="no"
-  fi
-
-  dnl Check whether the Fortran wrappers work
-  if test "${afb_hdf5_has_incs}" = "yes"; then
-    AC_MSG_CHECKING([whether HDF5 Fortran wrappers work])
-    AC_LANG_PUSH([Fortran])
-    AC_LINK_IFELSE([AC_LANG_PROGRAM([],
-      [[
-        use hdf5
-        character(len=*), parameter :: path = "dummy"
-        integer :: mode, ncerr, ncid
-        ncerr = nf90_open(path,mode,ncid)
-      ]])], [afb_hdf5_has_libs="yes"], [afb_hdf5_has_libs="no"])
-    AC_LANG_POP([Fortran])
-    AC_MSG_RESULT([${afb_hdf5_has_libs}])
-  fi
-
-  dnl Final adjustments
-  if test "${afb_hdf5_has_incs}" = "yes" -a \
-          "${afb_hdf5_has_libs}" = "yes"; then
-    afb_hdf5_ext_ok="yes"
-    if test "${afb_hdf5_libs}" = ""; then
-      afb_hdf5_libs="${afb_hdf5_default_libs}"
-    fi
-  else
-    afb_hdf5_ext_ok="no"
-  fi
-
-  dnl Check for parallel I/O support
-  if test "${afb_hdf5_ext_ok}" = "yes"; then
-    AC_MSG_CHECKING([whether HDF5 supports parallel I/O])
-    AC_LINK_IFELSE([AC_LANG_PROGRAM([],
-      [[
-        use hdf5
-        character(len=*), parameter :: path = "dummy"
-        integer :: cmode, comm, info, ncerr, ncid
-        ncerr = nf90_open_par(path, cmode, comm, info, ncid)
-      ]])], [afb_hdf5_has_par="yes"], [afb_hdf5_has_par="no"])
-    AC_MSG_RESULT([${afb_hdf5_has_par}])
+    afb_hdf5_ok="no"
   fi
 
   dnl Restore environment
+  with_hdf5="${tmp_saved_with_hdf5}"
   CPPFLAGS="${tmp_saved_CPPFLAGS}"
   FCFLAGS="${tmp_saved_FCFLAGS}"
   LIBS="${tmp_saved_LIBS}"
