@@ -46,13 +46,13 @@ def macro_patches(name,stamp,patches):
 
 
 
-# ABI_FALLBACKS_PATCHES()
-# -----------------------
+# AFB_PATCHES_SETUP()
+# -------------------
 #
 # Tells the user which packages have patches.
 #
-AC_DEFUN([ABI_FALLBACKS_PATCHES],[
-@MACRO@]) # ABI_FALLBACKS_PATCHES
+AC_DEFUN([AFB_PATCHES_SETUP],[
+@MACRO@]) # AFB_PATCHES_SETUP
 """ % (name,stamp,name)
 
   # List packages with patches
@@ -109,8 +109,9 @@ now = strftime("%Y/%m/%d %H:%M:%S +0000",gmtime())
 # Init
 cnf = MyConfigParser()
 cnf.read(my_configs[0])
-abinit_fallbacks = cnf.sections()
+abinit_fallbacks = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "real"]
 abinit_fallbacks.sort()
+abinit_virtuals = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "virtual"]
 if ( os.path.exists("patches") ):
   patch_list = os.listdir("patches")
 else:

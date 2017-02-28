@@ -9,12 +9,12 @@
 
 
 
-# ABI_FALLBACKS_CHECK_LIBXC(API_MAJOR, API_MINOR, API_MAX)
+# AFB_CHECK_LIBXC(API_MAJOR, API_MINOR, API_MAX)
 # --------------------------------------------------------
 #
 # Check whether the specified LibXC library is working.
 #
-AC_DEFUN([ABI_FALLBACKS_CHECK_LIBXC],[
+AC_DEFUN([AFB_CHECK_LIBXC],[
   dnl Init
   afb_libxc_default_libs="-lxcf90 -lxc"
   afb_libxc_has_hdrs="unknown"
@@ -121,4 +121,4 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_LIBXC],[
   CPPFLAGS="${tmp_saved_CPPFLAGS}"
   FCFLAGS="${tmp_saved_FCFLAGS}"
   LIBS="${tmp_saved_LIBS}"
-]) # ABI_FALLBACKS_CHECK_LIBXC
+]) # AFB_CHECK_LIBXC

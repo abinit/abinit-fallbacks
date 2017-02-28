@@ -9,12 +9,12 @@
 
 
 
-# ABI_FALLBACKS_CHECK_NETCDF4()
+# AFB_CHECK_NETCDF4()
 # ----------------------------
 #
 # Check whether the specified NetCDF4 library is working.
 #
-AC_DEFUN([ABI_FALLBACKS_CHECK_NETCDF4],[
+AC_DEFUN([AFB_CHECK_NETCDF4],[
   dnl Init
   afb_netcdf4_default_libs="-lnetcdf4"
   afb_netcdf4_ok="unknown"
@@ -80,4 +80,4 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_NETCDF4],[
   CPPFLAGS="${tmp_saved_CPPFLAGS}"
   FCFLAGS="${tmp_saved_FCFLAGS}"
   LIBS="${tmp_saved_LIBS}"
-]) # ABI_FALLBACKS_CHECK_NETCDF4
+]) # AFB_CHECK_NETCDF4

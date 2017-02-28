@@ -53,12 +53,12 @@ def abi_macro_autoconf():
   return """
 
 
-# ABI_FALLBACKS_FALLBACKS_ENV_AC_UPDATE(LANG)
+# AFB_ENV_AC_UPDATE(LANG)
 # ---------------------------------
 #
 # Updates Autoconf build environment.
 #
-AC_DEFUN([ABI_FALLBACKS_FALLBACKS_ENV_AC_UPDATE],[
+AC_DEFUN([AFB_ENV_AC_UPDATE],[
   dnl Please note that the existing environment will always be overwritten.
   dnl Thus you should save sensistive data before calling this macro.
 
@@ -84,7 +84,7 @@ AC_DEFUN([ABI_FALLBACKS_FALLBACKS_ENV_AC_UPDATE],[
   FCLIBS="${FC_LIBS}"
 
   unset tmp_lang
-]) # ABI_FALLBACKS_FALLBACKS_ENV_AC_UPDATE
+]) # AFB_ENV_AC_UPDATE
 """
 
 
@@ -95,15 +95,15 @@ def abi_macro_init():
   return """
 
 
-# ABI_FALLBACKS_ENV_INIT()
+# AFB_ENV_INIT()
 # --------------
 #
 # Declares ABINIT environment variables and initializes the internal
 # variables.
 #
-AC_DEFUN([ABI_FALLBACKS_ENV_INIT],[
+AC_DEFUN([AFB_ENV_INIT],[
 @MACRO@
-]) # ABI_FALLBACKS_ENV_INIT
+]) # AFB_ENV_INIT
 """
 
 
@@ -114,16 +114,16 @@ def abi_macro_backup():
   return """
 
 
-# ABI_FALLBACKS_ENV_BACKUP()
+# AFB_ENV_BACKUP()
 # ----------------
 #
 # Saves all ABINIT environment variables.
 #
-AC_DEFUN([ABI_FALLBACKS_ENV_BACKUP],[
+AC_DEFUN([AFB_ENV_BACKUP],[
   dnl All variables will be saved, yet please note that they may be
-  dnl conditionally restored (see ABI_FALLBACKS_ENV_RECALL for details).
+  dnl conditionally restored (see AFB_ENV_RECALL for details).
 @MACRO@
-]) # ABI_FALLBACKS_ENV_BACKUP
+]) # AFB_ENV_BACKUP
 """
 
 
@@ -134,16 +134,16 @@ def abi_macro_recall():
   return """
 
 
-# ABI_FALLBACKS_ENV_RECALL()
+# AFB_ENV_RECALL()
 # ----------------
 #
 # Restores all previously-saved non-empty ABINIT environment variables.
 #
-AC_DEFUN([ABI_FALLBACKS_ENV_RECALL],[
+AC_DEFUN([AFB_ENV_RECALL],[
   dnl The following ensures that non-empty environment variables always override
   dnl what is read from the config files.
 @MACRO@
-]) # ABI_FALLBACKS_ENV_RECALL
+]) # AFB_ENV_RECALL
 """
 
 
@@ -154,14 +154,14 @@ def abi_macro_restore():
   return """
 
 
-# ABI_FALLBACKS_ENV_RESTORE()
+# AFB_ENV_RESTORE()
 # -----------------
 #
 # Restores all previously-saved ABINIT environment variables.
 #
-AC_DEFUN([ABI_FALLBACKS_ENV_RESTORE],[
+AC_DEFUN([AFB_ENV_RESTORE],[
 @MACRO@
-]) # ABI_FALLBACKS_ENV_RESTORE
+]) # AFB_ENV_RESTORE
 """
 
 

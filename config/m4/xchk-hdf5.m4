@@ -9,12 +9,12 @@
 
 
 
-# ABI_FALLBACKS_CHECK_HDF5()
+# AFB_CHECK_HDF5()
 # --------------------------
 #
 # Check whether the specified HDF5 library is working.
 #
-AC_DEFUN([ABI_FALLBACKS_CHECK_HDF5],[
+AC_DEFUN([AFB_CHECK_HDF5],[
   dnl Init
   afb_hdf5_default_libs="-lhdf5_hl -lhdf5"
   afb_hdf5_has_par="unknown"
@@ -81,4 +81,4 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_HDF5],[
   CPPFLAGS="${tmp_saved_CPPFLAGS}"
   FCFLAGS="${tmp_saved_FCFLAGS}"
   LIBS="${tmp_saved_LIBS}"
-]) # ABI_FALLBACKS_CHECK_HDF5
+]) # AFB_CHECK_HDF5

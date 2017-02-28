@@ -46,23 +46,23 @@ def macro_template(name,stamp):
 
 
 
-# ABI_FALLBACKS_CONFIG_FILES()
+# AFB_CONFIG_FILES()
 # ----------------------------
 #
 # Transmits additional config files to the configure script.
 #
-AC_DEFUN([ABI_FALLBACKS_CONFIG_FILES],[
+AC_DEFUN([AFB_CONFIG_FILES],[
   AC_CONFIG_FILES([@FBK_CFGFILES@])
-]) # ABI_FALLBACKS_CONFIG_FILES
+]) # AFB_CONFIG_FILES
 
 
 
-# ABI_FALLBACKS_SETUP()
+# AFB_SETUP()
 # ---------------------
 #
 # Initializes all fallbacks in the correct order.
 #
-AC_DEFUN([ABI_FALLBACKS_SETUP],[@FBK_CALLS@]) # ABI_FALLBACKS_SETUP
+AC_DEFUN([AFB_SETUP],[@FBK_CALLS@]) # AFB_SETUP
 """ % (name,stamp,name)
 
 
@@ -113,12 +113,12 @@ def macro_fallback(nick,name,desc,libs,bins,md5s,urls,deps=None,
   ret = """
 
 
-# _ABI_FALLBACK_@PKG_NICK@()
-# ----------------%s
+# _AFB_@PKG_NICK@()
+# -----%s
 #
 # Sets all variables needed to handle the @PKG_NICK@ fallback.
 #
-AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
+AC_DEFUN([_AFB_@PKG_NICK@],[
   dnl Initial setup
   afb_@pkg_nick@_bins=""
   afb_@pkg_nick@_incs=""
@@ -166,7 +166,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
             "${dl_url}"
         fi
         if test -s "${afb_@pkg_nick@_tarball}"; then
-          ABI_FALLBACKS_CHECK_MD5SUM([${afb_@pkg_nick@_tarball}],[@MD5SUM@])
+          AFB_CHECK_MD5SUM([${afb_@pkg_nick@_tarball}],[@MD5SUM@])
           case "${afb_md5_ok}" in
             yes)
               tmp_tarball_ok="yes"
@@ -209,7 +209,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
   dnl Substitutions
   AC_SUBST(afb_@pkg_nick@_ok)
   AC_SUBST(afb_@pkg_nick@_tarball)
-@PKG_SUBST@]) # _ABI_FALLBACK_@PKG_NICK@
+@PKG_SUBST@]) # _AFB_@PKG_NICK@
 """ % ("-"*len(nick))
 
   # Fill-in set-up sequence
@@ -328,7 +328,7 @@ AC_DEFUN([_ABI_FALLBACK_@PKG_NICK@],[
     with_opts += "    fi\n"
     with_opts += "  fi"
   if ( pkg_xfer != "" ):
-    pkg_xfer = "  else\n\n    dnl Check whether the external package works\n%s    ABI_FALLBACKS_CHECK_@PKG_NICK@@CHK_ARGS@\n    afb_@pkg_nick@_ok=\"${afb_@pkg_nick@_ext_ok}\"\n" % pkg_xfer
+    pkg_xfer = "  else\n\n    dnl Check whether the external package works\n%s    AFB_CHECK_@PKG_NICK@@CHK_ARGS@\n    afb_@pkg_nick@_ok=\"${afb_@pkg_nick@_ext_ok}\"\n" % pkg_xfer
 
   # Transform template (the order is important)
   ret = re.sub("@SET_VARS@",set_vars,ret)
@@ -389,8 +389,9 @@ now = strftime("%Y/%m/%d %H:%M:%S +0000",gmtime())
 # Init
 cnf = MyConfigParser()
 cnf.read(my_configs[0])
-abinit_fallbacks = cnf.sections()
+abinit_fallbacks = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "real"]
 abinit_fallbacks.sort()
+abinit_virtuals = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "virtual"]
 m4_all = macro_template(my_name,now)
 m4_fbk = ""
 m4_ord = ""
@@ -430,8 +431,12 @@ for i in range(len(abinit_fallbacks)):
     if ( cnf.has_option(pkg,"depends") ):
       all_deps[pkg] = cnf.get(pkg,"depends").split()
       pkg_deps = all_deps[pkg]
+      for i in range(len(pkg_deps)):
+        if ( cnf.get(pkg_deps[i],"type") == "virtual" ):
+          pkg_deps += cnf.get(pkg_deps[i],"providers").split()
+      pkg_deps = [item for item in pkg_deps if not item in abinit_virtuals]
       for dep in pkg_deps:
-        is_preq[dep] = True
+        fbk_prqs[dep] = True
         if ( pkg_num[dep] >= pkg_num[pkg] ):
           pkg_num[pkg] = pkg_num[dep] + 1
     else:
@@ -444,7 +449,7 @@ pkg_ranks.sort()
 for rnk in pkg_ranks:
   for pkg in pkg_num:
     if ( pkg_num[pkg] == rnk ):
-      m4_ord += "\n  _ABI_FALLBACK_%s" % pkg.upper()
+      m4_ord += "\n  _AFB_%s" % pkg.upper()
 m4_ord += "\n"
 
 m4_all = re.sub("@FBK_CALLS@",m4_ord,m4_all)
@@ -490,7 +495,12 @@ for pkg in abinit_fallbacks:
   else:
     pkg_dep_libs = {}
     for dep in pkg_deps:
-      pkg_dep_libs[dep] = cnf.get(dep,"libraries").split()
+      if ( cnf.get(dep,"type") == "real" ):
+        pkg_dep_libs[dep] = cnf.get(dep,"libraries").split()
+      else:
+        pkg_dep_libs[dep] = []
+        for prov in cnf.get(dep,"providers").split():
+          pkg_dep_libs[dep].append({"provider":prov, "libraries":cnf.get(prov,"libraries").split()})
 
   # Check whether the fallback exports C headers or modules
   if ( (pkg_hdrs is None) and (pkg_mods is None) ):

@@ -19,7 +19,7 @@
 # Checks that the specified file has the specified MD5 sum. The result
 # (no, yes, unknown) is stored in the afb_md5_ok variable.
 #
-AC_DEFUN([ABI_FALLBACKS_CHECK_MD5SUM],[
+AC_DEFUN([AFB_CHECK_MD5SUM],[
   dnl Init
   if test "${MD5SUM}" = ""; then
     AC_CHECK_PROGS([MD5SUM],[md5sum md5])
@@ -47,4 +47,4 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_MD5SUM],[
       AC_MSG_RESULT([md5 failed])
     fi
   fi
-]) # ABI_FALLBACKS_CHECK_MD5SUM
+]) # AFB_CHECK_MD5SUM

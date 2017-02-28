@@ -66,13 +66,13 @@ ${MKDIR_P} sources stamps
 #
 
 # Manage environment variables and command-line options
-ABI_FALLBACKS_ENV_BACKUP
-ABI_FALLBACKS_OPTIONS_DEFINE
-ABI_FALLBACKS_OPTIONS_BACKUP
-ABI_FALLBACKS_OPTIONS_SETUP
-ABI_FALLBACKS_OPTIONS_CHANGED
-ABI_FALLBACKS_OPTIONS_PARSE
-ABI_FALLBACKS_ENV_INIT
+AFB_ENV_BACKUP
+AFB_OPTIONS_DEFINE
+AFB_OPTIONS_BACKUP
+AFB_OPTIONS_SETUP
+AFB_OPTIONS_CHANGED
+AFB_OPTIONS_PARSE
+AFB_ENV_INIT
 
 # set-up tarball directory
 if test "${with_tardir}" = ""; then
@@ -136,7 +136,7 @@ fi
 #
 
 # Make sure required patches can be applied
-ABI_FALLBACKS_PATCHES
+AFB_PATCHES_SETUP
 
 # ---------------------------------------------------------------------------- #
 
@@ -166,7 +166,7 @@ AC_PROG_CXX
 #
 
 AC_PROG_FC
-ABI_FALLBACKS_PROG_FC
+AFB_PROG_FC
 
 # ---------------------------------------------------------------------------- #
 
@@ -202,7 +202,7 @@ CXX_LIBS="${CXX_LIBS} ${LIBS}"
 FC_LIBS="${FC_LIBS} ${LIBS}"
 
 # Transmit all available parameters
-ABI_FALLBACKS_SETUP
+AFB_SETUP
 
 # ---------------------------------------------------------------------------- #
 
@@ -212,7 +212,7 @@ ABI_FALLBACKS_SETUP
 
 AC_CONFIG_COMMANDS([script-perms],[chmod u+x src/abinit-fallbacks-config])
 
-ABI_FALLBACKS_CONFIG_FILES
+AFB_CONFIG_FILES
 
 AC_CONFIG_FILES([
   fallbacks.dump
@@ -222,4 +222,4 @@ AC_CONFIG_FILES([
   src/Makefile])
 AC_OUTPUT
 
-ABI_FALLBACKS_INFO
+AFB_INFO_DISPLAY

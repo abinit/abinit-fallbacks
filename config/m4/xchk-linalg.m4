@@ -9,13 +9,13 @@
 
 
 
-# ABI_FALLBACKS_CHECK_LINALG()
+# AFB_CHECK_LINALG()
 # ----------------------------
 #
 # Check whether the specified libraries are BLAS and LAPACK
 # implementations.
 #
-AC_DEFUN([ABI_FALLBACKS_CHECK_LINALG],[
+AC_DEFUN([AFB_CHECK_LINALG],[
   dnl Init
   afb_linalg_default_libs="-llapack -lblas"
   afb_linalg_has_incs="unknown"
@@ -241,4 +241,4 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_LINALG],[
   CPPFLAGS="${tmp_saved_CPPFLAGS}"
   FCFLAGS="${tmp_saved_FCFLAGS}"
   LIBS="${tmp_saved_LIBS}"
-]) # ABI_FALLBACKS_CHECK_LINALG
+]) # AFB_CHECK_LINALG

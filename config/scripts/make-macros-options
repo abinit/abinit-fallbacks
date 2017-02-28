@@ -52,12 +52,12 @@ def macro_define_header():
   return """
 
 
-# ABI_FALLBACKS_OPTIONS_DEFINE()
+# AFB_OPTIONS_DEFINE()
 # --------------------
 #
 # Declares command-line arguments for the "configure" script.
 #
-AC_DEFUN([ABI_FALLBACKS_OPTIONS_DEFINE],[
+AC_DEFUN([AFB_OPTIONS_DEFINE],[
 """
 
 
@@ -65,7 +65,7 @@ AC_DEFUN([ABI_FALLBACKS_OPTIONS_DEFINE],[
 # Define macro footer
 def macro_define_footer():
 
-  return "]) # ABI_FALLBACKS_OPTIONS_DEFINE\n"
+  return "]) # AFB_OPTIONS_DEFINE\n"
 
 
 
@@ -75,12 +75,12 @@ def macro_setup_header():
   return """
 
 
-# ABI_FALLBACKS_OPTIONS_SETUP()
+# AFB_OPTIONS_SETUP()
 # -------------------
 #
 # Sets the default values of command-line arguments.
 #
-AC_DEFUN([ABI_FALLBACKS_OPTIONS_SETUP],[
+AC_DEFUN([AFB_OPTIONS_SETUP],[
 """
 
 
@@ -88,7 +88,7 @@ AC_DEFUN([ABI_FALLBACKS_OPTIONS_SETUP],[
 # Init macro footer
 def macro_setup_footer():
 
-  return "]) # ABI_FALLBACKS_OPTIONS_SETUP\n"
+  return "]) # AFB_OPTIONS_SETUP\n"
 
 
 
@@ -98,12 +98,12 @@ def macro_backup_header():
   return """
 
 
-# ABI_FALLBACKS_OPTIONS_BACKUP()
+# AFB_OPTIONS_BACKUP()
 # --------------------
 #
 # Saves all command-line arguments.
 #
-AC_DEFUN([ABI_FALLBACKS_OPTIONS_BACKUP],[
+AC_DEFUN([AFB_OPTIONS_BACKUP],[
 """
 
 
@@ -111,7 +111,7 @@ AC_DEFUN([ABI_FALLBACKS_OPTIONS_BACKUP],[
 # Backup macro footer
 def macro_backup_footer():
 
-  return "]) # ABI_FALLBACKS_OPTIONS_BACKUP\n"
+  return "]) # AFB_OPTIONS_BACKUP\n"
 
 
 
@@ -121,12 +121,12 @@ def macro_recall_header():
   return """
 
 
-# ABI_FALLBACKS_OPTIONS_RECALL()
+# AFB_OPTIONS_RECALL()
 # --------------------
 #
 # Restores all previously-saved command-line arguments.
 #
-AC_DEFUN([ABI_FALLBACKS_OPTIONS_RECALL],[
+AC_DEFUN([AFB_OPTIONS_RECALL],[
 """
 
 
@@ -134,7 +134,7 @@ AC_DEFUN([ABI_FALLBACKS_OPTIONS_RECALL],[
 # Restore macro footer
 def macro_recall_footer():
 
-  return "]) # ABI_FALLBACKS_OPTIONS_RECALL\n"
+  return "]) # AFB_OPTIONS_RECALL\n"
 
 
 
@@ -144,16 +144,16 @@ def macro_changed_template():
   return """
 
 
-dnl ABI_FALLBACKS_OPTIONS_CHANGED()
+dnl AFB_OPTIONS_CHANGED()
 dnl ---------------------
 dnl
 dnl Display changes of user interface between versions and warns about
 dnl obsolete uses.
 dnl
-AC_DEFUN([ABI_FALLBACKS_OPTIONS_CHANGED],[
+AC_DEFUN([AFB_OPTIONS_CHANGED],[
   AC_MSG_NOTICE([reporting user interface changes:])
 @MACRO@
-]) dnl ABI_FALLBACKS_OPTIONS_CHANGED
+]) dnl AFB_OPTIONS_CHANGED
 """
 
 
@@ -164,16 +164,16 @@ def macro_parse_template():
   return """
 
 
-dnl ABI_FALLBACKS_OPTIONS_PARSE()
+dnl AFB_OPTIONS_PARSE()
 dnl -------------------
 dnl
 dnl Parses command-line arguments.
 dnl
-AC_DEFUN([ABI_FALLBACKS_OPTIONS_PARSE],[
+AC_DEFUN([AFB_OPTIONS_PARSE],[
   AC_REQUIRE([AC_PROG_EGREP])
   AC_MSG_NOTICE([parsing command-line options])
 @MACRO@
-]) dnl ABI_FALLBACKS_OPTIONS_PARSE
+]) dnl AFB_OPTIONS_PARSE
 """
 
 
@@ -184,16 +184,16 @@ def macro_triggers_template():
   return """
 
 
-dnl ABI_FALLBACKS_OPTIONS_TRIGGERS()
+dnl AFB_OPTIONS_TRIGGERS()
 dnl ----------------------
 dnl
 dnl Set triggers associated to 'enable_*' options (AC_DEFINE and
 dnl AM_CONDTIONAL).
 dnl
-AC_DEFUN([ABI_FALLBACKS_OPTIONS_TRIGGERS],[
+AC_DEFUN([AFB_OPTIONS_TRIGGERS],[
   AC_MSG_NOTICE([setting triggers associated to command-line options])
 @MACRO@
-]) dnl ABI_FALLBACKS_OPTIONS_TRIGGERS
+]) dnl AFB_OPTIONS_TRIGGERS
 """
 
 

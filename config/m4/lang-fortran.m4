@@ -13,14 +13,14 @@
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_ABSOFT(COMPILER)
+# _AFB_CHECK_FC_ABSOFT(COMPILER)
 # ----------------------------------------
 #
 # Checks whether the specified Fortran compiler is the ABSoft Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_ABSOFT],[
+AC_DEFUN([_AFB_CHECK_FC_ABSOFT],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -43,18 +43,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_ABSOFT],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_ABSOFT
+]) # _AFB_CHECK_FC_ABSOFT
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_COMPAQ(COMPILER)
+# _AFB_CHECK_FC_COMPAQ(COMPILER)
 # ----------------------------------------
 #
 # Checks whether the specified Fortran compiler is the COMPAQ Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_COMPAQ],[
+AC_DEFUN([_AFB_CHECK_FC_COMPAQ],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -81,18 +81,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_COMPAQ],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_COMPAQ
+]) # _AFB_CHECK_FC_COMPAQ
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_FUJITSU(COMPILER)
+# _AFB_CHECK_FC_FUJITSU(COMPILER)
 # -----------------------------------------
 #
 # Checks whether the specified Fortran compiler is the Fujitsu Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_FUJITSU],[
+AC_DEFUN([_AFB_CHECK_FC_FUJITSU],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -115,18 +115,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_FUJITSU],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_FUJITSU
+]) # _AFB_CHECK_FC_FUJITSU
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_G95(COMPILER)
+# _AFB_CHECK_FC_G95(COMPILER)
 # -------------------------------------
 #
 # Checks whether the specified Fortran compiler is the G95 Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_G95],[
+AC_DEFUN([_AFB_CHECK_FC_G95],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -149,18 +149,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_G95],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_G95
+]) # _AFB_CHECK_FC_G95
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_GNU(COMPILER)
+# _AFB_CHECK_FC_GNU(COMPILER)
 # -------------------------------------
 #
 # Checks whether the specified Fortran compiler is the GNU Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_GNU],[
+AC_DEFUN([_AFB_CHECK_FC_GNU],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -182,18 +182,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_GNU],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_GNU
+]) # _AFB_CHECK_FC_GNU
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_HITACHI(COMPILER)
+# _AFB_CHECK_FC_HITACHI(COMPILER)
 # -----------------------------------------
 #
 # Checks whether the specified Fortran compiler is the Hitachi Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_HITACHI],[
+AC_DEFUN([_AFB_CHECK_FC_HITACHI],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -216,18 +216,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_HITACHI],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_HITACHI
+]) # _AFB_CHECK_FC_HITACHI
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_IBM(COMPILER)
+# _AFB_CHECK_FC_IBM(COMPILER)
 # -------------------------------------
 #
 # Checks whether the specified Fortran compiler is the IBM XL Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_IBM],[
+AC_DEFUN([_AFB_CHECK_FC_IBM],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -261,18 +261,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_IBM],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_IBM
+]) # _AFB_CHECK_FC_IBM
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_INTEL(COMPILER)
+# _AFB_CHECK_FC_INTEL(COMPILER)
 # ---------------------------------------
 #
 # Checks whether the specified Fortran compiler is the Intel Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_INTEL],[
+AC_DEFUN([_AFB_CHECK_FC_INTEL],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -295,11 +295,11 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_INTEL],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_INTEL
+]) # _AFB_CHECK_FC_INTEL
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_MIPSPRO(COMPILER)
+# _AFB_CHECK_FC_MIPSPRO(COMPILER)
 # -----------------------------------------
 #
 # Checks whether the specified Fortran compiler is the MIPSpro Fortran
@@ -307,7 +307,7 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_INTEL],[
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_MIPSPRO],[
+AC_DEFUN([_AFB_CHECK_FC_MIPSPRO],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -330,18 +330,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_MIPSPRO],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_MIPSPRO
+]) # _AFB_CHECK_FC_MIPSPRO
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_NAG(COMPILER)
+# _AFB_CHECK_FC_NAG(COMPILER)
 # -------------------------------------
 #
 # Checks whether the specified Fortran compiler is the NAGWare Fortran 95
 # compiler. If yes, tries to determine its version number and sets the
 # afb_fc_vendor and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_NAG],[
+AC_DEFUN([_AFB_CHECK_FC_NAG],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -364,11 +364,11 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_NAG],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_NAG
+]) # _AFB_CHECK_FC_NAG
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_OPEN64(COMPILER)
+# _AFB_CHECK_FC_OPEN64(COMPILER)
 # ----------------------------------------
 #
 # Checks whether the specified Fortran compiler is the Open64
@@ -376,7 +376,7 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_NAG],[
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_OPEN64],[
+AC_DEFUN([_AFB_CHECK_FC_OPEN64],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -399,11 +399,11 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_OPEN64],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_OPEN64
+]) # _AFB_CHECK_FC_OPEN64
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_PATHSCALE(COMPILER)
+# _AFB_CHECK_FC_PATHSCALE(COMPILER)
 # -------------------------------------------
 #
 # Checks whether the specified Fortran compiler is the PathScale
@@ -411,7 +411,7 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_OPEN64],[
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_PATHSCALE],[
+AC_DEFUN([_AFB_CHECK_FC_PATHSCALE],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -434,11 +434,11 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_PATHSCALE],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_PATHSCALE
+]) # _AFB_CHECK_FC_PATHSCALE
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_PGI(COMPILER)
+# _AFB_CHECK_FC_PGI(COMPILER)
 # -------------------------------------
 #
 # Checks whether the specified Fortran compiler is the Portland Group
@@ -446,7 +446,7 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_PATHSCALE],[
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_PGI],[
+AC_DEFUN([_AFB_CHECK_FC_PGI],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -469,18 +469,18 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_PGI],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_PGI
+]) # _AFB_CHECK_FC_PGI
 
 
 
-# _ABI_FALLBACKS_CHECK_FC_SUN(COMPILER)
+# _AFB_CHECK_FC_SUN(COMPILER)
 # -------------------------------------
 #
 # Checks whether the specified Fortran compiler is the Sun WorkShop Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_SUN],[
+AC_DEFUN([_AFB_CHECK_FC_SUN],[
   dnl Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
@@ -503,7 +503,7 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_SUN],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _ABI_FALLBACKS_CHECK_FC_SUN
+]) # _AFB_CHECK_FC_SUN
 
 
 
@@ -511,13 +511,13 @@ AC_DEFUN([_ABI_FALLBACKS_CHECK_FC_SUN],[
 
 
 
-# ABI_FALLBACKS_FC_EXTENSIONS()
+# AFB_FC_EXTENSIONS()
 # -----------------------------
 #
 # Sets the default extensions of Fortran source files and modules,
 # whenever possible.
 #
-AC_DEFUN([ABI_FALLBACKS_FC_EXTENSIONS],[
+AC_DEFUN([AFB_FC_EXTENSIONS],[
   dnl Set Fortran module extension
   AX_F90_MODULE_EXTENSION
   if test "${ax_cv_f90_modext}" != ""; then
@@ -533,18 +533,18 @@ AC_DEFUN([ABI_FALLBACKS_FC_EXTENSIONS],[
     AC_MSG_WARN([Fortran file extension could not be changed])
     AC_MSG_WARN([some advanced Fortran tests may fail])
   fi
-]) # ABI_FALLBACKS_FC_EXTENSIONS
+]) # AFB_FC_EXTENSIONS
 
 
 
-# ABI_FALLBACKS_FC_MOD_CASE()
+# AFB_FC_MOD_CASE()
 # ---------------------------
 #
 # Checks whether the Fortran compiler creates upper-case or lower-case
 # module files.
 #
-AC_DEFUN([ABI_FALLBACKS_FC_MOD_CASE],[
-  AC_REQUIRE([ABI_FALLBACKS_FC_EXTENSIONS])
+AC_DEFUN([AFB_FC_MOD_CASE],[
+  AC_REQUIRE([AFB_FC_EXTENSIONS])
 
   dnl Init
   fc_mod_lowercase="yes"
@@ -570,18 +570,18 @@ AC_DEFUN([ABI_FALLBACKS_FC_MOD_CASE],[
   dnl Output final outcome
   AC_MSG_CHECKING([whether Fortran modules are upper-case])
   AC_MSG_RESULT([${fc_mod_uppercase}])
-]) # ABI_FALLBACKS_FC_MOD_CASE
+]) # AFB_FC_MOD_CASE
 
 
 
-# ABI_FALLBACKS_FC_MOD_INCS(MODULE)
+# AFB_FC_MOD_INCS(MODULE)
 # ---------------------------------
 #
 # Checks whether the specified Fortran module is directly available, or
 # if we need to add '-I/usr/include' to the compile flags. Returns the
 # required includes.
 #
-AC_DEFUN([ABI_FALLBACKS_FC_MOD_INCS],[
+AC_DEFUN([AFB_FC_MOD_INCS],[
   AC_MSG_CHECKING([for Fortran module includes])
 
   if test "${afb_fc_mod_incs_ok}" = "" -o \
@@ -624,16 +624,16 @@ AC_DEFUN([ABI_FALLBACKS_FC_MOD_INCS],[
 
   dnl Substitute variables
   AC_SUBST(fc_mod_incs)
-]) # ABI_FALLBACKS_FC_MOD_INCS
+]) # AFB_FC_MOD_INCS
 
 
 
-# ABI_FALLBACKS_PROG_FC()
+# AFB_PROG_FC()
 # -----------------------
 #
 # Tries to determine which type of Fortran compiler is installed.
 #
-AC_DEFUN([ABI_FALLBACKS_PROG_FC],[
+AC_DEFUN([AFB_PROG_FC],[
   dnl Init
   afb_fc_vendor="${with_fc_vendor}"
   afb_fc_version="${with_fc_version}"
@@ -653,60 +653,60 @@ AC_DEFUN([ABI_FALLBACKS_PROG_FC],[
 
   dnl Get rid of that one as early as possible
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_IBM(${FC})
+    _AFB_CHECK_FC_IBM(${FC})
   fi
 
   dnl Should be checked before gfortran because it mimics its behaviour
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_INTEL(${FC})
+    _AFB_CHECK_FC_INTEL(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_G95(${FC})
+    _AFB_CHECK_FC_G95(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_GNU(${FC})
+    _AFB_CHECK_FC_GNU(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_PATHSCALE(${FC})
+    _AFB_CHECK_FC_PATHSCALE(${FC})
   fi
 
   #if test "${afb_fc_vendor}" = "unknown"; then
-  #  _ABI_FALLBACKS_CHECK_FC_COMPAQ(${FC})
+  #  _AFB_CHECK_FC_COMPAQ(${FC})
   #fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_ABSOFT(${FC})
+    _AFB_CHECK_FC_ABSOFT(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_MIPSPRO(${FC})
+    _AFB_CHECK_FC_MIPSPRO(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_OPEN64(${FC})
+    _AFB_CHECK_FC_OPEN64(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_FUJITSU(${FC})
+    _AFB_CHECK_FC_FUJITSU(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_SUN(${FC})
+    _AFB_CHECK_FC_SUN(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_HITACHI(${FC})
+    _AFB_CHECK_FC_HITACHI(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_NAG(${FC})
+    _AFB_CHECK_FC_NAG(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
-    _ABI_FALLBACKS_CHECK_FC_PGI(${FC})
+    _AFB_CHECK_FC_PGI(${FC})
   fi
 
   dnl Fall back to generic when detection fails
@@ -729,4 +729,4 @@ AC_DEFUN([ABI_FALLBACKS_PROG_FC],[
   AC_SUBST(afb_fc_version)
   AC_SUBST(afb_fc_wrap)
   AC_SUBST(fc_info_string)
-]) # ABI_FALLBACKS_PROG_FC
+]) # AFB_PROG_FC

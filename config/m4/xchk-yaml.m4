@@ -9,12 +9,12 @@
 
 
 
-# ABI_FALLBACKS_CHECK_YAML(API_MAJOR_MIN, API_MINOR_MIN)
+# AFB_CHECK_YAML(API_MAJOR_MIN, API_MINOR_MIN)
 # ------------------------------------------------------
 #
 # Check whether the specified YAML library is working.
 #
-AC_DEFUN([ABI_FALLBACKS_CHECK_YAML],[
+AC_DEFUN([AFB_CHECK_YAML],[
   dnl Init
   afb_yaml_default_libs="-lyaml"
   afb_yaml_has_incs="unknown"
@@ -70,4 +70,4 @@ AC_DEFUN([ABI_FALLBACKS_CHECK_YAML],[
   dnl Restore environment
   CPPFLAGS="${tmp_saved_CPPFLAGS}"
   LIBS="${tmp_saved_LIBS}"
-]) # ABI_FALLBACKS_CHECK_YAML
+]) # AFB_CHECK_YAML
