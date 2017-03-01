@@ -259,9 +259,8 @@ now = strftime("%Y/%m/%d %H:%M:%S +0000",gmtime())
 # Init fallbacks
 cnf = MyConfigParser()
 cnf.read(my_configs[0])
-pkg_list = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "real"]
+pkg_list = cnf.sections()
 pkg_list.sort()
-vrt_list = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "virtual"]
 
 # Sort fallbacks by dependencies
 all_deps = dict()

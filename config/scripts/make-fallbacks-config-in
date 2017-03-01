@@ -326,9 +326,8 @@ now = strftime("%Y/%m/%d %H:%M:%S +0000",gmtime())
 # Init
 cnf = MyConfigParser()
 cnf.read(my_configs[0])
-abinit_fallbacks = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "real"]
+abinit_fallbacks = cnf.sections()
 abinit_fallbacks.sort()
-abinit_virtuals = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "virtual"]
 fbk_deps = {}
 fbk_libs = {}
 fbk_vars = {}
@@ -360,10 +359,6 @@ for i in range(len(abinit_fallbacks)):
     if ( cnf.has_option(pkg,"depends") ):
       all_deps[pkg] = cnf.get(pkg,"depends").split()
       pkg_deps = all_deps[pkg]
-      for i in range(len(pkg_deps)):
-        if ( cnf.get(pkg_deps[i],"type") == "virtual" ):
-          pkg_deps += cnf.get(pkg_deps[i],"providers").split()
-      pkg_deps = [item for item in pkg_deps if not item in abinit_virtuals]
       for dep in pkg_deps:
         fbk_prqs[dep] = True
         if ( pkg_num[dep] >= pkg_num[pkg] ):
@@ -388,10 +383,6 @@ for pkg in abinit_fallbacks:
   pkg_langs = cnf.get(pkg,"languages").split()
   if ( cnf.has_option(pkg,"depends") ):
     fbk_deps[pkg] = cnf.get(pkg,"depends").split()
-    for i in range(len(fbk_deps[pkg])):
-      if ( cnf.get(fbk_deps[pkg][i],"type") == "virtual" ):
-        fbk_deps[pkg] += cnf.get(fbk_deps[pkg][i],"providers").split()
-    fbk_deps[pkg] = [item for item in fbk_deps[pkg] if not item in abinit_virtuals]
   if ( cnf.has_option(pkg,"binaries") ):
     fbk_vars[pkg].append("bins")
   if ( "C" in pkg_langs ):

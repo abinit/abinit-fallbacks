@@ -389,9 +389,8 @@ now = strftime("%Y/%m/%d %H:%M:%S +0000",gmtime())
 # Init
 cnf = MyConfigParser()
 cnf.read(my_configs[0])
-abinit_fallbacks = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "real"]
+abinit_fallbacks = cnf.sections()
 abinit_fallbacks.sort()
-abinit_virtuals = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "virtual"]
 m4_all = macro_template(my_name,now)
 m4_fbk = ""
 m4_ord = ""
@@ -431,12 +430,8 @@ for i in range(len(abinit_fallbacks)):
     if ( cnf.has_option(pkg,"depends") ):
       all_deps[pkg] = cnf.get(pkg,"depends").split()
       pkg_deps = all_deps[pkg]
-      for i in range(len(pkg_deps)):
-        if ( cnf.get(pkg_deps[i],"type") == "virtual" ):
-          pkg_deps += cnf.get(pkg_deps[i],"providers").split()
-      pkg_deps = [item for item in pkg_deps if not item in abinit_virtuals]
       for dep in pkg_deps:
-        fbk_prqs[dep] = True
+        is_preq[dep] = True
         if ( pkg_num[dep] >= pkg_num[pkg] ):
           pkg_num[pkg] = pkg_num[dep] + 1
     else:
@@ -495,12 +490,6 @@ for pkg in abinit_fallbacks:
   else:
     pkg_dep_libs = {}
     for dep in pkg_deps:
-      if ( cnf.get(dep,"type") == "real" ):
-        pkg_dep_libs[dep] = cnf.get(dep,"libraries").split()
-      else:
-        pkg_dep_libs[dep] = []
-        for prov in cnf.get(dep,"providers").split():
-          pkg_dep_libs[dep].append({"provider":prov, "libraries":cnf.get(prov,"libraries").split()})
 
   # Check whether the fallback exports C headers or modules
   if ( (pkg_hdrs is None) and (pkg_mods is None) ):

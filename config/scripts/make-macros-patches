@@ -109,9 +109,8 @@ now = strftime("%Y/%m/%d %H:%M:%S +0000",gmtime())
 # Init
 cnf = MyConfigParser()
 cnf.read(my_configs[0])
-abinit_fallbacks = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "real"]
+abinit_fallbacks = cnf.sections()
 abinit_fallbacks.sort()
-abinit_virtuals = [pkg for pkg in cnf.sections() if cnf.get(pkg,"type") == "virtual"]
 if ( os.path.exists("patches") ):
   patch_list = os.listdir("patches")
 else:

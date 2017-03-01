@@ -19,12 +19,6 @@ AC_DEFUN([AFB_CHECK_HDF5],[
   afb_hdf5_default_libs="-lhdf5_hl -lhdf5"
   afb_hdf5_has_par="unknown"
   afb_hdf5_ok="unknown"
-  afb_netcdf4_ok="unknown"
-  afb_netcdf4_cc=""
-  afb_netcdf4_cppflags=""
-  afb_netcdf4_cflags=""
-  afb_netcdf4_ldflags=""
-  afb_netcdf4_libs=""
 
   dnl Prepare environment
   tmp_saved_with_hdf5="${with_hdf5}"
