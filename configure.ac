@@ -180,7 +180,7 @@ AC_PROG_RANLIB
 # ---------------------------------------------------------------------------- #
 
 #
-# Final configuration of fallbacks
+# Final build parameters configuration
 #
 
 # Make use of *_EXTRA flags
@@ -201,7 +201,27 @@ CC_LIBS="${CC_LIBS} ${LIBS}"
 CXX_LIBS="${CXX_LIBS} ${LIBS}"
 FC_LIBS="${FC_LIBS} ${LIBS}"
 
-# Transmit all available parameters
+# ---------------------------------------------------------------------------- #
+
+#
+# Configure fallbacks and their dependencies in the correct order
+#
+
+# HDF5 significantly enhances NetCDF4
+AFB_CHECK_HDF5
+if test "${afb_hdf5_ok}" = "yes"; then
+  AC_MSG_NOTICE([enabling advanced NetCDF4 I/O features])
+  AC_MSG_NOTICE([please note that HDF5 must be compiled with
+           the same compiler as now for this to work])
+  CPPFLAGS_NETCDF4="${CPPFLAGS} ${HDF5_CPPFLAGS}"
+  CFLAGS_NETCDF4="${CFLAGS} ${HDF5_CFLAGS}"
+  LDFLAGS_NETCDF4="${LDFLAGS} ${HDF5_LDFLAGS}"
+  LIBS_NETCDF4="${LIBS} ${HDF5_LIBS}"
+else
+  AC_MSG_NOTICE([enabling minimal NetCDF4 features only])
+fi
+
+# Configure all fallbacks
 AFB_SETUP
 
 # ---------------------------------------------------------------------------- #

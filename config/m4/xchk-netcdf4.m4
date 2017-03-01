@@ -10,13 +10,13 @@
 
 
 # AFB_CHECK_NETCDF4()
-# ----------------------------
+# -------------------
 #
 # Check whether the specified NetCDF4 library is working.
 #
 AC_DEFUN([AFB_CHECK_NETCDF4],[
   dnl Init
-  afb_netcdf4_default_libs="-lnetcdf4"
+  afb_netcdf4_default_libs="-lnetcdf"
   afb_netcdf4_ok="unknown"
   afb_netcdf4_fortran_ok="unknown"
   afb_netcdf4_par_ok="unknown"
@@ -51,16 +51,8 @@ AC_DEFUN([AFB_CHECK_NETCDF4],[
   dnl See ax_lib_netcdf4.m4 for more information
   if test "${with_netcdf4}" = "yes"; then
     AC_MSG_CHECKING([which NetCDF4 version we have])
-    AC_MSG_RESULT([${NETCDF4_VERSION])
+    AC_MSG_RESULT([${NETCDF4_VERSION}])
     afb_netcdf4_ok="yes"
-    afb_netcdf4_cc="${NETCDF4_CC}"
-    afb_netcdf4_cppflags="${NETCDF4_CPPFLAGS}"
-    afb_netcdf4_cflags="${NETCDF4_CFLAGS}"
-    afb_netcdf4_fc="${NETCDF4_FC}"
-    afb_netcdf4_fcflags="${NETCDF4_FFLAGS}"
-    afb_netcdf4_ldflags="${NETCDF4_LDFLAGS}"
-    afb_netcdf4_libs="${NETCDF4_LIBS}"
-    afb_netcdf4_fc_libs="${NETCDF4_FLIBS}"
   else
     afb_netcdf4_ok="no"
   fi

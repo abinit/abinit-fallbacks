@@ -58,7 +58,7 @@ AC_DEFUN([AFB_CONFIG_FILES],[
 
 
 # AFB_SETUP()
-# ---------------------
+# -----------
 #
 # Initializes all fallbacks in the correct order.
 #
@@ -113,12 +113,12 @@ def macro_fallback(nick,name,desc,libs,bins,md5s,urls,deps=None,
   ret = """
 
 
-# _AFB_@PKG_NICK@()
-# -----%s
+# _AFB_SETUP_@PKG_NICK@()
+# -------------%s
 #
 # Sets all variables needed to handle the @PKG_NICK@ fallback.
 #
-AC_DEFUN([_AFB_@PKG_NICK@],[
+AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
   dnl Initial setup
   afb_@pkg_nick@_bins=""
   afb_@pkg_nick@_incs=""
@@ -209,7 +209,7 @@ AC_DEFUN([_AFB_@PKG_NICK@],[
   dnl Substitutions
   AC_SUBST(afb_@pkg_nick@_ok)
   AC_SUBST(afb_@pkg_nick@_tarball)
-@PKG_SUBST@]) # _AFB_@PKG_NICK@
+@PKG_SUBST@]) # _AFB_SETUP_@PKG_NICK@
 """ % ("-"*len(nick))
 
   # Fill-in set-up sequence
@@ -445,7 +445,7 @@ pkg_ranks.sort()
 for rnk in pkg_ranks:
   for pkg in pkg_num:
     if ( pkg_num[pkg] == rnk ):
-      m4_ord += "\n  _AFB_%s" % pkg.upper()
+      m4_ord += "\n  _AFB_SETUP_%s" % pkg.upper()
 m4_ord += "\n"
 
 m4_all = re.sub("@FBK_CALLS@",m4_ord,m4_all)
@@ -491,6 +491,7 @@ for pkg in abinit_fallbacks:
   else:
     pkg_dep_libs = {}
     for dep in pkg_deps:
+      pkg_dep_libs[dep] = cnf.get(dep,"libraries").split()
 
   # Check whether the fallback exports C headers or modules
   if ( (pkg_hdrs is None) and (pkg_mods is None) ):

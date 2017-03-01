@@ -10,7 +10,7 @@
 
 
 # AFB_CHECK_HDF5()
-# --------------------------
+# ----------------
 #
 # Check whether the specified HDF5 library is working.
 #
@@ -65,6 +65,8 @@ AC_DEFUN([AFB_CHECK_HDF5],[
   dnl Set internal variables according to the results of AX_LIB_HDF5
   dnl See ax_lib_hdf5.m4 for more information
   if test "${with_hdf5}" = "yes"; then
+    AC_MSG_CHECKING([which HDF5 version we have])
+    AC_MSG_RESULT([${HDF5_VERSION}])
     afb_hdf5_ok="yes"
   else
     afb_hdf5_ok="no"
