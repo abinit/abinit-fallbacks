@@ -8,7 +8,8 @@
 #
 from __future__ import print_function, division, absolute_import #, unicode_literals
 
-import sys,os,re
+import sys,re
+import os,errno
 import argparse
 import subprocess
 import glob
@@ -19,8 +20,16 @@ try:
 except ImportError:
     from configparser import ConfigParser
 
+#
+NamesExceptions={ 'psml' : 'libpsml' }
+def RenameException(fallback):
+    try:
+        return NamesExceptions[fallback]
+    except:
+        return fallback
+
 def Check_If_Installed(basedir,fallback,version):
-    return os.path.isdir("%s/%s/%s" % ( basedir,fallback,version ))
+    return os.path.isdir("%s/%s-%s" % ( basedir,RenameException(fallback),version ))
 
 # ---------------------------------------------------------------------------- #
 
@@ -37,14 +46,12 @@ if ( not os.path.exists(my_config) ):
 # 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l","--link", action="store_true", help="create fallbacks links")
-parser.add_argument("-L","--Link", action="store_true", help="create main links")
 parser.add_argument("-y","--yes", action="store_true", help="yes answer by default")
 parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='?', help="name of builder ( == module name )")
 args = parser.parse_args()
 
 d = vars(args)
 link=d['link']
-Link=d['Link']
 yes=d['yes']
 builder=d['builder']
 if builder.split("_")[0] != hostname:
@@ -67,7 +74,7 @@ for fallback in fallbacks:
        version=cnf_vars['name'].split("_")[1]
   fbks_version[fallback]=version
 
-if not ( link or Link ):
+if not link :
   for k,v in fbks_version.iteritems():
     print("%s : %s" %(k,v))
   sys.exit()
@@ -83,7 +90,8 @@ fallbacks.remove('linalg')
 LINK=True
 if not yes:
   for f in fallbacks:
-    if Check_If_Installed(fbk_prefix_base,f,fbks_version[f]):
+    f2 = RenameException(f)
+    if Check_If_Installed(fbk_prefix_base,f2,fbks_version[f]):
         print("%s exists" % f) 
     else:
         print("%s missing" % f)
@@ -96,45 +104,24 @@ if not LINK and not yes:
        sys.exit()
 
 # fallbacks links
+base="%s" % fbk_prefix_base
 if link:
+  os.chdir(base)
   for fb in fallbacks:
-    base="%s/%s" % (fbk_prefix_base,fb)
-    #print("%s : %s" % (fb,base))
-    for d in ['bin','lib','include']:
-      if not os.path.exists("%s/%s" % (base,d)):
-	os.makedirs("%s/%s" % (base,d))
-      os.chdir("%s/%s" % (base,d))
-      # remove old links
-      files=os.listdir(".")
-      if len(files) != 0:
-          for file in files:
-              os.unlink(file)
-      folder="../%s/%s" % (fbks_version[fb],d)
-      if os.path.exists(folder) :
-         for file in os.listdir(folder):
-             if file == 'abinit-fallbacks-config' or file == 'pkgconfig':
-                 continue
-             subprocess.call(['ln', '-s', "%s/%s" % (folder,file)])
-
-# main links 
-if Link:
-  for fb in fallbacks:
-    #print(fb)
-    for d in ['bin','lib','include']:
-      if not os.path.exists("%s/%s" % (fbk_prefix_base,d)):
-	os.makedirs("%s/%s" % (fbk_prefix_base,d))
-      os.chdir("%s/%s" % (fbk_prefix_base,d))
-      # remove old links
-      files=os.listdir(".")
-      if len(files) != 0:
-          for file in files:
-              os.unlink(file)
-      folder="../%s/%s/%s" % (fb,fbks_version[fb],d)
-      if os.path.exists(folder) :
-         for file in os.listdir(folder):
-             if file == 'abinit-fallbacks-config' or file == 'pkgconfig':
-                 continue
-             subprocess.call(['ln', '-s', "%s/%s" % (folder,file)])
+    fb2 = RenameException(fb)
+    src="%s-%s" % (fb2,fbks_version[fb])
+    tgt="%s" % (fb2)
+    try:
+        if not yes:
+            print("%s -> %s" % (src,tgt))
+        os.symlink(src,tgt)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+           os.remove(fb2)
+           os.symlink(src,tgt)
+        else:
+           print("problem with link creation : ",fb2)
 
 if not yes:
     print("done...")
+sys.exit()

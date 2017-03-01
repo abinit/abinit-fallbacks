@@ -22,8 +22,19 @@ def OpenMongoConnection():
     uri="mongodb://bbro:bbro@gitlab.pcpm.ucl.ac.be/buildbot"
     return  MongoClient(uri)
 
+#
+NamesExceptions={ 'psml' : 'libpsml' }
+def RenameException(fallback):
+    try:
+        return NamesExceptions[fallback]
+    except:
+        return fallback
+
 def Check_If_Installed(basedir,fallback,version):
-    return os.path.isdir("%s/%s/%s" % ( basedir,fallback,version ))
+    return os.path.isdir("%s/%s-%s" % ( basedir,RenameException(fallback),version ))
+
+#def Check_If_Installed(basedir,fallback,version):
+#    return os.path.isdir("%s/%s-%s" % ( basedir,fallback,version ))
 
 # ---------------------------------------------------------------------------- #
 
@@ -62,16 +73,16 @@ for fallback in fallbacks:
   fbks_version[fallback]=version
   fbks_external[fallback]=False
 
-tmp=sorted(A.items(), key=lambda x: x[1])
+temp=sorted(A.items(), key=lambda x: x[1])
 for i in range(0,len(fallbacks)):
-  fbks_sorted_list=fbks_sorted_list+[tmp[i][0]]
+  fbks_sorted_list=fbks_sorted_list+[temp[i][0]]
 
-#print(fbks_sorted_list)
-# ['libxc', 'linalg', 'yaml', 'netcdf', 'wannier90', 'atompaw', 'bigdft']
-#print(fbks_list_depends)
-# {'wannier90': ['linalg'], 'libxc': [], 'linalg': [], 'bigdft': ['linalg', 'netcdf', 'libxc', 'yaml'], 'yaml': [], 'netcdf': [], 'atompaw': ['linalg', 'libxc']}
-#print(fbks_version)
-# {'wannier90': '2.0.1.1', 'libxc': '2.2.3', 'linalg': '6.10', 'bigdft': '1.7.1.23', 'yaml': '0.1.6', 'netcdf': '4.1.1', 'atompaw': '4.0.0.14'}
+print(fbks_sorted_list)
+#['libxc', 'linalg', 'yaml', 'netcdf', 'xmlf90', 'wannier90', 'psml', 'atompaw', 'bigdft']
+print(fbks_list_depends)
+#{'wannier90': ['linalg'], 'libxc': [], 'psml': ['libxc', 'xmlf90'], 'linalg': [], 'bigdft': ['linalg', 'netcdf', 'libxc', 'yaml'], 'yaml': [], 'netcdf': [], 'xmlf90': [], 'atompaw': ['linalg', 'libxc']}
+print(fbks_version)
+#{'wannier90': '2.0.1.1', 'libxc': '2.2.3', 'psml': '1.0.1', 'linalg': '6.10', 'bigdft': '1.7.1.23', 'yaml': '0.1.6', 'netcdf': '4.1.1', 'xmlf90': '1.5.0', 'atompaw': '4.0.0.14'}
 
 fbk_libs={}
 for f in fbks_sorted_list:
@@ -82,6 +93,8 @@ for f in fbks_sorted_list:
 
 #
 parser = argparse.ArgumentParser()
+parser.add_argument("-p","--psml", action="store_true", help="build PSML")
+parser.add_argument("-m","--xmlf90", action="store_true", help="build xmlf90")
 parser.add_argument("-l","--linalg", action="store_true", help="build LinAlg")
 parser.add_argument("-b","--bigdft", action="store_true", help="build BigDFT")
 parser.add_argument("-n","--netcdf", action="store_true", help="build NetCDF")
@@ -90,7 +103,7 @@ parser.add_argument("-x","--libxc", action="store_true", help="build libXC")
 parser.add_argument("-w","--wannier90", action="store_true", help="build Wannier90")
 parser.add_argument("-y","--yaml", action="store_true", help="build yaml")
 parser.add_argument("-A","--all", action="store_false", help="build all fallbacks")
-parser.add_argument("-p","--prod", action="store_true", help="install all fbks with same prefix")
+parser.add_argument("-P","--prod", action="store_true", help="install all fbks with same prefix")
 parser.add_argument("builder", type=str, help="name of builder ( == module name )")
 args = parser.parse_args()
 
@@ -134,7 +147,7 @@ fbk_options=db_builders.find_one({ 'name': builder })['fallback_options']
 client.close()
 
 ##############################################
-# external linalg is used by defaut with BB
+# by default, linalg is external with BB
 try:
   if fbk_options['LINALG'] != "":
      print("\n*** Use external linalg : ",fbk_options['LINALG'])
@@ -167,7 +180,7 @@ except:
 slave,vendor,version,variant = builder.split('_')
 fbk_prefix_base="/usr/local/fallbacks/%s/%s/%s" % ( vendor,version,variant )
 
-# find which fb will be installed 
+# find which fb could be installed 
 tmpfb=[]
 for k,v in d.iteritems():
    if v:
@@ -176,7 +189,11 @@ for k,v in d.iteritems():
 # Check if some fbk are already installed
 already_installed=[]
 for f in tmpfb:
-    if Check_If_Installed(fbk_prefix_base,f,fbks_version[f]):
+    #f2 = f
+    #if f == 'psml' :
+    #   f2 = 'libpsml'
+    f2 = RenameException(f)
+    if Check_If_Installed(fbk_prefix_base,f2,fbks_version[f]):
         already_installed.append(f)
 
 for f in already_installed:
@@ -193,6 +210,7 @@ if len(will_be_installed) == 0:
 
 print("\nWill be installed : %s \n" % will_be_installed)
 
+#sys.exit()
 ##############################################
 # create a Configure file with configure cmd
 #
@@ -210,12 +228,17 @@ except OSError:
 
 # create prefix where installing fbk
 #
+with open(filename,"w") as fn:
+    fn.write('# rerun autogen.sh in case \n')
+    fn.write('WD=`pwd`;cd ..;./autogen.sh;cd $WD\n\n')
+
 for fb in will_be_installed:
 
   if prod_prefix:
       fbk_prefix=fbk_prefix_base
   else:
-      fbk_prefix="%s/%s/%s" % (fbk_prefix_base,fb,fbks_version[fb])
+      fbk_prefix=fbk_prefix_base
+      #fbk_prefix="%s/%s-%s" % (fbk_prefix_base,fb,fbks_version[fb])
 
   with open(filename,"a") as fn:
       fn.write('# build %s \n' % fb)
@@ -237,8 +260,8 @@ for fb in will_be_installed:
                except:
                   pass
            else:
-              fn.write('  --with-%s-libs=\"-L%s/%s/%s/lib %s\" \\\n' % (f,fbk_prefix_base,f,fbks_version[f],fbk_libs[f]))
-              fn.write('  --with-%s-incs=\"-I%s/%s/%s/include\" \\\n' % (f,fbk_prefix_base,f,fbks_version[f]))
+              fn.write('  --with-%s-libs=\"-L%s/%s-%s/lib %s\" \\\n' % (f,fbk_prefix_base,f,fbks_version[f],fbk_libs[f]))
+              fn.write('  --with-%s-incs=\"-I%s/%s-%s/include\" \\\n' % (f,fbk_prefix_base,f,fbks_version[f]))
       # disable all others fbks
       fn.write('  ')
       for f in fbks_sorted_list:
@@ -252,10 +275,10 @@ for fb in will_be_installed:
       for opt in ['FCFLAGS_EXTRA','FPPFLAGS','CPP','CPPFLAGS','CFLAGS','CXXFLAGS','FCCPP','F77','F90','FFLAGS','F90FLAGS','FCFLAGS','LDFLAGS','LIBS']:
         try:
            if fbk_options[opt] != "":
-              fn.write('%s=\"%s\" ' % (opt,fbk_options[opt]))
+              fn.write('  %s=\"%s\" ' % (opt,fbk_options[opt]))
         except:
            pass
-      fn.write('\n  make -j 4 install\n\n')
+      fn.write('\nmake -j 4 install\n\n')
 
 subprocess.call(['chmod', '0750', filename])
 

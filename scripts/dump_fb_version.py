@@ -19,8 +19,16 @@ try:
 except ImportError:
     from configparser import ConfigParser
 
+#
+NamesExceptions={ 'psml' : 'libpsml' }
+def RenameException(fallback):
+    try:
+        return NamesExceptions[fallback]
+    except:
+        return fallback
+
 def Check_If_Installed(basedir,fallback,version):
-    return os.path.isdir("%s/%s/%s" % ( basedir,fallback,version ))
+    return os.path.isdir("%s/%s-%s" % ( basedir,RenameException(fallback),version ))
 
 # ---------------------------------------------------------------------------- #
 
@@ -66,33 +74,37 @@ fbk_prefix_base="/usr/local/fallbacks/%s/%s/%s" % ( vendor,version,variant )
 print('-------------------------------------------------')
 print('prefix : %s' % fbk_prefix_base)
 
+
 #############################################
 # fallbacks/config/specs/fallbacks.conf
 
 print('-------------------------------------------------')
 print('versions in fallbacks/config/specs/fallbacks.conf')
 print('-------------------------------------------------')
-for f in fallbacks:
-  print("%s : %s" %(f,fbks_version[f]))
+for fbk in fallbacks:
+    f = RenameException(fbk)
+    print("%s : %s" %(f,fbks_version[fbk]))
 
 
 #############################################
 # check all versions of fb installed
 
-print('\n------------------------------------------')
-print('version of all external fallbacks installed')
-print('-------------------------------------------')
+print('\n------------------------------------------------')
+print('all versions of installed external fallbacks')
+print('------------------------------------------------')
 
-list_dirs_excl=['bin','lib','include']
-for f in fallbacks:
-    try:
-       files=os.listdir("%s/%s" % (fbk_prefix_base,f))
-       for d in list_dirs_excl:
-          files.remove(d)
-       print(files)
-    except:
-       print("%s not installed" % f)
-
+for fbk in fallbacks:
+    f = RenameException(fbk)
+    t= glob.glob('%s/%s-*' % (fbk_prefix_base,f))
+    if len(t) != 0:
+        print("%s : " % f, end='')
+        for i in t:
+           tmp=i.split("/")[-1]
+           print(tmp.split("-")[1],end=' / ')
+           #print(glob.glob('%s/%s-*' % (fbk_prefix_base,f)))
+        print()
+    else:
+        print("%s not installed" % f)
 
 #############################################
 # version fb prod
@@ -101,29 +113,12 @@ print('\n--------------------------------------------')
 print('versions of external fallbacks used for prod')
 print('--------------------------------------------')
 
-for f in fallbacks:
+for fbk in fallbacks:
+    f = RenameException(fbk)
     try:
-       files=os.listdir("%s/%s/lib" % (fbk_prefix_base,f))
-       # ../4.0.0.14/lib/libatompaw.a
-       version=os.readlink("%s/%s/lib/%s" % ( fbk_prefix_base,f,files[0])).split("/")[1]
+       version=os.readlink("%s/%s" % ( fbk_prefix_base,f)).split("-")[1]
        print("%s : %s" % (f,version))
     except:
        print("%s not installed" % f)
 
-
 sys.exit()
-
-#############################################
-# check fb installed
-
-print('\n--------------------------------')
-print('check if fallbacks are installed ')
-print('---------------------------------')
-slave,vendor,version,variant = builder.split('_')
-fbk_prefix_base="/usr/local/fallbacks/%s/%s/%s" % ( vendor,version,variant )
-
-for f in fallbacks:
-    if Check_If_Installed(fbk_prefix_base,f,fbks_version[f]):
-        print("%s : %s" % (f,fbks_version[f])) 
-    else:
-        print("%s missing" % f)
