@@ -197,7 +197,7 @@ exit 0
   fbk_dump = ""
 
   for pkg in fbk_order:
-    fbk_name  = "%s-%s" % (pkg, fbk_versions[pkg])
+    fbk_inst  = "%s/%s" % (pkg, fbk_versions[pkg])
     fbk_init += "\nenable_%s='@enable_%s@'" % (pkg,pkg)
     fbk_init += "\nafb_%s_version='%s'" % (pkg, fbk_versions[pkg])
     fbk_init += "\nafb_%s_status='disabled'" % pkg
@@ -230,12 +230,12 @@ exit 0
         if ( item == "bins" ):
 
           fbk_init += "\nafb_%s_has_dep%s='no'" % (pkg,item)
-          fbk_dump += "\n  afb_%s_%s='@prefix@/%s/bin'" % (pkg,item,fbk_name)
+          fbk_dump += "\n  afb_%s_%s='@prefix@/%s/bin'" % (pkg,item,fbk_inst)
 
         elif ( item == "incs" ):
 
           fbk_init += "\nafb_%s_has_dep%s='no'" % (pkg,item)
-          fbk_dump += "\n  afb_%s_%s='-I@prefix@/%s/include'" % (pkg,item,fbk_name)
+          fbk_dump += "\n  afb_%s_%s='-I@prefix@/%s/include'" % (pkg,item,fbk_inst)
 
           if ( fbk_deps[pkg] ):
             fbk_dump += "\n  afb_%s_has_dep%s='yes'" % (pkg,item)
@@ -251,7 +251,7 @@ exit 0
           tmp_dump = ""
           for pkg_lib in fbk_libs[pkg][-1::-1]:
             tmp_dump += " -l%s" % re.sub("lib","",pkg_lib[:-2])
-          fbk_dump += "\n  afb_%s_%s='-L@prefix@/%s/lib%s'" % (pkg,item,fbk_name,tmp_dump)
+          fbk_dump += "\n  afb_%s_%s='-L@prefix@/%s/lib%s'" % (pkg,item,fbk_inst,tmp_dump)
 
           if ( fbk_deps[pkg] ):
             fbk_dump += "\n  afb_%s_has_dep%s='yes'" % (pkg,item)

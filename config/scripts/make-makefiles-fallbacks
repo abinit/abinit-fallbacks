@@ -71,6 +71,7 @@ all-local:%s
 # Fallback template
 def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_cfg=None):
 
+  pkg_inst = re.sub("-","/",pkg_name)
   tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build" % pkg
   tmp_bdir    = "/tmp-build"
   tmp_cfg_cmd = """\
@@ -79,7 +80,7 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_c
 	    --bindir="@prefix@/%s/bin" \\
 	    --includedir="@prefix@/%s/include" \\
 	    --libdir="@prefix@/%s/lib" \\
-	    $(CFGFLAGS_%s)""" % (pkg_name,pkg_name,pkg_name,pkg_name,pkg.upper())
+	    $(CFGFLAGS_%s)""" % (pkg_inst,pkg_inst,pkg_inst,pkg_inst,pkg.upper())
   tmp_inst_pfx = ""
 
   if ( pkg_cfg ):

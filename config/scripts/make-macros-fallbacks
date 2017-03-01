@@ -243,20 +243,21 @@ AC_DEFUN([_AFB_@PKG_NICK@],[
 
   # Set package specs
   tmp_libs = ""
+  pkg_inst = re.sub("-","/",name)
   pkg_specs = ""
   pkg_subst = ""
   if ( is_preq ):
     if ( bins ):
-      pkg_specs += "\n      afb_@pkg_nick@_bins=\"\\$(prefix)/%s/bin\"" % pkg_name
+      pkg_specs += "\n      afb_@pkg_nick@_bins=\"\\$(prefix)/%s/bin\"" % pkg_inst
       pkg_subst += "  AC_SUBST(afb_@pkg_nick@_bins)\n"
     if ( include ):
-      pkg_specs += "\n      afb_@pkg_nick@_incs=\"-I\\$(prefix)/%s/include\"" % pkg_name
+      pkg_specs += "\n      afb_@pkg_nick@_incs=\"-I\\$(prefix)/%s/include\"" % pkg_inst
       pkg_subst += "  AC_SUBST(afb_@pkg_nick@_incs)\n"
     if ( libs ):
       for lib in libs:
         if ( re.match("lib.*\.a",lib) ):
           tmp_libs = " -l%s" % (re.sub(r"lib(.*)\.a",r"\1",lib)) + tmp_libs
-      pkg_specs += "\n      afb_@pkg_nick@_libs=\"-L\\$(prefix)/%s/lib%s\"" % (pkg_name,tmp_libs)
+      pkg_specs += "\n      afb_@pkg_nick@_libs=\"-L\\$(prefix)/%s/lib%s\"" % (pkg_inst,tmp_libs)
       pkg_subst += "  AC_SUBST(afb_@pkg_nick@_libs)\n"
   if ( siesta ):
     pkg_subst += "  AC_SUBST(CPPFLAGS_@PKG_NICK@)\n"
