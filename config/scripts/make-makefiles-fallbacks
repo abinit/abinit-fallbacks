@@ -71,7 +71,7 @@ all-local:%s
 # Fallback template
 def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_cfg=None,comp_suffix=False):
 
-  pkg_inst = re.sub("-","/",pkg_name)
+  pkg_inst = pkg_name[::-1].replace("-","/",1)[::-1]
   tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build" % pkg
   tmp_bdir    = "/tmp-build"
   tmp_cfg_cmd = """\
@@ -89,7 +89,7 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_c
     elif ( pkg_cfg["type"] == "siesta" ):
       tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build && cp $(builddir)/config/siesta/%s.mk sources/$(%s_pkg_name)/tmp-build/fortran.mk" % (pkg,pkg,pkg)
       tmp_cfg_cmd = "\t  /bin/sh ../%s""" % pkg_cfg["script"]
-      tmp_inst_pfx = 'PREFIX="$(DESTDIR)@prefix@/$(%s_pkg_name)" ' % pkg
+      tmp_inst_pfx = 'PREFIX="$(DESTDIR)@prefix@/$(%s_pkg_inst)" ' % pkg
     elif ( pkg_cfg["type"] == "obsolete" ):
       tmp_mk_bdir = "$(LN_S) \\. sources/$(%s_pkg_name)/tmp-build" % pkg
       tmp_bdir = ""

@@ -119,7 +119,7 @@ for pkg in abinit_fallbacks:
     pkg_deps.sort()
     for dep in pkg_deps:
       if ( cnf.get(dep,"configure") == "siesta" ):
-        cfg_deps += "\n%s_ROOT = $(DESTDIR)@prefix@/@%s_pkg_name@" % \
+        cfg_deps += "\n%s_ROOT = $(DESTDIR)@prefix@/@%s_pkg_inst@" % \
           (dep.upper(),dep)
   except NoOptionError:
     pkg_deps = None
