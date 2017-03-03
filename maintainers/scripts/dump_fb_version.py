@@ -8,8 +8,7 @@
 #
 from __future__ import print_function, division, absolute_import #, unicode_literals
 
-import sys,re
-import os,errno
+import sys,os,re
 import argparse
 import subprocess
 import glob
@@ -21,7 +20,7 @@ except ImportError:
     from configparser import ConfigParser
 
 #
-NamesExceptions={ 'psml' : 'libpsml' }
+NamesExceptions={ 'psml' : 'libpsml', 'netcdf4':'netcdf', 'netcdf4_fortran':'netcdf-fortran' }
 def RenameException(fallback):
     try:
         return NamesExceptions[fallback]
@@ -29,11 +28,11 @@ def RenameException(fallback):
         return fallback
 
 def Check_If_Installed(basedir,fallback,version):
-    return os.path.isdir("%s/%s-%s" % ( basedir,RenameException(fallback),version ))
+    return os.path.isdir("%s/%s/%s" % ( basedir,RenameException(fallback),version ))
 
 # ---------------------------------------------------------------------------- #
 
-my_name    = "create_links4fbks.py"
+my_name    = "dump_fb_versions.py"
 my_config  = "config/specs/fallbacks.conf"
 hostname   = socket.gethostname().split(".")[0]
 
@@ -45,14 +44,10 @@ if ( not os.path.exists(my_config) ):
 
 # 
 parser = argparse.ArgumentParser()
-parser.add_argument("-l","--link", action="store_true", help="create fallbacks links")
-parser.add_argument("-y","--yes", action="store_true", help="yes answer by default")
 parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='?', help="name of builder ( == module name )")
 args = parser.parse_args()
 
 d = vars(args)
-link=d['link']
-yes=d['yes']
 builder=d['builder']
 if builder.split("_")[0] != hostname:
    print("The builder name (%s) is not consistent whith the hostname : %s" % (builder,hostname) )
@@ -74,54 +69,56 @@ for fallback in fallbacks:
        version=cnf_vars['name'].split("_")[1]
   fbks_version[fallback]=version
 
-if not link :
-  for k,v in fbks_version.iteritems():
-    print("%s : %s" %(k,v))
-  sys.exit()
-
-#############################################
-# create links
-
 slave,vendor,version,variant = builder.split('_')
 fbk_prefix_base="/usr/local/fallbacks/%s/%s/%s" % ( vendor,version,variant )
+print('-------------------------------------------------')
+print('prefix : %s' % fbk_prefix_base)
 
-fallbacks.remove('linalg')
 
-LINK=True
-if not yes:
-  for f in fallbacks:
-    f2 = RenameException(f)
-    if Check_If_Installed(fbk_prefix_base,f2,fbks_version[f]):
-        print("%s exists" % f) 
+#############################################
+# fallbacks/config/specs/fallbacks.conf
+
+print('-------------------------------------------------')
+print('versions in fallbacks/config/specs/fallbacks.conf')
+print('-------------------------------------------------')
+for fbk in fallbacks:
+    f = RenameException(fbk)
+    print("%s : %s" %(f,fbks_version[fbk]))
+
+
+#############################################
+# check all versions of fb installed
+
+print('\n------------------------------------------------')
+print('all versions of installed external fallbacks')
+print('------------------------------------------------')
+
+for fbk in fallbacks:
+    f = RenameException(fbk)
+    t= glob.glob('%s/%s-*' % (fbk_prefix_base,f))
+    if len(t) != 0:
+        print("%s : " % f, end='')
+        for i in t:
+           tmp=i.split("/")[-1]
+           print(tmp.split("-")[1],end=' / ')
+           #print(glob.glob('%s/%s-*' % (fbk_prefix_base,f)))
+        print()
     else:
-        print("%s missing" % f)
-        LINK=False
+        print("%s not installed" % f)
 
-if not LINK and not yes:
-    msg="Not all fallbacks are presents, proceed anyway ?"
-    if raw_input("%s (y/N) " % msg).lower() != 'y':
-       print("Exit...")
-       sys.exit()
+#############################################
+# version fb prod
 
-# fallbacks links
-base="%s" % fbk_prefix_base
-if link:
-  os.chdir(base)
-  for fb in fallbacks:
-    fb2 = RenameException(fb)
-    src="%s-%s" % (fb2,fbks_version[fb])
-    tgt="%s" % (fb2)
+print('\n--------------------------------------------')
+print('versions of external fallbacks used for prod')
+print('--------------------------------------------')
+
+for fbk in fallbacks:
+    f = RenameException(fbk)
     try:
-        if not yes:
-            print("%s -> %s" % (src,tgt))
-        os.symlink(src,tgt)
-    except OSError, e:
-        if e.errno == errno.EEXIST:
-           os.remove(fb2)
-           os.symlink(src,tgt)
-        else:
-           print("problem with link creation : ",fb2)
+       version=os.readlink("%s/%s" % ( fbk_prefix_base,f)).split("-")[1]
+       print("%s : %s" % (f,version))
+    except:
+       print("%s not installed" % f)
 
-if not yes:
-    print("done...")
 sys.exit()
