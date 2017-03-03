@@ -69,7 +69,7 @@ all-local:%s
 
 
 # Fallback template
-def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_cfg=None):
+def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_cfg=None,comp_suffix=False):
 
   pkg_inst = re.sub("-","/",pkg_name)
   tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build" % pkg
@@ -116,7 +116,7 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_c
   else:
     tmp_deplibs = ""
 
-  return """\
+  ret = """\
 
                     ########################################
 
@@ -138,16 +138,16 @@ stamps/%s-config-stamp: stamps/%s-patch-stamp
 	cd sources/$(%s_pkg_name)%s && \\
 	  CPP="$(CPP)" \\
 	  CPPFLAGS="$(CPPFLAGS_%s) $(AM_CPPFLAGS)" \\
-	  CC="$(CC)" \\
+	  CC="$(CC@COMP_SUFFIX@)" \\
 	  CFLAGS="$(CFLAGS_%s)" \\
-	  CXX="$(CXX)" \\
+	  CXX="$(CXX@COMP_SUFFIX@)" \\
 	  CXXFLAGS="$(CXXFLAGS_%s)" \\
           FCCPP="$(TRUE_CPP)" \\
-	  F77="$(FC)" \\
+	  F77="$(FC@COMP_SUFFIX@)" \\
 	  FFLAGS="$(FCFLAGS_FIXEDFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
-	  F90="$(FC)" \\
+	  F90="$(FC@COMP_SUFFIX@)" \\
 	  F90FLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
-	  FC="$(FC)" \\
+	  FC="$(FC@COMP_SUFFIX@)" \\
 	  FCFLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  LDFLAGS="$(FC_LDFLAGS) $(LDFLAGS_%s)" \\
 	  LIBS="$(LIBS_%s) %s" \\
@@ -189,6 +189,13 @@ endif
   tmp_mk_bdir,
   pkg,
   pkg,pkg,pkg)
+
+  if ( comp_suffix ):
+    pkg_suffix = "_%s" % pkg.upper()
+  else:
+    pkg_suffix = ""
+
+  return re.sub("@COMP_SUFFIX@", pkg_suffix, ret)
 
 
 
@@ -293,6 +300,7 @@ for rnk in pkg_ranks:
 
 # Init
 makefile = makefile_header(my_name,now,abinit_fallbacks)
+comp_suff_trigger = {"no":False, "yes":True}
 
 # Process each package
 for pkg in abinit_fallbacks:
@@ -300,6 +308,7 @@ for pkg in abinit_fallbacks:
   # Extract package information
   pkg_name = cnf.get(pkg,"name")
   pkg_make = cnf.get(pkg,"makej")
+  pkg_suff = comp_suff_trigger[cnf.get(pkg,"comp_suffix")]
   pkg_bins = pkg_hdrs = pkg_libs = pkg_mods = None
   pkg_conf = {"type":cnf.get(pkg,"configure"), "script":cnf.get(pkg,"cfg_script")}
   if ( cnf.has_option(pkg,"binaries") ):
@@ -320,7 +329,7 @@ for pkg in abinit_fallbacks:
     pkg_patches.sort()
 
   # Generate templates
-  makefile += fallback_template(pkg,pkg_name,pkg_make,pkg_patches,all_deps[pkg],pkg_conf)
+  makefile += fallback_template(pkg,pkg_name,pkg_make,pkg_patches,all_deps[pkg],pkg_conf,pkg_suff)
   makefile += fallback_clean_template(pkg,pkg_name,pkg_bins,pkg_hdrs,
                 pkg_libs,pkg_mods)
 

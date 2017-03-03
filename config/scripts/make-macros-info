@@ -53,6 +53,11 @@ def macro_info(name,stamp,fbk_list):
 #
 AC_DEFUN([AFB_INFO_DISPLAY],[
   # Init
+  if test "${enable_hdf5}" = "yes"; then
+    tmp_s_hdf5=`echo "${afb_hdf5_ok}" | sed -e 's/^yes/enabled/;s/^no/disabled/'`
+  else
+    tmp_s_hdf5="disabled"
+  fi
 @FBK_FORMAT@
   # Display configuration
   cat <<EOF
@@ -75,6 +80,8 @@ through environment variables, and whether tricks have been internally
 applied to their build parameters.
 
 @FBK_STATUS@
+
+Note: HDF5 support is ${tmp_s_hdf5} in NetCDF4.
 
 Full information about the current configuration can be found in the
 fallbacks.dump file.

@@ -151,6 +151,11 @@ AC_PROG_CPP
 # Note: if problem, set ac_cv_prog_cc_c99="no"
 AC_PROG_CC_C99
 
+# Store information on C compiler
+AFB_PROG_CC(${CC})
+ref_cc_vendor="${afb_cc_vendor}"
+ref_cc_version="${afb_cc_version}"
+
 # ---------------------------------------------------------------------------- #
 
 #
@@ -209,16 +214,35 @@ FC_LIBS="${FC_LIBS} ${LIBS}"
 
 # HDF5 significantly enhances NetCDF4
 AFB_CHECK_HDF5
-if test "${afb_hdf5_ok}" = "yes"; then
+if test "${afb_hdf5_ok}" = "yes" -a "${enable_hdf5}" = "yes"; then
   AC_MSG_NOTICE([enabling advanced NetCDF4 I/O features])
   AC_MSG_NOTICE([please note that HDF5 must be compiled with
            the same compiler as now for this to work])
-  CPPFLAGS_NETCDF4="${CPPFLAGS} ${HDF5_CPPFLAGS}"
-  CFLAGS_NETCDF4="${CFLAGS} ${HDF5_CFLAGS}"
-  LDFLAGS_NETCDF4="${LDFLAGS} ${HDF5_LDFLAGS}"
-  LIBS_NETCDF4="${LIBS} ${HDF5_LIBS}"
+  CC_NETCDF4="${HDF5_CC}"
+  test -z "${CPPFLAGS_NETCDF4}" && \
+    CPPFLAGS_NETCDF4="${CPPFLAGS} ${HDF5_CPPFLAGS}"
+  test -z "${CFLAGS_NETCDF4}" && \
+    CFLAGS_NETCDF4="${CFLAGS} ${HDF5_CFLAGS}"
+  test -z "${LDFLAGS_NETCDF4}" && \
+    LDFLAGS_NETCDF4="${LDFLAGS} ${HDF5_LDFLAGS}"
+  test -z "${LIBS_NETCDF4}" && \
+    LIBS_NETCDF4="${LIBS} ${HDF5_LIBS}"
 else
   AC_MSG_NOTICE([enabling minimal NetCDF4 features only])
+fi
+
+# Check that the NetCDF4 compiler wrapper is the same as our current compiler
+if test "${CC_NETCDF4}" = ""; then
+  CC_NETCDF4="${CC}"
+fi
+AFB_PROG_CC(${CC_NETCDF4})
+if test "${afb_cc_vendor}" != "${ref_cc_vendor}"; then
+  AC_MSG_WARN([NetCDF4 will be built with a different C compiler
+                    The build of Abinit might fail])
+else
+  if test "${afb_cc_version}" != "${ref_cc_version}"; then
+    AC_MSG_WARN([NetCDF4 will be built with a different compiler version])
+  fi
 fi
 
 # Configure all fallbacks

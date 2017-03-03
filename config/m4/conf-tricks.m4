@@ -269,9 +269,10 @@ AC_DEFUN([AFB_TRICKS_NETCDF4],[
     AC_MSG_NOTICE([applying NetCDF4 tricks (vendor: $1, version: $2, flags: config)])
 
     dnl Internal NetCDF4 parameters
-    CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-dap --disable-examples --disable-hdf4 --disable-v2 --enable-parallel-tests"
-    #CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --enable-static --disable-shared"
-    if test "${afb_hdf5_ok}" != "yes"; then
+    CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-dap --disable-examples --disable-hdf4 --disable-v2"
+    if test "${afb_hdf5_ok}" = "yes"; then
+      CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --enable-parallel-tests"
+    else
       CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-netcdf-4"
     fi
 
@@ -322,10 +323,9 @@ AC_DEFUN([AFB_TRICKS_NETCDF4_FORTRAN],[
     AC_MSG_NOTICE([applying NetCDF4 Fortran tricks (vendor: $1, version: $2, flags: config)])
 
     dnl Internal NetCDF4 Fortran parameters
-    CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --disable-dap --disable-examples --disable-hdf4 --disable-v2 --enable-parallel-tests"
-    #CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --enable-static --disable-shared"
-    if test "${afb_hdf5_ok}" != "yes"; then
-      CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --disable-netcdf-4"
+    CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --enable-large-file-tests"
+    if test "${afb_hdf5_ok}" = "yes"; then
+      CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --enable-parallel-tests"
     fi
 
     dnl Finish

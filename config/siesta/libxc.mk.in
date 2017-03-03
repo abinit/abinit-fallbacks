@@ -12,7 +12,7 @@
 #
 # The symbols below are valid for libxc 2.2.0, at least.
 #
-LIBXC_ROOT     = $(DESTDIR)@prefix@/@libxc_pkg_name@
+LIBXC_ROOT     = $(DESTDIR)@prefix@/@libxc_pkg_inst@
 LIBXC_INCFLAGS = -I$(LIBXC_ROOT)/include
 LIBXC_LIBS     = -L$(LIBXC_ROOT)/lib -lxcf90 -lxc
 #

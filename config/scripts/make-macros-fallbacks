@@ -132,6 +132,8 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
   dnl Define variables needed to build the package
   @pkg_nick@_pkg_name="@PKG_NAME@"
   AC_SUBST(@pkg_nick@_pkg_name)
+  @pkg_nick@_pkg_inst="@PKG_INST@"
+  AC_SUBST(@pkg_nick@_pkg_inst)
   @pkg_nick@_pkg_string="@PKG_DESC@"
   AC_SUBST(@pkg_nick@_pkg_string)
 
@@ -243,7 +245,7 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
 
   # Set package specs
   tmp_libs = ""
-  pkg_inst = re.sub("-","/",name)
+  pkg_inst = name[::-1].replace("-","/",1)[::-1]
   pkg_specs = ""
   pkg_subst = ""
   if ( is_preq ):
@@ -346,6 +348,7 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
   ret = re.sub("@MD5SUM@",md5s,ret)
   ret = re.sub("@TRICKS@",tricks,ret)
   ret = re.sub("@PKG_NAME@",name,ret)
+  ret = re.sub("@PKG_INST@",pkg_inst,ret)
   ret = re.sub("@PKG_DESC@",desc,ret)
   ret = re.sub("@PKG_NICK@",nick.upper(),ret)
   ret = re.sub("@PKG_URLS@",urls_specs,ret)
