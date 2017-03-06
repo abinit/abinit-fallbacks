@@ -57,12 +57,15 @@ AC_DEFUN([AFB_CONFIG_FILES],[
 
 
 
-# AFB_SETUP()
-# -----------
+# AFB_SETUP_PACKAGES()
+# --------------------
 #
 # Initializes all fallbacks in the correct order.
 #
-AC_DEFUN([AFB_SETUP],[@FBK_CALLS@]) # AFB_SETUP
+AC_DEFUN([AFB_SETUP_PACKAGES],[@FBK_CALLS@
+  afb_pkg_list="@FBK_LIST@"
+  AC_SUBST(afb_pkg_list)
+]) # AFB_SETUP_PACKAGES
 """ % (name,stamp,name)
 
 
@@ -451,6 +454,7 @@ for rnk in pkg_ranks:
       m4_ord += "\n  _AFB_SETUP_%s" % pkg.upper()
 m4_ord += "\n"
 
+m4_all = re.sub("@FBK_LIST@"," ".join(abinit_fallbacks),m4_all)
 m4_all = re.sub("@FBK_CALLS@",m4_ord,m4_all)
 m4_cfg = []
 
