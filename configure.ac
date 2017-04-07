@@ -246,7 +246,7 @@ else
 fi
 
 # Configure all fallbacks
-AFB_SETUP
+AFB_SETUP_PACKAGES
 
 # ---------------------------------------------------------------------------- #
 
