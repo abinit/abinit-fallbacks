@@ -57,12 +57,15 @@ AC_DEFUN([AFB_CONFIG_FILES],[
 
 
 
-# AFB_SETUP()
-# -----------
+# AFB_SETUP_PACKAGES()
+# --------------------
 #
 # Initializes all fallbacks in the correct order.
 #
-AC_DEFUN([AFB_SETUP],[@FBK_CALLS@]) # AFB_SETUP
+AC_DEFUN([AFB_SETUP_PACKAGES],[@FBK_CALLS@
+  afb_pkg_list="@FBK_LIST@"
+  AC_SUBST(afb_pkg_list)
+]) # AFB_SETUP_PACKAGES
 """ % (name,stamp,name)
 
 
@@ -205,8 +208,8 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
 @PKG_XFER@  fi
 
   dnl Inform Automake
-  AM_CONDITIONAL(DO_BUILD_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
-  AM_CONDITIONAL(DO_TEST_@PKG_NICK@,[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
+  AM_CONDITIONAL([DO_BUILD_@PKG_NICK@],[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
+  AM_CONDITIONAL([DO_TEST_@PKG_NICK@],[test "${enable_@pkg_nick@}" = "yes" -a "${afb_@pkg_nick@_ok}" = "yes"])
 
   dnl Substitutions
   AC_SUBST(afb_@pkg_nick@_ok)
@@ -245,7 +248,7 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
 
   # Set package specs
   tmp_libs = ""
-  pkg_inst = name[::-1].replace("-","/",1)[::-1]
+  pkg_inst = "%s/%s" % (nick, re.sub(".*-", "", name))
   pkg_specs = ""
   pkg_subst = ""
   if ( is_preq ):
@@ -451,6 +454,7 @@ for rnk in pkg_ranks:
       m4_ord += "\n  _AFB_SETUP_%s" % pkg.upper()
 m4_ord += "\n"
 
+m4_all = re.sub("@FBK_LIST@"," ".join(abinit_fallbacks),m4_all)
 m4_all = re.sub("@FBK_CALLS@",m4_ord,m4_all)
 m4_cfg = []
 

@@ -47,6 +47,8 @@ def makefile_header(name,stamp,pkgs):
 # Please modify the %s script or its config file instead.
 #
 
+ACLOCAL_AMFLAGS = -I config/m4
+
 SUBDIRS = src
 
 all-local:%s
@@ -71,7 +73,7 @@ all-local:%s
 # Fallback template
 def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_cfg=None,comp_suffix=False):
 
-  pkg_inst = pkg_name[::-1].replace("-","/",1)[::-1]
+  pkg_inst = "%s/%s" % (pkg, re.sub(".*-", "", pkg_name))
   tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build" % pkg
   tmp_bdir    = "/tmp-build"
   tmp_cfg_cmd = """\
