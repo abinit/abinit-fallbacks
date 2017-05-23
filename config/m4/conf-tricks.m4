@@ -488,8 +488,25 @@ AC_DEFUN([AFB_TRICKS_XMLF90],[
   dnl Init
   afb_xmlf90_tricks="no"
   afb_xmlf90_tricky_vars=""
+  tmp_xmlf90_num_tricks=0
+  tmp_xmlf90_cnt_tricks=0
 
   AC_MSG_NOTICE([no tricks to apply for XMLF90])
+
+  dnl Count applied tricks
+  case "${tmp_xmlf90_cnt_tricks}" in
+    0)
+      afb_xmlf90_tricks="no"
+      ;;
+    ${tmp_xmlf90_num_tricks})
+      afb_xmlf90_tricks="yes"
+      ;;
+    *)
+      afb_xmlf90_tricks="partial"
+      ;;
+  esac
+  unset tmp_xmlf90_cnt_tricks
+  unset tmp_xmlf90_num_tricks
 ]) # AFB_TRICKS_XMLF90
 
 
