@@ -469,6 +469,10 @@ for pkg in abinit_fallbacks:
   pkg_lngs = ["CONFIG"] + cnf.get(pkg,"languages").split() + ["LINK"]
   pkg_chka = cnf.get(pkg,"check_api")
   pkg_ssta = ( cnf.get(pkg,"configure") == "siesta" )
+  if ( cnf.has_option(pkg,"siesta_mk") ):
+    pkg_smki = cnf.get(pkg,"siesta_mk")
+  else:
+    pkg_smki = pkg
 
   # Extract optional package information
   try:
@@ -525,7 +529,7 @@ for pkg in abinit_fallbacks:
 
   # Add config files
   if ( pkg_ssta ):
-    m4_cfg.append(pkg)
+    m4_cfg.append(pkg_smki)
 
 # Substitute global template and write down macro file
 m4_all = re.sub("@FBK_CFGFILES@",

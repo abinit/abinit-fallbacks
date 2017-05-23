@@ -89,7 +89,11 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_c
     if ( pkg_cfg["type"] == "autotools" ):
       pass
     elif ( pkg_cfg["type"] == "siesta" ):
-      tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build && cp $(builddir)/config/siesta/%s.mk sources/$(%s_pkg_name)/tmp-build/fortran.mk" % (pkg,pkg,pkg)
+      if ( cnf.has_option(pkg,"siesta_mk") ):
+        pkg_smki = cnf.get(pkg,"siesta_mk")
+      else:
+        pkg_smki = pkg
+      tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build && cp $(builddir)/config/siesta/%s.mk sources/$(%s_pkg_name)/tmp-build/fortran.mk" % (pkg,pkg_smki,pkg)
       tmp_cfg_cmd = "\t  /bin/sh ../%s""" % pkg_cfg["script"]
       tmp_inst_pfx = 'PREFIX="$(DESTDIR)@prefix@/$(%s_pkg_inst)" ' % pkg
     elif ( pkg_cfg["type"] == "obsolete" ):
