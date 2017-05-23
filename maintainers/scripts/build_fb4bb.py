@@ -23,7 +23,7 @@ def OpenMongoConnection():
     return  MongoClient(uri)
 
 #
-NamesExceptions={ 'psml' : 'libpsml', 'netcdf4':'netcdf', 'netcdf4_fortran':'netcdf-fortran' }
+NamesExceptions={ 'netcdf4':'netcdf', 'netcdf4_fortran':'netcdf-fortran' }
 def RenameException(fallback):
     try:
         return NamesExceptions[fallback]
@@ -78,11 +78,11 @@ for i in range(0,len(fallbacks)):
   fbks_sorted_list=fbks_sorted_list+[temp[i][0]]
 
 print(fbks_sorted_list)
-#['libxc', 'linalg', 'yaml', 'netcdf4', 'netcdf4_fortran', 'xmlf90', 'wannier90', 'psml', 'atompaw', 'bigdft']
+#['libxc', 'linalg', 'yaml', 'netcdf4', 'netcdf4_fortran', 'xmlf90', 'wannier90', 'libpsml', 'atompaw', 'bigdft']
 print(fbks_list_depends)
-#{'wannier90': ['linalg'], 'libxc': [], 'psml': ['libxc', 'xmlf90'], 'linalg': [], 'bigdft': ['linalg', 'netcdf4', 'netcdf4_fortran', 'libxc', 'yaml'], 'yaml': [], 'netcdf': [], 'xmlf90': [], 'atompaw': ['linalg', 'libxc']}
+#{'wannier90': ['linalg'], 'libxc': [], 'libpsml': ['libxc', 'xmlf90'], 'linalg': [], 'bigdft': ['linalg', 'netcdf4', 'netcdf4_fortran', 'libxc', 'yaml'], 'yaml': [], 'netcdf': [], 'xmlf90': [], 'atompaw': ['linalg', 'libxc']}
 print(fbks_version)
-#{'wannier90': '2.0.1.1', 'libxc': '2.2.3', 'psml': '1.0.1', 'linalg': '6.10', 'bigdft': '1.7.1.23', 'yaml': '0.1.6', 'netcdf4': '4.4.1.1', 'netcdf4_fortran':'4.4.4', 'xmlf90': '1.5.0', 'atompaw': '4.0.0.14'}
+#{'wannier90': '2.0.1.1', 'libxc': '2.2.3', 'libpsml': '1.0.1', 'linalg': '6.10', 'bigdft': '1.7.1.23', 'yaml': '0.1.6', 'netcdf4': '4.4.1.1', 'netcdf4_fortran':'4.4.4', 'xmlf90': '1.5.0', 'atompaw': '4.0.0.14'}
 
 fbk_libs={}
 for f in fbks_sorted_list:
@@ -93,7 +93,7 @@ for f in fbks_sorted_list:
 
 #
 parser = argparse.ArgumentParser()
-parser.add_argument("-p","--psml", action="store_true", help="build PSML")
+parser.add_argument("-p","--libpsml", action="store_true", help="build LibPSML")
 parser.add_argument("-m","--xmlf90", action="store_true", help="build xmlf90")
 parser.add_argument("-l","--linalg", action="store_true", help="build LinAlg")
 parser.add_argument("-b","--bigdft", action="store_true", help="build BigDFT")
@@ -198,7 +198,7 @@ for k,v in d.iteritems():
 already_installed=[]
 for f in tmpfb:
     #f2 = f
-    #if f == 'psml' :
+    #if f == 'libpsml' :
     #   f2 = 'libpsml'
     f2 = RenameException(f)
     if Check_If_Installed(fbk_prefix_base,f2,fbks_version[f]):

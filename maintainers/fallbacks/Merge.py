@@ -16,7 +16,7 @@ import re
 filename="fallbacks.conf"
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-p","--psml", dest="psml", help="version PSML")
+parser.add_argument("-p","--libpsml", dest="libpsml", help="version PSML")
 parser.add_argument("-m","--xmlf90", dest="xmlf90", help="version xmlf90")
 parser.add_argument("-x","--libxc", dest="libxc", help="version libXC")
 parser.add_argument("-l","--linalg", dest="linalg", help="version LinAlg")
@@ -35,7 +35,7 @@ concat = ""
 res = [f for f in os.listdir(".") if re.search('^[a-z0-9]*\.cfg', f)]
 for file in res:
     if file == 'libpsml.cfg':
-        f=vers['psml']
+        f=vers['libpsml']
     else:
         f=vers[file.split('.')[0]]
     if f != None :
