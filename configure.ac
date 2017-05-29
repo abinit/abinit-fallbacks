@@ -254,15 +254,17 @@ AFB_SETUP_PACKAGES
 # Output configuration and report
 #
 
-AC_CONFIG_COMMANDS([script-perms],[chmod u+x src/abinit-fallbacks-config])
+AC_CONFIG_COMMANDS([script-perms],
+  [chmod u+x src/abinit-fallbacks-config src/install-symlinks.sh])
 
 AFB_CONFIG_FILES
 
 AC_CONFIG_FILES([
+  Makefile
   fallbacks.dump
   config/siesta/libxc.mk
   src/abinit-fallbacks-config
-  Makefile
+  src/install-symlinks.sh
   src/Makefile])
 AC_OUTPUT
 

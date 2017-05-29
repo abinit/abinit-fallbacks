@@ -35,6 +35,7 @@ echo "[fbkbuild]   Generating M4 macros"
 # Generate source files
 echo "[fbkbuild]   Generating source files"
 ./config/scripts/make-fallbacks-config-in
+./config/scripts/make-install-symlinks-in
 
 # Generate makefiles
 echo "[fbkbuild]   Generating makefiles"

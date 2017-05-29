@@ -54,21 +54,21 @@ def makefile_header(name,stamp,pkgs):
 
 ACLOCAL_AMFLAGS = -I config/m4
 
-SUBDIRS = src
+SUBDIRS = src .
 
 all-local:%s
 	@echo ""
-	@if test -x "${DESTDIR}${bindir}/abinit-fallbacks-config"; then \
-	  echo "The fallbacks are now ready to use."; \
-	  echo ""; \
-	  echo "You may point Abinit to them through one of the following choices:"; \
-	  echo ""; \
-          echo "  - set with_fallbacks_prefix='${DESTDIR}${prefix}' in your Abinit config file;"; \
-	  echo ""; \
-	  echo "  - use the --with-fallbacks-prefix='${DESTDIR}${prefix}' option of Abinit's configure."; \
-	else \
-	  echo "All requested fallbacks have been built."; \
-	  echo "you may now type 'make install' to finish the installation."; \
+	@if test -x "${DESTDIR}${bindir}/abinit-fallbacks-config"; then \\
+	  echo "The fallbacks are now ready to use."; \\
+	  echo ""; \\
+	  echo "You may point Abinit to them through one of the following choices:"; \\
+	  echo ""; \\
+          echo "  - set with_fallbacks_prefix='${DESTDIR}${prefix}' in your Abinit config file;"; \\
+	  echo ""; \\
+	  echo "  - use the --with-fallbacks-prefix='${DESTDIR}${prefix}' option of Abinit's configure."; \\
+	else \\
+	  echo "All requested fallbacks have been built."; \\
+	  echo "you may now type 'make install' to finish the installation."; \\
 	fi
 	@echo ""
 """ % (name,stamp,name,tmp_cmds)
@@ -124,8 +124,10 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_c
 
   if ( pkg_deps ):
     tmp_deplibs = "$(afb_" + "_libs) $(afb_".join(pkg_deps) + "_libs)"
+    tmp_libpaths = ":".join(["@prefix@/%s/%s/lib" % (item, "default") for item in pkg_deps]) + ":"
   else:
     tmp_deplibs = ""
+    tmp_libpaths = ""
 
   ret = """\
 
@@ -147,6 +149,9 @@ stamps/%s-build-stamp: stamps/%s-config-stamp
 
 stamps/%s-config-stamp: stamps/%s-patch-stamp
 	cd sources/$(%s_pkg_name)%s && \\
+	  DYLD_LIBRARY_PATH="@LIB_PATHS@${DYLD_LIBRARY_PATH}" \\
+	  LD_LIBRARY_PATH="@LIB_PATHS@${LD_LIBRARY_PATH}" \\
+	  LIBRARY_PATH="@LIB_PATHS@${LIBRARY_PATH}" \\
 	  CPP="$(CPP)" \\
 	  CPPFLAGS="$(CPPFLAGS_%s) $(AM_CPPFLAGS)" \\
 	  CC="$(CC@COMP_SUFFIX@)" \\
@@ -206,8 +211,10 @@ endif
   else:
     pkg_suffix = ""
 
-  return re.sub("@COMP_SUFFIX@", pkg_suffix, ret)
+  ret = re.sub("@COMP_SUFFIX@", pkg_suffix, ret)
+  ret = re.sub("@LIB_PATHS@", tmp_libpaths, ret)
 
+  return ret
 
 
 # Fallback clean-up template
@@ -374,5 +381,9 @@ src_mf = """\
 #
 
 nodist_bin_SCRIPTS = abinit-fallbacks-config
+
+all-local:
+	./install-symlinks.sh
+
 """ % (my_name,now,my_name)
 open("src/Makefile.am","w").write(src_mf)

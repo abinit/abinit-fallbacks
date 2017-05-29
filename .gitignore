@@ -8,6 +8,7 @@ Makefile.am
 Makefile.in
 Makefile
 TAGS
+install-symlinks.sh*
 package-ready
 tags
 tmp
