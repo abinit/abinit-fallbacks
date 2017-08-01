@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash
+
+. /usr/share/lmod/lmod/init/bash
+module use /home/pouillon/retos/HPC/modules/all
+module load foss/2016b
 
 set -e
 
@@ -10,7 +14,7 @@ mkdir tmp
 cd tmp
 ../configure \
   --enable-local-build \
-  --with-linalg-libs="-llapack -lblas"
+  --with-linalg-libs="-lopenblas"
 
 test "${cmd}" != "no-make" && make dist
 test "${cmd}" != "no-make" && make -j4
