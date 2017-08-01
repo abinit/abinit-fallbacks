@@ -20,7 +20,7 @@ except ImportError:
     from configparser import ConfigParser
 
 #
-NamesExceptions={ 'psml' : 'libpsml', 'netcdf4':'netcdf', 'netcdf4_fortran':'netcdf-fortran' }
+NamesExceptions={ 'netcdf4':'netcdf', 'netcdf4_fortran':'netcdf-fortran' }
 def RenameException(fallback):
     try:
         return NamesExceptions[fallback]

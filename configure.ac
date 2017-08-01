@@ -25,7 +25,7 @@
 
 # Initialize Autoconf
 AC_PREREQ(2.68)
-AC_INIT([ABINIT-Fallbacks],[8.0-dev],
+AC_INIT([ABINIT-Fallbacks],[8.5.0],
   [https://bugs.launchpad.net/abinit-fallbacks/],[abinit-fallbacks])
 AC_REVISION([Autotools support for the ABINIT Fallbacks])
 AC_CONFIG_AUX_DIR([config/gnu])

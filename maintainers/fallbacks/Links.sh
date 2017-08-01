@@ -15,7 +15,6 @@ for i in $fbks; do
   version=`egrep "^name = (lib)?$i-.*" ../fallbacks.conf | cut -d- -f2;`
   if [ "x$version" != "x" ]; then
      #echo "$i-$version.cfg $i.cfg"
-     if [ "$i" == "psml" ]; then i="libpsml"; fi
      ln -s $i-$version.cfg $i.cfg
   fi
 done
