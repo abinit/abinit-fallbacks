@@ -44,12 +44,14 @@ ui_*.py
 /config/gnu/missing
 /config/gnu/mkinstalldirs
 /config/siesta/libxc.mk
-/config/siesta/psml.mk
-/config/siesta/psml.mk.in
+/config/siesta/libpsml.mk
+/config/siesta/libpsml.mk.in
 /config/siesta/xmlf90.mk
 /config/siesta/xmlf90.mk.in
 /src/abinit-fallbacks-config
 /src/abinit-fallbacks-config.in
+/src/install-symlinks.sh
+/src/install-symlinks.sh.in
 /exports
 /sources
 /stamps
