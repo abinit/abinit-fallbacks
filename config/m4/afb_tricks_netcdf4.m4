@@ -35,7 +35,7 @@ AC_DEFUN([AFB_TRICKS_NETCDF4],[
     AC_MSG_NOTICE([applying NetCDF4 tricks (vendor: $1, version: $2, flags: config)])
 
     dnl Internal NetCDF4 parameters
-    CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-dap --disable-examples --disable-hdf4 --disable-v2"
+    CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-dap --disable-examples --disable-hdf4 --disable-v2 --disable-shared"
     if test "${afb_hdf5_ok}" = "yes"; then
       CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --enable-parallel-tests"
     else
@@ -47,6 +47,18 @@ AC_DEFUN([AFB_TRICKS_NETCDF4],[
     afb_netcdf4_tricky_vars="${afb_netcdf4_tricky_vars} CFGFLAGS"
   else
     AC_MSG_NOTICE([CFGFLAGS_NETCDF4 set => skipping NetCDF4 config tricks])
+  fi
+
+  dnl C tricks
+  if test "${afb_netcdf4_cflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying LibXC tricks (vendor: $1, version: $2, flags: C)])
+    CFLAGS_NETCDF4="${CFLAGS_NETCDF4} -fPIC"
+
+    dnl Finish
+    tmp_netcdf4_cnt_tricks=`expr ${tmp_netcdf4_cnt_tricks} \+ 1`
+    afb_netcdf4_tricky_vars="${afb_netcdf4_tricky_vars} CFLAGS"
+  else
+    AC_MSG_NOTICE([CFLAGS_NETCDF4 set => skipping LibXC C tricks])
   fi
 
   dnl Count applied tricks

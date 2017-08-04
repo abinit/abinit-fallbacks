@@ -35,7 +35,7 @@ AC_DEFUN([AFB_TRICKS_NETCDF4_FORTRAN],[
     AC_MSG_NOTICE([applying NetCDF4 Fortran tricks (vendor: $1, version: $2, flags: config)])
 
     dnl Internal NetCDF4 Fortran parameters
-    CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --enable-large-file-tests"
+    CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --enable-large-file-tests --disable-shared"
     if test "${afb_hdf5_ok}" = "yes"; then
       CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --enable-parallel-tests"
     fi
@@ -45,6 +45,19 @@ AC_DEFUN([AFB_TRICKS_NETCDF4_FORTRAN],[
     afb_netcdf4_fortran_tricky_vars="${afb_netcdf4_fortran_tricky_vars} CFGFLAGS"
   else
     AC_MSG_NOTICE([CFGFLAGS_NETCDF4_FORTRAN set => skipping NetCDF4 Fortran config tricks])
+  fi
+
+  dnl CPP tricks
+  if test "${afb_netcdf4_fortran_cppflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying NetCDF4 Fortran tricks (vendor: $1, version: $2, flags: C preprocessing)])
+
+    CPPFLAGS_NETCDF4_FORTRAN="${CPPFLAGS_NETCDF4_FORTRAN} \$(afb_netcdf4_incs) "
+
+    dnl Finish
+    tmp_netcdf4_fortran_cnt_tricks=`expr ${tmp_netcdf4_fortran_cnt_tricks} \+ 1`
+    afb_netcdf4_fortran_tricky_vars="${afb_netcdf4_fortran_tricky_vars} CFGFLAGS"
+  else
+    AC_MSG_NOTICE([CPPFLAGS_NETCDF4_FORTRAN set => skipping NetCDF4 Fortran  preprocessing tricks])
   fi
 
   dnl Count applied tricks

@@ -33,8 +33,14 @@ def Check_If_Installed(basedir,fallback,version):
 # ---------------------------------------------------------------------------- #
 
 my_name    = "dump_fb_versions.py"
-my_config  = "config/specs/fallbacks.conf"
+my_config  = "../config/specs/fallbacks.conf"
 hostname   = socket.gethostname().split(".")[0]
+builder    = os.popen("module -t list 2>&1 | grep `hostname -s`").readlines()[0].strip()
+
+if builder.split("_")[0] != hostname:
+   print("The builder name (%s) is not consistent with the hostname : %s" % (builder,hostname) )
+   print("Aborting now...") 
+   sys.exit(3)
 
 # Check if we have a config file
 if ( not os.path.exists(my_config) ):
@@ -43,16 +49,12 @@ if ( not os.path.exists(my_config) ):
   sys.exit(2)
 
 # 
-parser = argparse.ArgumentParser()
-parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='?', help="name of builder ( == module name )")
-args = parser.parse_args()
+#parser = argparse.ArgumentParser()
+#parser.add_argument("builder", type=str, default="yquem_gnu_6.3_serial", nargs='?', help="name of builder ( == module name )")
+#args = parser.parse_args()
+#d = vars(args)
+#builder=d['builder']
 
-d = vars(args)
-builder=d['builder']
-if builder.split("_")[0] != hostname:
-   print("The builder name (%s) is not consistent whith the hostname : %s" % (builder,hostname) )
-   print("Aborting now...") 
-   sys.exit(3)
 
 # Process config file
 cnf = ConfigParser()
@@ -64,9 +66,9 @@ fbks_version={}       # version of fbks
 
 for fallback in fallbacks:
   cnf_vars = dict(cnf.items(fallback))
-  version=cnf_vars['name'].split("-")[1]
+  version=cnf_vars['name'].split("-")[-1]
   if fallback == "linalg":
-       version=cnf_vars['name'].split("_")[1]
+       version=cnf_vars['name'].split("_")[-1]
   fbks_version[fallback]=version
 
 slave,vendor,version,variant = builder.split('_')
@@ -85,7 +87,6 @@ for fbk in fallbacks:
     f = RenameException(fbk)
     print("%s : %s" %(f,fbks_version[fbk]))
 
-
 #############################################
 # check all versions of fb installed
 
@@ -94,13 +95,16 @@ print('all versions of installed external fallbacks')
 print('------------------------------------------------')
 
 for fbk in fallbacks:
-    f = RenameException(fbk)
-    t= glob.glob('%s/%s-*' % (fbk_prefix_base,f))
+    #f = RenameException(fbk)
+    f = fbk
+    t= glob.glob('%s/%s/*' % (fbk_prefix_base,f))
+    #print(t)
     if len(t) != 0:
         print("%s : " % f, end='')
         for i in t:
            tmp=i.split("/")[-1]
-           print(tmp.split("-")[1],end=' / ')
+           print(tmp, end=' / ')
+           #print(tmp.split("-")[1],end=' / ')
            #print(glob.glob('%s/%s-*' % (fbk_prefix_base,f)))
         print()
     else:
@@ -114,9 +118,11 @@ print('versions of external fallbacks used for prod')
 print('--------------------------------------------')
 
 for fbk in fallbacks:
-    f = RenameException(fbk)
+    #f = RenameException(fbk)
+    f = fbk
     try:
-       version=os.readlink("%s/%s" % ( fbk_prefix_base,f)).split("-")[1]
+       #version=os.readlink("%s/%s" % ( fbk_prefix_base,f)).split("-")[1]
+       version=os.readlink("%s/%s" % ( fbk_prefix_base,f))
        print("%s : %s" % (f,version))
     except:
        print("%s not installed" % f)
