@@ -7,10 +7,12 @@
 # distribution.
 #
 
-from ConfigParser import ConfigParser,NoOptionError
+from __future__ import print_function
+
+from configparser import ConfigParser,NoOptionError
 from time import gmtime,strftime
 
-import commands
+import subprocess
 import os
 import re
 import sys
@@ -180,15 +182,15 @@ my_output  = "config/m4/auto-environment.m4"
 # Check if we are in the top of the ABINIT source tree
 if ( not os.path.exists("configure.ac") or
      not os.path.exists("config/specs/fallbacks.conf") ):
-  print "%s: You must be in the top of an ABINIT source tree." % my_name
-  print "%s: Aborting now." % my_name
+  print("%s: You must be in the top of an ABINIT source tree." % my_name)
+  print("%s: Aborting now." % my_name)
   sys.exit(1)
 
 # Read config file(s)
 for cnf_file in my_configs:
   if ( not os.path.exists(cnf_file) ):
-    print "%s: Could not find config file (%s)." % (my_name,cnf_file)
-    print "%s: Aborting now." % my_name
+    print("%s: Could not find config file (%s)." % (my_name,cnf_file))
+    print("%s: Aborting now." % my_name)
     sys.exit(2)
 
 # What time is it?
@@ -259,9 +261,9 @@ m4.write(re.sub("@MACRO@",src,abi_macro_restore()))
 
 # Finish
 m4.close()
-tmp = commands.getoutput("./config/scripts/add-header-typed Autoconf %s" % (my_output))
+tmp = subprocess.getoutput("./config/scripts/add-header-typed Autoconf %s" % (my_output))
 if ( tmp != "" ):
-  print tmp
+  print(tmp)
 
 # Write environment dumper (for debugging)
 dumper = file("fallbacks.dump.in","a")

@@ -6,7 +6,8 @@
 # please see the COPYING file in the top-level directory of the ABINIT source
 # distribution.
 #
-from __future__ import print_function, division, absolute_import #, unicode_literals
+
+from __future__ import print_function, division, absolute_import
 
 import sys,re
 import os,errno
@@ -16,7 +17,7 @@ import glob
 import socket
 
 try:
-    from ConfigParser import ConfigParser
+    from configparser import ConfigParser
 except ImportError:
     from configparser import ConfigParser
 
@@ -75,7 +76,7 @@ for fallback in fallbacks:
   fbks_version[fallback]=version
 
 if not link :
-  for k,v in fbks_version.iteritems():
+  for k,v in fbks_version.items():
     print("%s : %s" %(k,v))
   sys.exit()
 
@@ -99,7 +100,7 @@ if not yes:
 
 if not LINK and not yes:
     msg="Not all fallbacks are presents, proceed anyway ?"
-    if raw_input("%s (y/N) " % msg).lower() != 'y':
+    if input("%s (y/N) " % msg).lower() != 'y':
        print("Exit...")
        sys.exit()
 
@@ -115,7 +116,7 @@ if link:
         if not yes:
             print("%s -> %s" % (src,tgt))
         os.symlink(src,tgt)
-    except OSError, e:
+    except OSError as e:
         if e.errno == errno.EEXIST:
            os.remove(fb2)
            os.symlink(src,tgt)

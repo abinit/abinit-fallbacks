@@ -6,7 +6,8 @@
 # please see the COPYING file in the top-level directory of the ABINIT source
 # distribution.
 #
-from __future__ import print_function, division, absolute_import #, unicode_literals
+
+from __future__ import print_function, division, absolute_import
 
 import sys,os,re
 import argparse
@@ -14,7 +15,7 @@ import subprocess
 from pymongo import MongoClient
 
 try:
-    from ConfigParser import ConfigParser
+    from configparser import ConfigParser
 except ImportError:
     from configparser import ConfigParser
 
@@ -73,7 +74,7 @@ for fallback in fallbacks:
   fbks_version[fallback]=version
   fbks_external[fallback]=False
 
-temp=sorted(A.items(), key=lambda x: x[1])
+temp=sorted(list(A.items()), key=lambda x: x[1])
 for i in range(0,len(fallbacks)):
   fbks_sorted_list=fbks_sorted_list+[temp[i][0]]
 
@@ -190,7 +191,7 @@ fbk_prefix_base="/usr/local/fallbacks/%s/%s/%s" % ( vendor,version,variant )
 
 # find which fb could be installed 
 tmpfb=[]
-for k,v in d.iteritems():
+for k,v in d.items():
    if v:
       tmpfb.append(k)
 

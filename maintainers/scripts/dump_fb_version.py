@@ -6,7 +6,8 @@
 # please see the COPYING file in the top-level directory of the ABINIT source
 # distribution.
 #
-from __future__ import print_function, division, absolute_import #, unicode_literals
+
+from __future__ import print_function, division, absolute_import
 
 import sys,os,re
 import argparse
@@ -15,7 +16,7 @@ import glob
 import socket
 
 try:
-    from ConfigParser import ConfigParser
+    from configparser import ConfigParser
 except ImportError:
     from configparser import ConfigParser
 
