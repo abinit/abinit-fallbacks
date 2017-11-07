@@ -305,7 +305,7 @@ if ( not os.path.exists("configure.ac") or
   print("%s: Aborting now." % my_name)
   sys.exit(1)
 
-# Read config file(s)
+# Read config open(s)
 cnf = MyConfigParser()
 for cnf_file in my_configs:
   if ( not os.path.exists(cnf_file) ):
@@ -334,7 +334,7 @@ ac_args["enable"].sort()
 ac_args["with"].sort()
 
 # Start writing macro
-m4 = file(my_output,"w")
+m4 = open(my_output,"w")
 m4.write(macro_header(my_name,now))
 
 # Start writing define macro
@@ -571,7 +571,7 @@ if ( tmp != "" ):
   print(tmp)
 
 # Write option dumper (for debugging)
-dumper = file("fallbacks.dump.in","a")
+dumper = open("fallbacks.dump.in","a")
 dumper.write("\n                    # ----------------------------------- #\n")
 dumper.write("\n# Command-line options (script: %s)\n" % (my_name))
 for arg in all_args:

@@ -186,7 +186,7 @@ if ( not os.path.exists("configure.ac") or
   print("%s: Aborting now." % my_name)
   sys.exit(1)
 
-# Read config file(s)
+# Read config open(s)
 for cnf_file in my_configs:
   if ( not os.path.exists(cnf_file) ):
     print("%s: Could not find config file (%s)." % (my_name,cnf_file))
@@ -203,7 +203,7 @@ abinit_env_vars = cnf.sections()
 abinit_env_vars.sort()
 
 # Start writing macro
-m4 = file(my_output,"w")
+m4 = open(my_output,"w")
 m4.write(macro_header(my_name,now))
 
 # Write Autoconf macro
@@ -266,7 +266,7 @@ if ( tmp != "" ):
   print(tmp)
 
 # Write environment dumper (for debugging)
-dumper = file("fallbacks.dump.in","a")
+dumper = open("fallbacks.dump.in","a")
 dumper.write("\n                    # ------------------------------------ #\n")
 dumper.write("\n# Environment variables (script: %s)\n" % (my_name))
 for var in abinit_env_vars:
