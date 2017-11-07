@@ -18,7 +18,7 @@ import socket
 try:
     from configparser import ConfigParser
 except ImportError:
-    from configparser import ConfigParser
+    from ConfigParser import ConfigParser
 
 #
 NamesExceptions={ 'netcdf4':'netcdf', 'netcdf4_fortran':'netcdf-fortran' }

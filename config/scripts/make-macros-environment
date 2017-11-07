@@ -9,13 +9,20 @@
 
 from __future__ import print_function
 
-from configparser import ConfigParser,NoOptionError
+try:
+    from configparser import ConfigParser,NoOptionError
+except ImportError:
+    from ConfigParser import ConfigParser,NoOptionError
 from time import gmtime,strftime
 
-import subprocess
 import os
 import re
 import sys
+
+if ( sys.version_info.major == 3 ):
+    from subprocess import getoutput
+else:
+    from commands import getoutput
 
 class MyConfigParser(ConfigParser):
 
@@ -261,7 +268,7 @@ m4.write(re.sub("@MACRO@",src,abi_macro_restore()))
 
 # Finish
 m4.close()
-tmp = subprocess.getoutput("./config/scripts/add-header-typed Autoconf %s" % (my_output))
+tmp = getoutput("./config/scripts/add-header-typed Autoconf %s" % (my_output))
 if ( tmp != "" ):
   print(tmp)
 

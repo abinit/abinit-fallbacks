@@ -9,7 +9,10 @@
 
 from __future__ import print_function
 
-from configparser import ConfigParser,NoOptionError
+try:
+    from configparser import ConfigParser,NoOptionError
+except ImportError:
+    from ConfigParser import ConfigParser,NoOptionError
 from time import gmtime,strftime
 
 import subprocess

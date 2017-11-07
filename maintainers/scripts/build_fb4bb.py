@@ -17,7 +17,7 @@ from pymongo import MongoClient
 try:
     from configparser import ConfigParser
 except ImportError:
-    from configparser import ConfigParser
+    from ConfigParser import ConfigParser
 
 def OpenMongoConnection():
     uri="mongodb://bbro:bbro@gitlab.pcpm.ucl.ac.be/buildbot"
