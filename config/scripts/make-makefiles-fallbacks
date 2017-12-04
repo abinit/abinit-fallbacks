@@ -78,7 +78,8 @@ all-local:%s
 # Fallback template
 def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_cfg=None,comp_suffix=False):
 
-  pkg_inst = "%s/%s" % (pkg, re.sub(".*-", "", pkg_name))
+  pkg_version = re.sub(pkg+"-", "", pkg_name, flags=re.IGNORECASE)
+  pkg_inst = "%s/%s" % (pkg, pkg_version)
   tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build" % pkg
   tmp_bdir    = "/tmp-build"
   tmp_cfg_cmd = """\
@@ -88,19 +89,10 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_c
 	    --includedir="@prefix@/%s/include" \\
 	    --libdir="@prefix@/%s/lib" \\
 	    $(CFGFLAGS_%s)""" % (pkg_inst,pkg_inst,pkg_inst,pkg_inst,pkg.upper())
-  tmp_inst_pfx = ""
 
   if ( pkg_cfg ):
     if ( pkg_cfg["type"] == "autotools" ):
       pass
-    elif ( pkg_cfg["type"] == "siesta" ):
-      if ( cnf.has_option(pkg,"siesta_mk") ):
-        pkg_smki = cnf.get(pkg,"siesta_mk")
-      else:
-        pkg_smki = pkg
-      tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build && cp $(builddir)/config/siesta/%s.mk sources/$(%s_pkg_name)/tmp-build/fortran.mk" % (pkg,pkg_smki,pkg)
-      tmp_cfg_cmd = "\t  /bin/sh ../%s""" % pkg_cfg["script"]
-      tmp_inst_pfx = 'PREFIX="$(DESTDIR)@prefix@/$(%s_pkg_inst)" ' % pkg
     elif ( pkg_cfg["type"] == "obsolete" ):
       tmp_mk_bdir = "$(LN_S) \\. sources/$(%s_pkg_name)/tmp-build" % pkg
       tmp_bdir = ""
@@ -123,88 +115,88 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_c
     tmp_patches = "\n\t@echo \"No patch to apply\""
 
   if ( pkg_deps ):
+    tmp_depincs = "$(afb_" + "_incs) $(afb_".join(pkg_deps) + "_incs)"
     tmp_deplibs = "$(afb_" + "_libs) $(afb_".join(pkg_deps) + "_libs)"
     tmp_libpaths = ":".join(["@prefix@/%s/%s/lib" % (item, "default") for item in pkg_deps]) + ":"
   else:
+    tmp_depincs = ""
     tmp_deplibs = ""
     tmp_libpaths = ""
+
+  pkg_dict = {
+    "name": pkg,
+    "NAME": pkg.upper(),
+    "version": pkg_version,
+    "patches": tmp_patches,
+    "threads": pkg_make,
+    "builddir": tmp_bdir,
+    "dep_incs": tmp_depincs,
+    "dep_libs": tmp_deplibs,
+    "cfg_cmd": tmp_cfg_cmd,
+    "mk_builddir": tmp_mk_bdir,
+  }
 
   ret = """\
 
                     ########################################
 
-# Package: %s
-%s_pkg_name = @%s_pkg_name@
+# Package: %(name)s
+%(name)s_pkg_name = @%(name)s_pkg_name@
 
-if DO_BUILD_%s
-%s: stamps/%s-install-stamp
+if DO_BUILD_%(NAME)s
+%(name)s: stamps/%(name)s-install-stamp
 
-stamps/%s-install-stamp: stamps/%s-build-stamp
-	cd sources/$(%s_pkg_name)/tmp-build && $(MAKE) install %s@SET_MAKE@
-	@touch stamps/%s-install-stamp
+stamps/%(name)s-install-stamp: stamps/%(name)s-build-stamp
+	cd sources/$(%(name)s_pkg_name)/tmp-build && $(MAKE) install @SET_MAKE@
+	rm -f $(DESTDIR)@prefix@/%(name)s/default
+	$(LN_S) %(version)s $(DESTDIR)@prefix@/%(name)s/default
+	@touch stamps/%(name)s-install-stamp
 
-stamps/%s-build-stamp: stamps/%s-config-stamp
-	cd sources/$(%s_pkg_name)/tmp-build && $(MAKE) -j %s @SET_MAKE@
-	@touch stamps/%s-build-stamp
+stamps/%(name)s-build-stamp: stamps/%(name)s-config-stamp
+	cd sources/$(%(name)s_pkg_name)/tmp-build && $(MAKE) -j %(threads)s @SET_MAKE@
+	@touch stamps/%(name)s-build-stamp
 
-stamps/%s-config-stamp: stamps/%s-patch-stamp
-	cd sources/$(%s_pkg_name)%s && \\
-	  DYLD_LIBRARY_PATH="@LIB_PATHS@${DYLD_LIBRARY_PATH}" \\
-	  LD_LIBRARY_PATH="@LIB_PATHS@${LD_LIBRARY_PATH}" \\
-	  LIBRARY_PATH="@LIB_PATHS@${LIBRARY_PATH}" \\
+stamps/%(name)s-config-stamp: stamps/%(name)s-patch-stamp
+	cd sources/$(%(name)s_pkg_name)%(builddir)s && \\
+	  export DYLD_LIBRARY_PATH="@LIB_PATHS@${DYLD_LIBRARY_PATH}" && \\
+	  export LD_LIBRARY_PATH="@LIB_PATHS@${LD_LIBRARY_PATH}" && \\
+	  export LIBRARY_PATH="@LIB_PATHS@${LIBRARY_PATH}" && \\
 	  CPP="$(CPP)" \\
-	  CPPFLAGS="$(CPPFLAGS_%s) $(AM_CPPFLAGS)" \\
+	  CPPFLAGS="$(CPPFLAGS_%(NAME)s) %(dep_incs)s $(AM_CPPFLAGS)" \\
 	  CC="$(CC@COMP_SUFFIX@)" \\
-	  CFLAGS="$(CFLAGS_%s)" \\
+	  CFLAGS="$(CFLAGS_%(NAME)s)" \\
 	  CXX="$(CXX@COMP_SUFFIX@)" \\
-	  CXXFLAGS="$(CXXFLAGS_%s)" \\
+	  CXXFLAGS="$(CXXFLAGS_%(NAME)s)" \\
           FCCPP="$(TRUE_CPP)" \\
 	  F77="$(FC@COMP_SUFFIX@)" \\
-	  FFLAGS="$(FCFLAGS_FIXEDFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
+	  FFLAGS="$(FCFLAGS_FIXEDFORM) $(FCFLAGS_%(NAME)s) %(dep_incs)s $(AM_CPPFLAGS)" \\
 	  F90="$(FC@COMP_SUFFIX@)" \\
-	  F90FLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
+	  F90FLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%(NAME)s) %(dep_incs)s $(AM_CPPFLAGS)" \\
 	  FC="$(FC@COMP_SUFFIX@)" \\
-	  FCFLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%s) $(AM_CPPFLAGS)" \\
-	  LDFLAGS="$(FC_LDFLAGS) $(LDFLAGS_%s)" \\
-	  LIBS="$(LIBS_%s) %s" \\
+	  FCFLAGS="$(FCFLAGS_FREEFORM) $(FCFLAGS_%(NAME)s) %(dep_incs)s $(AM_CPPFLAGS)" \\
+	  LDFLAGS="$(FC_LDFLAGS) $(LDFLAGS_%(NAME)s)" \\
+	  LIBS="$(LIBS_%(NAME)s) %(dep_libs)s" \\
 	  AR="$(AR)" \\
 	  ARFLAGS="$(ARFLAGS) $(ARFLAGS_CMD)" \\
 	  RANLIB="$(RANLIB)" \\
 	  ac_fc_srcext="F90" \\
-%s
-	@touch stamps/%s-config-stamp
+%(cfg_cmd)s
+	@touch stamps/%(name)s-config-stamp
 
-stamps/%s-patch-stamp: stamps/%s-unfold-stamp%s
-	@touch stamps/%s-patch-stamp
+stamps/%(name)s-patch-stamp: stamps/%(name)s-unfold-stamp%(patches)s
+	@touch stamps/%(name)s-patch-stamp
 
-stamps/%s-unfold-stamp:
+stamps/%(name)s-unfold-stamp:
 	cd sources && \\
-	  gzip -cd $(abinit_tardir)/$(%s_pkg_name).tar.gz | tar xf -
-	%s
-	@touch stamps/%s-unfold-stamp
+	  gzip -cd $(abinit_tardir)/$(%(name)s_pkg_name).tar.gz | tar xf -
+	%(mk_builddir)s
+	@touch stamps/%(name)s-unfold-stamp
 else
-%s:
-	@echo "The build of %s has been disabled"
-	@touch stamps/%s-install-stamp
+%(name)s:
+	@echo "The build of %(name)s has been disabled"
+	@touch stamps/%(name)s-install-stamp
 endif
-""" % (pkg,
-  pkg,pkg,
-  pkg.upper(),
-  pkg,pkg,
-  pkg,pkg,pkg,
-  tmp_inst_pfx,
-  pkg,
-  pkg,pkg,pkg,pkg_make,pkg,
-  pkg,pkg,pkg,
-  tmp_bdir,
-  pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),pkg.upper(),
-  pkg.upper(),pkg.upper(),pkg.upper(),tmp_deplibs,
-  tmp_cfg_cmd,pkg,
-  pkg,pkg,tmp_patches,pkg,
-  pkg,pkg,
-  tmp_mk_bdir,
-  pkg,
-  pkg,pkg,pkg)
+""" % pkg_dict
 
   if ( comp_suffix ):
     pkg_suffix = "_%s" % pkg.upper()

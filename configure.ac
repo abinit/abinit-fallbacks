@@ -262,7 +262,6 @@ AFB_CONFIG_FILES
 AC_CONFIG_FILES([
   Makefile
   fallbacks.dump
-  config/siesta/libxc.mk
   src/abinit-fallbacks-config
   src/install-symlinks.sh
   src/Makefile])
