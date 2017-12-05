@@ -25,7 +25,7 @@
 
 # Initialize Autoconf
 AC_PREREQ(2.68)
-AC_INIT([ABINIT-Fallbacks],[8.6.0],
+AC_INIT([ABINIT-Fallbacks],[8.6.3],
   [https://bugs.launchpad.net/abinit-fallbacks/],[abinit-fallbacks])
 AC_REVISION([Autotools support for the ABINIT Fallbacks])
 AC_CONFIG_AUX_DIR([config/gnu])
@@ -262,7 +262,6 @@ AFB_CONFIG_FILES
 AC_CONFIG_FILES([
   Makefile
   fallbacks.dump
-  config/siesta/libxc.mk
   src/abinit-fallbacks-config
   src/install-symlinks.sh
   src/Makefile])
