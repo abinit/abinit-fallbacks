@@ -241,6 +241,7 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
   tmp_libs = ""
   pkg_version = re.sub(pkg+"-", "", pkg_name, flags=re.IGNORECASE)
   pkg_inst = "%s/%s" % (pkg, pkg_version)
+  pkg_specs = ""
   pkg_subst = ""
   if ( is_preq ):
     if ( bins ):
