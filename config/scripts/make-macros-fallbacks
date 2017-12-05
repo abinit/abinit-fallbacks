@@ -240,6 +240,8 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
   # Set package specs
   tmp_libs = ""
   pkg_version = re.sub(pkg+"-", "", pkg_name, flags=re.IGNORECASE)
+  if ( pkg_version == pkg_name ):
+    pkg_version = re.sub(".*-([0-9])", "\\1", pkg_name, flags=re.IGNORECASE)
   pkg_inst = "%s/%s" % (pkg, pkg_version)
   pkg_specs = ""
   pkg_subst = ""

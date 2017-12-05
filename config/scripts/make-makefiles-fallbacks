@@ -82,7 +82,6 @@ def fallback_template(pkg,pkg_name,pkg_make,pkg_patches=None,pkg_deps=None,pkg_c
   if ( pkg_version == pkg_name ):
     pkg_version = re.sub(".*-([0-9])", "\\1", pkg_name, flags=re.IGNORECASE)
   pkg_inst = "%s/%s" % (pkg, pkg_version)
-  print(pkg_name, pkg, pkg_version)
   tmp_mk_bdir = "mkdir sources/$(%s_pkg_name)/tmp-build" % pkg
   tmp_bdir    = "/tmp-build"
   tmp_cfg_cmd = """\
