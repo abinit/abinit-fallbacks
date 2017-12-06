@@ -257,8 +257,6 @@ AFB_SETUP_PACKAGES
 AC_CONFIG_COMMANDS([script-perms],
   [chmod u+x src/abinit-fallbacks-config src/install-symlinks.sh])
 
-AFB_CONFIG_FILES
-
 AC_CONFIG_FILES([
   Makefile
   fallbacks.dump

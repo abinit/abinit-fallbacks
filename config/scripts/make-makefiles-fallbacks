@@ -375,9 +375,5 @@ src_mf = """\
 #
 
 nodist_bin_SCRIPTS = abinit-fallbacks-config
-
-all-local:
-	./install-symlinks.sh
-
 """ % (my_name,now,my_name)
 open("src/Makefile.am","w").write(src_mf)

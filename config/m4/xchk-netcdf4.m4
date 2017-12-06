@@ -18,7 +18,6 @@ AC_DEFUN([AFB_CHECK_NETCDF4],[
   dnl Init
   afb_netcdf4_default_libs="-lnetcdf"
   afb_netcdf4_ok="unknown"
-  afb_netcdf4_fortran_ok="unknown"
   afb_netcdf4_par_ok="unknown"
 
   dnl Prepare environment
@@ -53,13 +52,14 @@ AC_DEFUN([AFB_CHECK_NETCDF4],[
     AC_MSG_CHECKING([which NetCDF4 version we have])
     AC_MSG_RESULT([${NETCDF4_VERSION}])
     afb_netcdf4_ok="yes"
+    if test "${afb_netcdf4_incs}" = ""; then
+      afb_netcdf4_incs="${NETCDF4_CPPFLAGS}"
+    fi
+    if test "${afb_netcdf4_libs}" = ""; then
+      afb_netcdf4_libs="${NETCDF4_LIBS}"
+    fi
   else
     afb_netcdf4_ok="no"
-  fi
-  if test "${with_netcdf4_fortran}" = "yes"; then
-    afb_netcdf4_fortran_ok="yes"
-  else
-    afb_netcdf4_fortran_ok="no"
   fi
   if test "${with_netcdf4_parallel}" = "yes"; then
     afb_netcdf4_par_ok="yes"
