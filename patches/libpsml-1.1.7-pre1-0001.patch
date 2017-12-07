@@ -1,0 +1,1064 @@
+diff -urN trunk/src/Makefile.am old-api/src/Makefile.am
+--- trunk/src/Makefile.am	2017-11-07 10:54:52.245738000 +0100
++++ old-api/src/Makefile.am	2017-12-07 17:45:18.572619686 +0100
+@@ -27,6 +27,7 @@
+   m_psml_api.F90 \
+   m_psml_core.F90 \
+   m_psml_dump.F90 \
++  m_psml_old_api.F90 \
+   m_psml_parsing_helpers.F90 \
+   m_psml_ps_edit.F90 \
+   m_psml_reader.F90 \
+@@ -52,6 +53,7 @@
+   M_PSML_API.$(MODEXT) \
+   M_PSML_CORE.$(MODEXT) \
+   M_PSML_DUMP.$(MODEXT) \
++  M_PSML_OLD_API.$(MODEXT) \
+   M_PSML_PARSING_HELPERS.$(MODEXT) \
+   M_PSML_PS_EDIT.$(MODEXT) \
+   M_PSML_READER.$(MODEXT) \
+@@ -68,6 +70,7 @@
+   m_psml_api.$(MODEXT) \
+   m_psml_core.$(MODEXT) \
+   m_psml_dump.$(MODEXT) \
++  m_psml_old_api.$(MODEXT) \
+   m_psml_parsing_helpers.$(MODEXT) \
+   m_psml_ps_edit.$(MODEXT) \
+   m_psml_reader.$(MODEXT) \
+@@ -119,6 +122,7 @@
+   m_psml_api.$(LTOBJEXT) \
+   m_psml_core.$(LTOBJEXT) \
+   m_psml_dump.$(LTOBJEXT) \
++  m_psml_old_api.$(LTOBJEXT) \
+   m_psml_ps_edit.$(LTOBJEXT) \
+   m_psml_reader.$(LTOBJEXT)
+ 
+@@ -140,6 +144,15 @@
+   iso_varying_string.$(LTOBJEXT) \
+   m_psml_core.$(LTOBJEXT)
+ 
++m_psml_old_api.$(LTOBJEXT): \
++  assoc_list.$(LTOBJEXT) \
++  class_grid.$(LTOBJEXT) \
++  external_interfaces.$(LTOBJEXT) \
++  m_aux_aliases.$(LTOBJEXT) \
++  m_psml_interp.$(LTOBJEXT) \
++  m_psml_api.$(LTOBJEXT) \
++  m_psml_core.$(LTOBJEXT)
++
+ m_psml_parsing_helpers.$(LTOBJEXT): \
+   assoc_list.$(LTOBJEXT) \
+   class_grid.$(LTOBJEXT) \
+diff -urN trunk/src/m_psml.F90 old-api/src/m_psml.F90
+--- trunk/src/m_psml.F90	2017-11-07 10:54:52.245738000 +0100
++++ old-api/src/m_psml.F90	2017-12-07 17:46:44.022532147 +0100
+@@ -26,7 +26,8 @@
+   use m_psml_core, only: nonlocal_t, nlpj_t
+ 
+   use m_psml_api
+-  
++  use m_psml_old_api
++
+   use m_psml_dump
+   use m_psml_ps_edit
+ 
+diff -urN trunk/src/m_psml_old_api.F90 old-api/src/m_psml_old_api.F90
+--- trunk/src/m_psml_old_api.F90	1970-01-01 01:00:00.000000000 +0100
++++ old-api/src/m_psml_old_api.F90	2017-12-07 17:48:46.327620846 +0100
+@@ -0,0 +1,996 @@
++#if defined HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++!+ Extra procedures kept for backwards compatibility
++!+ Note that this interface does not offer the full functionality
++!+ of the new one.
++module m_psml_old_api
++!
++use m_psml_core
++use m_aux_aliases, only: ps_radfunc_t
++
++use assoc_list, only: ps_annotation_t => assoc_list_t
++use assoc_list, only: EMPTY_ANNOTATION => EMPTY_ASSOC_LIST
++
++use external_interfaces, only: die => psml_die
++use class_Grid
++
++use m_psml_api, only: ps_GetRawData
++
++implicit none
++
++public :: ps_GetUUID
++public :: ps_GetPSMLVersion
++public :: ps_SetInterpolator
++public :: ps_SetInterpolatorQuality
++!
++public :: ps_Creator
++public :: ps_Date
++!
++public :: ps_GetAnnotation
++!
++public :: ps_AtomicSymbol
++public :: ps_AtomicLabel
++public :: ps_AtomicNumber
++public :: ps_ZPseudo
++public :: ps_PseudoFlavor
++public :: ps_Relativity
++public :: ps_IsSpinPolarized
++public :: ps_HasCoreCorrections
++
++public :: ps_GenerationZval
++public :: ps_NValenceShells
++public :: ps_ValenceShellL
++public :: ps_ValenceShellN
++public :: ps_ValenceShellOccupation
++!
++public :: ps_NLibxcFunctionals
++public :: ps_LibxcName
++public :: ps_LibxcId
++public :: ps_LibxcWeight
++
++public :: ps_Number_Of_Potentials
++public :: ps_Get_Potential_Indexes
++public :: ps_Potential_L
++public :: ps_Potential_J
++public :: ps_Potential_N
++public :: ps_Potential_Rc
++public :: ps_Potential_Set
++
++public :: ps_LocalPotential_Type
++public :: ps_HasLocalCharge
++public :: ps_LocalCharge_Value
++!
++public :: ps_Number_Of_Projectors
++public :: ps_Get_Projector_Indexes
++public :: ps_Get_Projector_Indexes_byL
++public :: ps_Projector_L
++public :: ps_Projector_J
++public :: ps_Projector_Seq
++public :: ps_Projector_Ekb
++public :: ps_Projector_Type
++public :: ps_Projector_Set
++
++public :: ps_Number_Of_PseudoWfs
++public :: ps_Get_PseudoWf_Indexes
++public :: ps_PseudoWf_L
++public :: ps_PseudoWf_J
++public :: ps_PseudoWf_N
++public :: ps_PseudoWf_Set
++!
++public :: ps_CoreCharge_MatchingRadius
++public :: ps_CoreCharge_NumberOfKeptDerivatives
++!
++! Deprecated
++!
++public :: ps_XCAnnotation
++public :: ps_Potential_GetRawData
++public :: ps_LocalPotential_GetRawData
++public :: ps_Projector_GetRawData
++public :: ps_PseudoWf_GetRawData
++public :: ps_ValenceCharge_GetRawData
++public :: ps_CoreCharge_GetRawData
++
++
++integer, parameter    :: dp = selected_real_kind(14)
++logical               :: global_debug = .false.
++logical               :: global_use_effective_cutoff = .true.
++character(len=1), dimension(0:4) :: sym = (/ "s", "p", "d", "f", "g" /)
++
++private
++
++CONTAINS
++
++!
++!>  Returns the PSML version used in the file
++!
++function ps_GetPSMLVersion(ps) result(version)
++type(ps_t), intent(in) :: ps
++character(len=10) :: version
++version = ps%version
++end function ps_GetPSMLVersion
++!
++!>  Returns the unique uuid of the PSML file
++!
++function ps_GetUUID(ps) result(name)
++type(ps_t), intent(in) :: ps
++character(len=36) :: name
++name = ps%uuid
++end function ps_GetUUID
++!
++
++!> Sets the default interpolator and
++!> its quality parameter
++subroutine ps_SetInterpolator(func,nquality)
++use m_psml_interp, only: interpolator, nq
++
++! Parameter for interpolator's quality
++! It might mean different things for different
++! interpolators
++integer, intent(in) :: nquality
++
++interface
++   subroutine func(nquality,x,y,npts,r,val,debug)
++
++     integer, parameter :: dp = selected_real_kind(10,100)
++
++     integer, intent(in)  :: nquality  ! Quality parameter
++     real(dp), intent(in) :: x(*), y(*)
++     integer, intent(in)  :: npts    ! Size of x, y arrays
++     real(dp), intent(in) :: r
++     real(dp), intent(out):: val
++     logical, intent(in) :: debug
++   end subroutine func
++end interface
++
++  interpolator => func
++  nq = nquality
++
++end subroutine ps_SetInterpolator
++
++!> Sets the quality parameter of the current
++!> default interpolator. Useful when we do
++!> not care about the type of evaluator, but
++!> want to compare different qualities
++subroutine ps_SetInterpolatorQuality(nquality)
++use m_psml_interp, only: nq
++
++! Parameter for interpolator's quality
++! It might mean different things for different
++! interpolators
++integer, intent(in) :: nquality
++
++  nq = nquality
++end subroutine ps_SetInterpolatorQuality
++
++!>  Returns the atomic symbol
++!> @param ps is a handle to the psml information
++!
++function ps_AtomicSymbol(ps) result(name)
++type(ps_t), intent(in) :: ps
++character(len=2) :: name
++name = ps%header%atomic_label(1:2)
++end function ps_AtomicSymbol
++!
++!>  Returns the atomic label
++!> @param ps is a handle to the psml information
++!> The label is more general than the atomic symbol
++!>
++function ps_AtomicLabel(ps) result(name)
++type(ps_t), intent(in) :: ps
++character(len=len_trim(ps%header%atomic_label)) :: name
++name = trim(ps%header%atomic_label)
++end function ps_AtomicLabel
++!
++!>  Returns the atomic number
++!> @param ps is a handle to the psml information
++!>
++function ps_AtomicNumber(ps) result(z)
++type(ps_t), intent(in) :: ps
++real(dp) :: z
++ z = ps%header%z
++end function ps_AtomicNumber
++
++!>  Returns the creator of the PSML file, as
++!> written in the provenance element.
++!> @param ps is a handle to the psml information
++!> The format is arbitrary
++function ps_Creator(ps) result(name)
++type(ps_t), intent(in) :: ps
++character(len=len_trim(ps%provenance%creator)) :: name
++name = trim(ps%provenance%creator)
++end function ps_Creator
++!
++!>  Returns the date appearing in the provenance element.
++!> @param ps is a handle to the psml information
++!> The format is arbitrary
++!
++function ps_Date(ps) result(str)
++type(ps_t), intent(in) :: ps
++character(len=len_trim(ps%provenance%date)) :: str
++str = trim(ps%provenance%date)
++end function ps_Date
++!>
++!
++function ps_PseudoFlavor(ps) result(str)
++!+  Returns the pseudization flavor appearing in the header element.
++type(ps_t), intent(in) :: ps
++!+ Handle for PSML information
++character(len=len_trim(ps%header%flavor)) :: str
++str = trim(ps%header%flavor)
++end function ps_PseudoFlavor
++
++function ps_ZPseudo(ps) result(zpseudo)
++!*  Returns the effective valence of the pseudo-atom,
++! i.e., the atomic number minus the number of "core" electrons.
++  type(ps_t), intent(in) :: ps
++!+ Handle for PSML information
++real(dp)                   :: zpseudo
++zpseudo = ps%header%zpseudo
++end function ps_ZPseudo
++
++!>  Returns the annotation associated to a
++!> given element. For grids, if a radial function
++!> handle is given, the annotation for that 
++!> radial function's grid is returned. Otherwise,
++!> the return value is the annotation for the global grid.
++!> If there is no appropriate annotation, an empty
++!> structure is returned.
++!> @param ps is a handle to the psml information
++!> @param name is the element name or a common alias
++!> @param radfunc is a handle to a radial function structure
++!>
++function ps_GetAnnotation(ps,name,radfunc) result(annotation)
++
++ type(ps_t), intent(in)                 :: ps
++ character(len=*), intent(in)           :: name
++ type(ps_radfunc_t), intent(in), optional  :: radfunc
++ 
++ type(ps_annotation_t)  :: annotation
++ type(ps_annotation_t), pointer  :: annotation_p
++
++select case (name)
++
++   case ("psml","PSML","top-level","global")
++      annotation = ps%annotation
++   case ("provenance")
++         annotation = ps%provenance%annotation
++   case ("exchange-correlation","xc","XC")
++         annotation = ps%xc_info%annotation
++   case ("valence-configuration")
++         annotation = ps%config_val%annotation
++
++   case ("grid")
++
++      if (present(radfunc)) then
++         ! We are told to get the grid annotation
++         ! for a specific radial function
++
++         if (.not. initialized(radfunc%grid)) then
++            call die("get_annotation: Invalid radial function")
++         endif
++         annotation_p => annotationGrid(radfunc%grid)
++         annotation = annotation_p
++
++      else
++
++         ! This is the global grid annotation
++         if (.not. initialized(ps%global_grid)) then
++            annotation = EMPTY_ANNOTATION
++         else
++            annotation_p => annotationGrid(ps%global_grid)
++            annotation = annotation_p
++         endif
++
++      endif
++
++   case ("semilocal-potentials")
++         if (associated(ps%semilocal)) then
++            annotation = ps%semilocal%annotation
++         else
++            annotation = EMPTY_ANNOTATION
++         endif
++   case ("nonlocal-projectors")
++         if (associated(ps%nonlocal)) then
++            annotation = ps%nonlocal%annotation
++         else
++            annotation = EMPTY_ANNOTATION
++         endif
++   case ("local-potential")
++         annotation = ps%local%annotation
++   case ("pseudo-wavefunctions")
++         if (associated(ps%wavefunctions)) then
++            annotation = ps%wavefunctions%annotation
++         else
++            annotation = EMPTY_ANNOTATION
++         endif
++   case ("valence-charge")
++         annotation = ps%valence_charge%annotation
++   case ("core-charge")
++         annotation = ps%core_charge%annotation
++   case default
++      call die("Unrecognized annotation name: "//trim(name))
++
++   end select
++
++ end function ps_GetAnnotation
++!
++!> Returns the number of non-empty valence shells
++!> in the ps generation configuration
++!> @param ps is a handle to the psml information
++function ps_NValenceShells(ps) result(nshells)
++type(ps_t), intent(in) :: ps
++integer                :: nshells
++
++nshells = ps%config_val%nshells
++
++end function ps_NValenceShells
++
++!> Returns the angular momentum of the i'th valence shell
++!> in the ps generation configuration
++!> @param ps is a handle to the psml information
++!> @param i is the index of the shell
++!> @note i should be within range
++function ps_ValenceShellL(ps,i) result(l)
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++integer                :: l
++
++character(len=1) :: str
++
++call check_index(i,ps%config_val%nshells,"valence shell")
++l = l_of_sym(ps%config_val%l(i),"valence shell")
++
++end function ps_ValenceShellL
++
++!>  Returns the principal quantum number of the i'th valence shell
++!> in the ps generation configuration
++!> @author Alberto Garcia
++!> @date 2014
++!> @param ps is a handle to the psml information
++!> @param i is the index of the shell
++!> @note i should be within range
++function ps_ValenceShellN(ps,i) result(n)
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++integer                :: n
++
++call check_index(i,ps%config_val%nshells,"valence shell")
++n = ps%config_val%n(i)
++
++end function ps_ValenceShellN
++
++!>  Returns the occupation of the i'th valence shell
++!> in the ps generation configuration
++!> @author Alberto Garcia
++!> @date 2014
++!> @param ps is a handle to the psml information
++!> @param i is the index of the shell
++!> @param channel is an optional parameter for spin-polarized 
++!> calculations ("u" or "d"). 
++!> @note i should be within range
++!> @note If "channel" is present, the occupation returned
++!> corresponds to the given channel
++function ps_ValenceShellOccupation(ps,i,channel) result(occ)
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++character(len=1), intent(in), optional :: channel
++real(dp)                :: occ
++
++call check_index(i,ps%config_val%nshells,"valence shell")
++
++if (present(channel)) then
++   if (ps%header%polarized) then
++      if (channel == "u") then
++         occ = ps%config_val%occ_up(i)
++      else if (channel == "d") then
++         occ = ps%config_val%occ_down(i)
++      else
++         call die("Wrong channel in ValShellOccupation")
++      endif
++   else
++      call die("Cannot speficy channel in ValShellOccupation")
++   endif
++else
++   occ = ps%config_val%occ(i)
++endif
++
++end function ps_ValenceShellOccupation
++
++!>  Returns the total valence charge density in the
++!> atomic configuration used to generate the pseudopotential.
++!> !> @param ps is a handle to the psml information
++!>
++function ps_GenerationZval(ps) result(zval)
++type(ps_t), intent(in) :: ps
++real(dp)                   :: zval
++zval = ps%config_val%total_charge
++end function ps_GenerationZval
++
++!>  Returns the number of libxc functionals that
++!> would correspond to the exchange-correlation scheme
++!> used in the generation code.
++!> @param ps is a handle to the psml information
++!>
++!
++function ps_NLibxcFunctionals(ps) result(xc_n)
++type(ps_t), intent(in) :: ps
++integer                :: xc_n
++
++xc_n =  ps%xc_info%n_functs_libxc 
++end function ps_NLibxcFunctionals
++
++function ps_LibxcName(ps,i) result(xc_name)
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++character(len=50)      :: xc_name
++
++call check_index(i,ps%xc_info%n_functs_libxc,"libxc functional")
++xc_name = ps%xc_info%libxc_name(i)
++end function ps_LibxcName
++!
++function ps_LibxcId(ps,i) result(xc_id)
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++integer                :: xc_id
++
++call check_index(i,ps%xc_info%n_functs_libxc,"libxc functional")
++xc_id = ps%xc_info%libxc_id(i)
++end function ps_LibxcId
++!
++function ps_LibxcWeight(ps,i) result(xc_weight)
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++real(dp)               :: xc_weight
++
++call check_index(i,ps%xc_info%n_functs_libxc,"libxc functional")
++xc_weight = ps%xc_info%libxc_weight(i)
++end function ps_LibxcWeight
++!
++function ps_LibxcIdArray(ps) result(xc_id_array)
++type(ps_t), intent(in) :: ps
++integer                :: xc_id_array(2)
++
++xc_id_array(:) = ps%xc_info%libxc_id(:)
++end function ps_LibxcIdArray
++!
++function ps_ValidLibxc(ps) result(libxc_ok)
++type(ps_t), intent(in), target :: ps
++logical                :: libxc_ok
++
++integer, pointer  :: xc_id_array(:)
++
++xc_id_array => ps%xc_info%libxc_id(:)
++libxc_ok = .true.
++if (any (xc_id_array(:) <= 0)) then
++   libxc_ok = .false.
++endif
++end function ps_ValidLibxc
++
++!=================================================
++function ps_Relativity(ps) result(rel)
++type(ps_t), intent(in) :: ps
++character(len=6)       :: rel
++rel = ps%header%relativity
++end function ps_Relativity
++!
++function ps_IsSpinPolarized(ps) result(pol)
++type(ps_t), intent(in) :: ps
++logical                    :: pol
++pol = ps%header%polarized
++end function ps_IsSpinPolarized
++!
++function ps_HasCoreCorrections(ps) result(cc)
++type(ps_t), intent(in) :: ps
++logical                    :: cc
++cc = (ps%header%core_corrections == "yes")
++end function ps_HasCoreCorrections
++!=================================================
++!
++!----- Convenience set handling routines
++!
++subroutine ps_Get_Potential_Indexes(ps,set,indexes)
++type(ps_t), intent(in)                 :: ps
++integer, intent(in)                    :: set
++integer, allocatable, intent(inout)    :: indexes(:)
++
++integer :: i, n
++
++n = 0
++do i = 1, size(ps%sl_table)
++   if (iand(ps%sl_table(i)%p%set,set) /= 0) n = n+1
++enddo
++
++if (allocated(indexes))  deallocate(indexes)
++allocate(indexes(n))
++
++n = 0
++do i = 1, size(ps%sl_table)
++   if (iand(ps%sl_table(i)%p%set,set) /= 0) then
++      n = n+1
++      indexes(n) = i
++   end if
++enddo
++
++end subroutine ps_Get_Potential_Indexes
++
++function ps_HasLocalCharge(ps) result(p)
++type(ps_t), intent(in) :: ps
++logical                    :: p
++!
++p = (initialized(ps%local%chlocal%grid))
++
++end function ps_HasLocalCharge
++
++function ps_LocalCharge_Value(ps,r) result(val)
++type(ps_t), intent(in) :: ps
++real(dp), intent(in)       :: r
++real(dp)                   :: val
++
++if (r > max_range(ps%local%chlocal)) then
++
++   ! There should be a sanity check upon parsing
++   ! to guarantee that the coulomb behavior has
++   ! been reached at the end of the grid range
++
++   val = 0.0_dp
++else
++   val = eval_radfunc(ps%local%chlocal,r,debug=global_debug)
++endif
++end function ps_LocalCharge_Value
++!
++function ps_LocalPotential_Type(ps) result(type)
++type(ps_t), intent(in) :: ps
++character(len=40)          :: type
++
++type = ps%local%vlocal_type
++!
++end function ps_LocalPotential_Type
++!
++
++subroutine ps_Get_Projector_Indexes(ps,set,indexes)
++type(ps_t), intent(in)                 :: ps
++integer, intent(in)                    :: set
++integer, allocatable, intent(inout)    :: indexes(:)
++
++integer :: i, n
++
++n = 0
++do i = 1, size(ps%nl_table)
++   if (iand(ps%nl_table(i)%p%set,set) /= 0) n = n+1
++enddo
++
++if (allocated(indexes))  deallocate(indexes)
++allocate(indexes(n))
++
++n = 0
++do i = 1, size(ps%nl_table)
++   if (iand(ps%nl_table(i)%p%set,set) /= 0) then
++      n = n+1
++      indexes(n) = i
++   end if
++enddo
++
++end subroutine ps_Get_Projector_Indexes
++
++subroutine ps_Get_PseudoWf_Indexes(ps,set,indexes)
++type(ps_t), intent(in)                 :: ps
++integer, intent(in)                    :: set
++integer, allocatable, intent(inout)    :: indexes(:)
++
++integer :: i, n
++
++n = 0
++do i = 1, size(ps%wf_table)
++   if (iand(ps%wf_table(i)%p%set,set) /= 0) n = n+1
++enddo
++
++if (allocated(indexes))  deallocate(indexes)
++allocate(indexes(n))
++
++n = 0
++do i = 1, size(ps%wf_table)
++   if (iand(ps%wf_table(i)%p%set,set) /= 0) then
++      n = n+1
++      indexes(n) = i
++   end if
++enddo
++
++end subroutine ps_Get_PseudoWf_Indexes
++
++function ps_Number_Of_Potentials(ps,set) result(n)
++type(ps_t), intent(in)                 :: ps
++integer, intent(in)                    :: set
++integer                         :: n
++
++integer, allocatable  :: idx(:)
++call ps_Get_Potential_Indexes(ps,set,idx)
++n = size(idx)
++deallocate(idx)
++end function ps_Number_Of_Potentials
++
++function ps_Number_Of_Projectors(ps,set) result(n)
++type(ps_t), intent(in)                 :: ps
++integer, intent(in)                    :: set
++integer                         :: n
++
++integer, allocatable  :: idx(:)
++call ps_Get_Projector_Indexes(ps,set,idx)
++n = size(idx)
++deallocate(idx)
++end function ps_Number_Of_Projectors
++
++function ps_Number_Of_PseudoWfs(ps,set) result(n)
++type(ps_t), intent(in)                 :: ps
++integer, intent(in)                    :: set
++integer                         :: n
++
++integer, allocatable  :: idx(:)
++call ps_Get_PseudoWf_Indexes(ps,set,idx)
++n = size(idx)
++deallocate(idx)
++end function ps_Number_Of_PseudoWfs
++!
++
++function ps_Potential_Set(ps,i) result(set)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer                    :: set
++
++call check_index(i,size(ps%sl_table),"SL pot")
++set = ps%sl_table(i)%p%set
++!
++end function ps_Potential_Set
++!
++function ps_Potential_L(ps,i) result(l)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer                    :: l
++
++call check_index(i,size(ps%sl_table),"SL pot")
++l = l_of_sym(ps%sl_table(i)%p%l,"SL pot")
++
++end function ps_Potential_L
++!
++function ps_Potential_J(ps,i) result(j)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++real(dp)                   :: j
++
++call check_index(i,size(ps%sl_table),"SL pot")
++if (ps%sl_table(i)%p%j < 0.0) then
++   call die("j is not set in this SL potential")
++endif
++j = ps%sl_table(i)%p%j
++
++end function ps_Potential_J
++!
++function ps_Potential_Rc(ps,i) result(rc)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++real(dp)                   :: rc
++
++call check_index(i,size(ps%sl_table),"SL pot")
++rc = ps%sl_table(i)%p%rc
++
++end function ps_Potential_Rc
++!
++function ps_Potential_N(ps,i) result(n)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer                    :: n
++
++call check_index(i,size(ps%sl_table),"SL pot")
++n = ps%sl_table(i)%p%n
++
++end function ps_Potential_N
++!
++!====================================================
++!
++function ps_PseudoWf_L(ps,i) result(l)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer                    :: l
++
++call check_index(i,size(ps%wf_table),"Wf")
++l = l_of_sym(ps%wf_table(i)%p%l,"Wf")
++
++end function ps_PseudoWf_L
++!
++function ps_PseudoWf_J(ps,i) result(j)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++real(dp)                   :: j
++
++call check_index(i,size(ps%wf_table),"Wf")
++if (ps%wf_table(i)%p%j < 0.0) then
++   call die("j is not set in this wavefunction")
++endif
++j = ps%wf_table(i)%p%j
++
++end function ps_PseudoWf_J
++!
++function ps_PseudoWf_N(ps,i) result(n)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer                    :: n
++
++call check_index(i,size(ps%wf_table),"Wf")
++n = ps%wf_table(i)%p%n
++
++end function ps_PseudoWf_N
++!
++function ps_PseudoWf_Set(ps,i) result(set)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer              :: set
++
++call check_index(i,size(ps%wf_table),"Wf")
++set = ps%wf_table(i)%p%set
++!
++end function ps_PseudoWf_Set
++!
++!=======================================================
++
++function ps_Projector_L(ps,i) result(l)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer                    :: l
++
++call check_index(i,size(ps%nl_table),"proj")
++l = l_of_sym(ps%nl_table(i)%p%l,"proj")
++
++end function ps_Projector_L
++!
++function ps_Projector_J(ps,i) result(j)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++real(dp)                   :: j
++
++call check_index(i,size(ps%nl_table),"proj")
++if (ps%nl_table(i)%p%j < 0.0) then
++   call die("j is not set in this projector")
++endif
++j = ps%nl_table(i)%p%j
++
++end function ps_Projector_J
++!
++function ps_Projector_Ekb(ps,i) result(ekb)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)  :: i
++real(dp)                   :: ekb
++
++call check_index(i,size(ps%nl_table),"proj")
++ekb = ps%nl_table(i)%p%ekb
++
++end function ps_Projector_Ekb
++!
++function ps_Projector_Seq(ps,i) result(seq)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer                    :: seq
++
++call check_index(i,size(ps%nl_table),"proj")
++seq = ps%nl_table(i)%p%seq
++
++end function ps_Projector_Seq
++!
++function ps_Projector_Set(ps,i) result(set)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++integer                 :: set
++
++call check_index(i,size(ps%nl_table),"proj")
++set = ps%nl_table(i)%p%set
++!
++end function ps_Projector_Set
++!
++function ps_Projector_Type(ps,i) result(type)
++type(ps_t), intent(in) :: ps
++integer,   intent(in)      :: i
++character(len=40)          :: type
++
++call check_index(i,size(ps%nl_table),"proj")
++type = ps%nl_table(i)%p%type
++!
++end function ps_Projector_Type
++
++subroutine ps_Get_Projector_Indexes_byL(ps,l,idxset,idxl)
++!* Subset of projectors with given l
++! Note that this function takes an array of indexes
++! and returns another array of indexes
++! There is currently no way to check that the idxset
++! really corresponds to projectors...
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: l
++integer, intent(in)    :: idxset(:)
++integer, allocatable, intent(inout)   :: idxl(:)
++
++integer                    :: n
++
++integer :: n_in_set, i, l_i
++
++n_in_set = size(idxset)
++n = 0
++do i = 1, n_in_set
++  l_i = ps_Projector_L(ps,idxset(i))
++  if (l_i == l) n = n + 1
++enddo
++if (allocated(idxl)) deallocate(idxl)
++allocate(idxl(n))
++n = 0
++do i = 1, n_in_set
++  l_i = ps_Projector_L(ps,idxset(i))
++  if (l_i == l) then
++     n = n + 1
++     idxl(n) = idxset(i)
++  endif
++enddo
++
++end subroutine ps_Get_Projector_Indexes_byL
++!
++function ps_XCAnnotation(ps) result(xc_annotation)
++type(ps_t), intent(in) :: ps
++type(ps_annotation_t)  :: xc_annotation
++xc_annotation = ps%xc_info%annotation
++end function ps_XCAnnotation
++!
++
++!>  Returns the matching radius used in the fit of the
++!>  pseudo-core charge
++!> @param ps is a handle to the psml information
++!> It returns -1.0 if the information is not provided in the file
++function ps_CoreCharge_MatchingRadius(ps) result(rmatch)
++type(ps_t), intent(in) :: ps
++real(dp)               :: rmatch
++
++rmatch = ps%core_charge%rcore
++
++end function ps_CoreCharge_MatchingRadius
++
++!>  Returns the number of derivatives kept in the fit of the
++!>  pseudo-core charge
++!> @param ps is a handle to the psml information
++!> It returns -1 if the information is not provided in the file
++function ps_CoreCharge_NumberOfKeptDerivatives(ps) result(n)
++type(ps_t), intent(in) :: ps
++integer                :: n
++
++n = ps%core_charge%n_cont_derivs
++
++end function ps_CoreCharge_NumberOfKeptDerivatives
++
++subroutine ps_ValenceCharge_GetRawData(ps,raw_r,raw_data)
++type(ps_t), intent(in) :: ps
++real(dp), allocatable, intent(out)  :: raw_r(:), raw_data(:)
++
++call ps_GetRawData(ps%valence_charge%rho_val,raw_r,raw_data)
++
++end subroutine ps_ValenceCharge_GetRawData
++
++subroutine ps_CoreCharge_GetRawData(ps,raw_r,raw_data)
++type(ps_t), intent(in) :: ps
++real(dp), allocatable, intent(out)  :: raw_r(:), raw_data(:)
++
++call ps_GetRawData(ps%core_charge%rho_core,raw_r,raw_data)
++
++end subroutine ps_CoreCharge_GetRawData
++
++
++subroutine ps_Potential_GetRawData(ps,i,raw_r,raw_data)
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++real(dp), allocatable, intent(out)  :: raw_r(:), raw_data(:)
++
++call check_index(i,size(ps%sl_table),"SL pot")
++call ps_GetRawData(ps%sl_table(i)%p%V,raw_r,raw_data)
++
++end subroutine ps_Potential_GetRawData
++
++subroutine ps_PseudoWf_GetRawData(ps,i,raw_r,raw_data)
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++real(dp), allocatable, intent(out)  :: raw_r(:), raw_data(:)
++
++call ps_GetRawData(ps%wf_table(i)%p%Phi,raw_r,raw_data)
++
++end subroutine ps_PseudoWf_GetRawData
++!
++subroutine ps_LocalPotential_GetRawData(ps,raw_r,raw_data)
++type(ps_t), intent(in) :: ps
++real(dp), allocatable, intent(out)  :: raw_r(:), raw_data(:)
++
++call ps_GetRawData(ps%local%vlocal,raw_r,raw_data)
++
++end subroutine ps_LocalPotential_GetRawData
++
++subroutine ps_Projector_GetRawData(ps,i,raw_r,raw_data)
++!+ deprecated: true
++type(ps_t), intent(in) :: ps
++integer, intent(in)    :: i
++real(dp), allocatable, intent(out)  :: raw_r(:), raw_data(:)
++
++call ps_GetRawData(ps%nl_table(i)%p%proj,raw_r,raw_data)
++
++end subroutine ps_Projector_GetRawData
++
++!====================================================
++! Low-level routines
++!
++!
++subroutine check_index(i,n,str)
++integer, intent(in) :: i, n
++character(len=*), intent(in) :: str
++
++call assert( (i <=  n), "Index overflow in "//trim(str))
++call assert( (i >  0), "Non-positive index in "//trim(str))
++end subroutine check_index
++!
++function l_of_sym(str,name) result(l)
++character(len=*), intent(in) :: str, name
++integer                :: l
++!
++! This routine will disappear once we store
++! l as integer in the data structure
++!
++do l = 0,4
++   if (str == sym(l)) RETURN
++enddo
++call die("Wrong l symbol in "//trim(name))
++end function l_of_sym
++
++!>  Returns the maximum radius in a radfunc's data
++function max_range(f) result(range)
++type(radfunc_t), intent(in) :: f
++real(dp)                  :: range
++
++real(dp),  pointer :: a(:)
++integer :: npts_data
++
++a => valGrid(f%grid)
++
++!
++if (global_use_effective_cutoff) then
++   ! We use the effective end_of_range
++   range = f%rcut_eff
++else
++   ! Use the nominal range
++   ! This covers the case in which the data set uses only
++   ! a first section of the grid
++   npts_data = size(f%data)
++   range = a(npts_data)
++endif
++
++end function max_range
++!----------
++function eval_radfunc(f,r,debug) result(val)
++use m_psml_interp, only: interpolator, nq
++
++type(radfunc_t), intent(in) :: f
++real(dp), intent(in)      :: r
++real(dp)                  :: val
++logical, intent(in)       :: debug
++
++real(dp), pointer :: x(:) => null(), y(:) => null()
++integer :: npts, nq_saved
++
++x => valGrid(f%grid)
++y => f%data(:)
++
++!Note size(y) to cover the case in which the data set uses only
++! a first section of the grid
++npts = size(y)
++call interpolator(nq,x,y,npts,r,val,debug)
++
++end function eval_radfunc
++
++   subroutine assert(cond,message)
++     logical, intent(in) :: cond
++     character(len=*) message
++
++     if (.not. cond) call die(message)
++   end subroutine assert
++
++
++end module m_psml_old_api
