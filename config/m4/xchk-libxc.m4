@@ -87,9 +87,9 @@ AC_DEFUN([AFB_CHECK_LIBXC],[
 #include "xc.h"
       ]],
       [[
-        int major = -1, minor = -1;
+        int major = -1, minor = -1, micro = -1;
         FILE *tmp;
-        xc_version(&major, &minor);
+        xc_version(&major, &minor, &micro);
         tmp = fopen("conftest.tmp", "w");
         fprintf(tmp, "%d.%d\n", major, minor);
         fclose(tmp);

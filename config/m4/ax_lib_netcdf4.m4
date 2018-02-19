@@ -202,9 +202,7 @@ NetCDF4 support is being disabled (equivalent to --with-netcdf4=no).
         if test "$netcdf4_requested_mode" = "parallel" ; then
             with_netcdf4_parallel=$(eval $NC_CONFIG --has-pnetcdf)
             if test "$with_netcdf4_parallel" = "no" ; then
-                AC_MSG_ERROR([
-parallel NetCDF4 is not supported (while it was requested)
-])
+                AC_MSG_NOTICE([parallel NetCDF4 is not supported (while it was requested)])
             fi
         fi
 
