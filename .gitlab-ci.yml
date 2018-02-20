@@ -1,0 +1,16 @@
+stages:
+  - build
+
+foss-2016b:
+  stage: build
+  script:
+    - "/bin/bash quickcheck.sh 2>&1 | tee build-foss-2016b.txt"
+  artifacts:
+    when: always
+    paths:
+      - build-foss-2016b.txt
+  tags:
+    - easybuild
+  only:
+    - master
+
