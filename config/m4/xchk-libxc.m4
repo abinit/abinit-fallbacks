@@ -16,7 +16,7 @@
 #
 AC_DEFUN([AFB_CHECK_LIBXC],[
   dnl Init
-  afb_libxc_default_libs="-lxcf90 -lxc"
+  afb_libxc_default_libs="-lxc"
   afb_libxc_has_hdrs="unknown"
   afb_libxc_has_mods="unknown"
   afb_libxc_has_incs="unknown"

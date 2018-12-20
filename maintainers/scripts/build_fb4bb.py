@@ -88,7 +88,7 @@ print(fbks_version)
 fbk_libs={}
 for f in fbks_sorted_list:
     if f == 'libxc':
-           fbk_libs[f]="-lxcf90 -lxc"
+           fbk_libs[f]="-lxc"
     else:
         fbk_libs[f]="-l%s" % f
 

@@ -13,7 +13,7 @@ NetCDFF_version=`egrep "^name = netcdf-fortran-[0-9].*$" ../config/specs/fallbac
 --with-yaml-incs="-I/usr/include" \
 --with-yaml-libs="-L/usr/lib64 -lyaml" \
 --disable-atompaw --disable-wannier90 --disable-xmlf90 --disable-libpsml \
---with-libxc-libs="-L${FALLBACKS_PATH}/libxc/${LIBXC_version}/lib -lxcf90 -lxc" \
+--with-libxc-libs="-L${FALLBACKS_PATH}/libxc/${LIBXC_version}/lib -lxc" \
 --with-libxc-incs="-I${FALLBACKS_PATH}/libxc/${LIBXC_version}/include "
 
 
