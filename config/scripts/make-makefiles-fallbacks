@@ -361,7 +361,7 @@ for pkg in abinit_fallbacks:
 makefile += makefile_footer(abinit_fallbacks)
 
 # FIXME: add other files to distribute
-makefile += "EXTRA_DIST ="
+makefile += "EXTRA_DIST = \\\n\tautogen.sh \\\n\twipeout.sh"
 if ( os.path.exists("patches") ):
   for f in os.listdir("patches"):
     if ( re.search("\.patch$",f) ):
