@@ -28,6 +28,43 @@ class MyConfigParser(ConfigParser):
 # ---------------------------------------------------------------------------- #
 
 #
+# Files to distribute
+#
+
+fbk_dist_files = [
+  "autogen.sh",
+  "wipeout.sh",
+  "config/scripts/add-header-typed",
+  "config/scripts/make-config-dumper",
+  "config/scripts/make-fallbacks-config-in",
+  "config/scripts/make-install-symlinks-in",
+  "config/scripts/make-install-symlinks-in.orig",
+  "config/scripts/make-macros-environment",
+  "config/scripts/make-macros-fallbacks",
+  "config/scripts/make-macros-info",
+  "config/scripts/make-macros-options",
+  "config/scripts/make-macros-patches",
+  "config/scripts/make-makefiles-fallbacks",
+  "config/specs/atompaw.cfg",
+  "config/specs/bigdft.cfg",
+  "config/specs/environment.conf",
+  "config/specs/fallbacks.cfg",
+  "config/specs/fallbacks.conf",
+  "config/specs/languages.conf",
+  "config/specs/libpsml.cfg",
+  "config/specs/libxc.cfg",
+  "config/specs/linalg.cfg",
+  "config/specs/netcdf4.cfg",
+  "config/specs/netcdf4_fortran.cfg",
+  "config/specs/options.conf",
+  "config/specs/wannier90.cfg",
+  "config/specs/xmlf90.cfg",
+  "config/specs/yaml.cfg",
+]
+
+# ---------------------------------------------------------------------------- #
+
+#
 # Subroutines
 #
 
@@ -361,7 +398,9 @@ for pkg in abinit_fallbacks:
 makefile += makefile_footer(abinit_fallbacks)
 
 # FIXME: add other files to distribute
-makefile += "EXTRA_DIST = \\\n\tautogen.sh \\\n\twipeout.sh"
+makefile += "EXTRA_DIST ="
+if ( len(fbk_dist_files) > 0 ):
+  makefile += " \\\n\t" + " \\\n\t".join(fbk_dist_files)
 if ( os.path.exists("patches") ):
   for f in os.listdir("patches"):
     if ( re.search("\.patch$",f) ):
