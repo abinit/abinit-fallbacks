@@ -50,6 +50,7 @@ fbk_branch=`git branch | awk '{print $2}' | \
   sed -e 's/^[ ]*//; s/[ ]*$//' -e '/^$/d'`
 fbk_clean=`check_work_tree`
 fbk_revno=`git rev-parse HEAD | sed -e 's/\(.......\).*/\1/'`
+fbk_srcdir="${PWD}"
 
 # Create fallbacks source tarball
 if test "${fbk_clean}" = "1"; then
@@ -81,6 +82,7 @@ if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
     rm -r fallbacks
     tar xzf "${fbk_tarball}"
     mv abinit-fallbacks-[0-9]* fallbacks
+    cp "${fbk_srcdir}/.gitignore" fallbacks
   else
     echo "[fbkexport]   Error: Abinit source tree has uncommitted changes" >&2
     echo "[fbkexport]   Please commit them first and rerun this script" >&2
