@@ -46,7 +46,8 @@ check_work_tree () {
 set -e
 
 # Get fallbacks branch information
-fbk_branch=`git branch | awk '{print $2}' | sed -e 's/^[ ]*//; s/[ ]*$//'`
+fbk_branch=`git branch | awk '{print $2}' | \
+  sed -e 's/^[ ]*//; s/[ ]*$//' -e '/^$/d'`
 fbk_clean=`check_work_tree`
 fbk_revno=`git rev-parse HEAD | sed -e 's/\(.......\).*/\1/'`
 
