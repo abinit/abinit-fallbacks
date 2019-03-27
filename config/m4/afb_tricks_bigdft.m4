@@ -61,7 +61,7 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
   if test "${afb_bigdft_cppflags_custom}" = "no"; then
     AC_MSG_NOTICE([applying BigDFT tricks (vendor: $1, version: $2, flags: C preprocessing)])
 
-    CPPFLAGS_BIGDFT="${CPPFLAGS_BIGDFT} \$(afb_libxc_incs) \$(afb_yaml_incs)"
+    CPPFLAGS_BIGDFT="${CPPFLAGS_BIGDFT} \$(afb_libxc_incs)"
 
     dnl Finish
     tmp_bigdft_cnt_tricks=`expr ${tmp_bigdft_cnt_tricks} \+ 1`

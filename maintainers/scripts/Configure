@@ -10,8 +10,6 @@ NetCDFF_version=`egrep "^name = netcdf-fortran-[0-9].*$" ../config/specs/fallbac
 ../configure \
 --prefix=${FALLBACKS_PATH} \
 --with-linalg-libs="-L/usr/lib64 -lopenblas" \
---with-yaml-incs="-I/usr/include" \
---with-yaml-libs="-L/usr/lib64 -lyaml" \
 --disable-atompaw --disable-wannier90 --disable-xmlf90 --disable-libpsml \
 --with-libxc-libs="-L${FALLBACKS_PATH}/libxc/${LIBXC_version}/lib -lxc" \
 --with-libxc-incs="-I${FALLBACKS_PATH}/libxc/${LIBXC_version}/include "
@@ -27,4 +25,3 @@ NetCDFF_version=`egrep "^name = netcdf-fortran-[0-9].*$" ../config/specs/fallbac
 #--disable-libxc
 #--disable-netcdf4 --disable-netcdf4-fortran
 #--disable-bigdft 
-#--disable-yaml

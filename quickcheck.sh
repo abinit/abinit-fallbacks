@@ -43,7 +43,6 @@ cd tmp-linalg
   --disable-netcdf4-fortran \
   --disable-wannier90 \
   --disable-xmlf90 \
-  --disable-yaml \
   CC="gcc" \
   FC="gfortran"
 

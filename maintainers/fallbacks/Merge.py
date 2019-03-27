@@ -24,7 +24,6 @@ parser.add_argument("-b","--bigdft", dest="bigdft", help="version BigDFT")
 parser.add_argument("-n","--netcdf", dest="netcdf", help="version NetCDF")
 parser.add_argument("-a","--atompaw", dest="atompaw", help="version Atompaw")
 parser.add_argument("-w","--wannier90", dest="wannier90", help="version Wannier90")
-parser.add_argument("-y","--yaml", dest="yaml", help="version yaml")
 args = parser.parse_args()
 
 vers = vars(args)

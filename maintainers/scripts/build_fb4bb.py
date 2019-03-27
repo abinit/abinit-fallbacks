@@ -79,11 +79,11 @@ for i in range(0,len(fallbacks)):
   fbks_sorted_list=fbks_sorted_list+[temp[i][0]]
 
 print(fbks_sorted_list)
-#['libxc', 'linalg', 'yaml', 'netcdf4', 'netcdf4_fortran', 'xmlf90', 'wannier90', 'libpsml', 'atompaw', 'bigdft']
+#['libxc', 'linalg', 'netcdf4', 'netcdf4_fortran', 'xmlf90', 'wannier90', 'libpsml', 'atompaw', 'bigdft']
 print(fbks_list_depends)
-#{'wannier90': ['linalg'], 'libxc': [], 'libpsml': ['libxc', 'xmlf90'], 'linalg': [], 'bigdft': ['linalg', 'netcdf4', 'netcdf4_fortran', 'libxc', 'yaml'], 'yaml': [], 'netcdf': [], 'xmlf90': [], 'atompaw': ['linalg', 'libxc']}
+#{'wannier90': ['linalg'], 'libxc': [], 'libpsml': ['libxc', 'xmlf90'], 'linalg': [], 'bigdft': ['linalg', 'netcdf4', 'netcdf4_fortran', 'libxc'], 'netcdf': [], 'xmlf90': [], 'atompaw': ['linalg', 'libxc']}
 print(fbks_version)
-#{'wannier90': '2.0.1.1', 'libxc': '2.2.3', 'libpsml': '1.0.1', 'linalg': '6.10', 'bigdft': '1.7.1.23', 'yaml': '0.1.6', 'netcdf4': '4.4.1.1', 'netcdf4_fortran':'4.4.4', 'xmlf90': '1.5.0', 'atompaw': '4.0.0.14'}
+#{'wannier90': '2.0.1.1', 'libxc': '2.2.3', 'libpsml': '1.0.1', 'linalg': '6.10', 'bigdft': '1.7.1.23', 'netcdf4': '4.4.1.1', 'netcdf4_fortran':'4.4.4', 'xmlf90': '1.5.0', 'atompaw': '4.0.0.14'}
 
 fbk_libs={}
 for f in fbks_sorted_list:
@@ -103,7 +103,6 @@ parser.add_argument("-n","--netcdf4-fortran", action="store_true", help="build N
 parser.add_argument("-a","--atompaw", action="store_true", help="build Atompaw")
 parser.add_argument("-x","--libxc", action="store_true", help="build libXC")
 parser.add_argument("-w","--wannier90", action="store_true", help="build Wannier90")
-parser.add_argument("-y","--yaml", action="store_true", help="build yaml")
 parser.add_argument("-A","--all", action="store_false", help="build all fallbacks")
 parser.add_argument("-P","--prod", action="store_true", help="install all fbks with same prefix")
 parser.add_argument("builder", type=str, help="name of builder ( == module name )")
