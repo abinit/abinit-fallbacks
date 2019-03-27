@@ -39,7 +39,8 @@ AC_DEFUN([AFB_TRICKS_BIGDFT],[
 
     dnl YAML
     dnl FIXME: disabled internal YAML because PyYAML requires shared objects
-    tmpflags_libyaml='--disable-internal-libyaml --disable-shared --with-yaml-path="$(prefix)/$(yaml_pkg_inst)"'
+    dnl tmpflags_libyaml='--disable-internal-libyaml --disable-shared --with-yaml-path="$(prefix)/$(yaml_pkg_inst)"'
+    tmpflags_yaml='--enable-shared --enable-static'
 
     dnl Internal BigDFT parameters
     tmpflags_options='--without-archives --with-moduledir="$(prefix)/$(bigdft_pkg_inst)/include"'
