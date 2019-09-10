@@ -4,8 +4,8 @@
 . /usr/share/lmod/lmod/init/bash
 module use /home/pouillon/retos/hpc/modules/all
 module purge
-module load foss/2016b
-module load HDF5/1.8.17-foss-2016b
+module load foss/2018b
+module load HDF5/1.10.2-foss-2018b
 
 # Stop at first error
 set -e

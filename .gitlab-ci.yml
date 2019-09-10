@@ -1,14 +1,15 @@
 stages:
   - build
 
-foss-2016b:
+foss-2018b:
+  image: pouillon/esl:easybuild-2018b
   stage: build
   script:
-    - "/bin/bash quickcheck.sh 2>&1 | tee build-foss-2016b.txt"
+    - "/bin/bash quickcheck.sh 2>&1 | tee build-foss-2018b.txt"
   artifacts:
     when: always
     paths:
-      - build-foss-2016b.txt
+      - build-foss-2018b.txt
   tags:
     - easybuild
   only:
