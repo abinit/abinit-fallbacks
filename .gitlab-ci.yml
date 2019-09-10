@@ -7,11 +7,10 @@ foss-2018b:
   script:
     - "/bin/bash quickcheck.sh 2>&1 | tee build-foss-2018b.txt"
   artifacts:
-    when: always
     paths:
       - build-foss-2018b.txt
-  tags:
-    - easybuild
+    when: always
+    expire_in: 7 days
   only:
     - master
 
