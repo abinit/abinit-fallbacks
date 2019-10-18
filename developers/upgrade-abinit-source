@@ -74,15 +74,13 @@ echo -n "Overwrite '${abinit_srcdir}/fallbacks' (y/N)? "
 read yesno
 echo "******************************************************************************"
 
-# Replace old fallbacks directory 
+# Replace old fallbacks tarball
 if test "${yesno}" = "Y" -o "${yesno}" = "y"; then
   cd "${abinit_srcdir}"
   abi_clean=`check_work_tree`
   if test "${abi_clean}" = "1"; then
-    rm -r fallbacks
-    tar xzf "${fbk_tarball}"
-    mv abinit-fallbacks-[0-9]* fallbacks
-    cp "${fbk_srcdir}/.gitignore" fallbacks
+    rm -f fallbacks/abinit-fallbacks-[0-9].[0-9].[0-9].tar.gz
+    cp "${fbk_tarball}" fallbacks
   else
     echo "[fbkexport]   Error: Abinit source tree has uncommitted changes" >&2
     echo "[fbkexport]   Please commit them first and rerun this script" >&2
