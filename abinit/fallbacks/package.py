@@ -29,6 +29,7 @@ class FallbackPackage(object):
         # Load package information
         self.name = name
         self.cfg = configparser.ConfigParser()
+
         if ( config_data is None ):
             config_file = os.path.join(config_dir, "%s.cfg" % name)
             if ( os.path.exists(config_file) ):
@@ -38,9 +39,12 @@ class FallbackPackage(object):
         else:
             self.cfg.read_string(config_data)
         self.defaults = self.cfg.defaults()
+
         self.pkg_versions = self.cfg.sections()
-        self.pkg_versions.sort()
-        self.pkg_versions.reverse()
+        # presume that the first section is the last...
+        #print(self.pkg_versions)
+        #self.pkg_versions.sort()
+        #self.pkg_versions.reverse()
 
         # Check that mandatory options are present
         fbk_miss = [item for item in fbk_mandatory_options \
@@ -75,7 +79,9 @@ class FallbackPackage(object):
     def __str__(self):
 
         return "Abinit Fallback Package: %s/%s\nCodename: %s\nDependencies: %s" % \
-            (self.name, self,version, self.encode(), self.get_deps())
+            (self.name, self.version, self.encode(), self.get_deps())
+            #(self.name, self.version, self.encode(), self.get_item("depends"))
+            #(self.name, self.version, self.encode(), self.get_specs())
 
 
     def encode(self, version=None):
@@ -106,6 +112,20 @@ class FallbackPackage(object):
 
         if ( self.cfg.has_option(my_version, item) ):
             return self.cfg.get(my_version, item)
+        else:
+            return None
+
+
+    def get_deps(self, version=None):
+        """Return  depends of the package"""
+
+        if ( version is None ):
+            my_version = self.defaults["default_version"]
+        else:
+            my_version = version
+
+        if ( self.cfg.has_option(my_version, "depends") ):
+            return self.cfg.get(my_version, "depends")
         else:
             return None
 

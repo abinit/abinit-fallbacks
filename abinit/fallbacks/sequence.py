@@ -3,6 +3,22 @@
 import configparser
 import os
 
+def ConvertVersion2Number(v):   # 8.8 to 808
+    Maj,Min=v.split(".")
+    if len(Min) == 1:
+        Min='0'+Min
+    return Maj+Min
+
+def ConvertNumber2Version(a):   # 812 to 8.12
+    Min=a[-2:]
+    if Min == "00":
+       Min="0"
+    else:
+       if Min[0] == "0" :
+          Min=Min[1]
+    Maj=a[:-2]
+    return "%s.%s" % (Maj,Min)
+
 
                     ########################################
 
@@ -25,8 +41,10 @@ class FallbackSequence(object):
         else:
             self.cfg.read_string(config_data)
         self.versions = self.cfg.sections()
-        self.versions.sort()
-        self.versions.reverse()
+        # search the lastest version
+        self.versions = list(map(ConvertVersion2Number, self.versions))
+        self.versions = sorted(self.versions, reverse=True)
+        self.versions = list(map(ConvertNumber2Version, self.versions))
 
         # Check presence of Abinit version
         self.abinit_version = abinit_version
@@ -36,22 +54,21 @@ class FallbackSequence(object):
             raise KeyError("missing Abinit version %s" % abinit_version)
 
         # Look for package descriptions
-        self.fbk_list = fbk_filter
+        self.fbk_list = {}
+        fbk_list = fbk_filter
         if ( fbk_filter is None ):
-            self.fbk_list = self.cfg.options(self.abinit_version)
-        else:
-            self.fbk_list = {}
-            for fbk in fbk_list:
-                if ( self.cfg.has_option(self.abinit_version, fbk)):
-                    self.fbk_list[fbk] = self.cfg.get(self.abinit_version, fbk)
-                else:
-                    raise KeyError("unknown fallback '%s'" % fbk)
+            fbk_list = self.cfg.options(self.abinit_version)
+        for fbk in fbk_list:
+            if ( self.cfg.has_option(self.abinit_version, fbk)):
+                self.fbk_list[fbk] = self.cfg.get(self.abinit_version, fbk)
+            else:
+                raise KeyError("unknown fallback '%s'" % fbk)
 
 
     def __str__(self):
 
         return "Abinit Fallback Sequence:\n  * " + \
-            "\n  * ".join(["%s/%s" % (key, val) for key, val in self.fbk_list.iter()])
+            "\n  * ".join(["%s/%s" % (key, val) for key, val in self.fbk_list.items()])
 
 
     def sort_packages(self):
