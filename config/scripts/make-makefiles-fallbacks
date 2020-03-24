@@ -49,6 +49,7 @@ fbk_dist_files = [
   "config/specs/environment.conf",
   "config/specs/fallbacks.cfg",
   "config/specs/fallbacks.conf",
+  "config/specs/hdf5.cfg",
   "config/specs/languages.conf",
   "config/specs/libpsml.cfg",
   "config/specs/libxc.cfg",

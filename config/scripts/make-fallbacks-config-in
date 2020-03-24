@@ -308,10 +308,10 @@ my_name    = "make-fallbacks-config-in"
 my_configs = ["config/specs/fallbacks.conf"]
 my_output  = "src/abinit-fallbacks-config.in"
 
-# Check if we are in the top of the ABINIT source tree
+# Check if we are in the top of the ABINIT-FALLBACKS source tree
 if ( not os.path.exists("configure.ac") or
      not os.path.exists("config/specs/fallbacks.conf") ):
-  print("%s: You must be in the top of an ABINIT source tree." % my_name)
+  print("%s: You must be in the top of an ABINITi-FALLBACKS source tree." % my_name)
   print("%s: Aborting now." % my_name)
   sys.exit(1)
 

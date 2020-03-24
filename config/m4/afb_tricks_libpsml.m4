@@ -14,9 +14,9 @@
 
 
 # AFB_TRICKS_LIBPSML(FC_VENDOR,FC_VERSION)
-# -------------------------------------
+# --------------------------------------
 #
-# Applies tricks and workarounds to have the LibPSML library correctly
+# Applies tricks and workarounds to have the LIBPSML library correctly
 # linked to the binaries.
 #
 AC_DEFUN([AFB_TRICKS_LIBPSML],[
@@ -27,10 +27,39 @@ AC_DEFUN([AFB_TRICKS_LIBPSML],[
   dnl Init
   afb_libpsml_tricks="no"
   afb_libpsml_tricky_vars=""
-  tmp_libpsml_num_tricks=0
+  tmp_libpsml_num_tricks=2
   tmp_libpsml_cnt_tricks=0
 
-  AC_MSG_NOTICE([no tricks to apply for LibPSML])
+  dnl Configure tricks
+  if test "${afb_libpsml_cfgflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying libPSML tricks (vendor: $1, version: $2, flags: config)])
+    dnl Internal libPSML parameters
+    CFGFLAGS_LIBPSML="--enable-static --disable-shared"
+
+    dnl Finish
+    tmp_libpsml_cnt_tricks=`expr ${tmp_libpsml_cnt_tricks} \+ 1`
+    afb_libpsml_tricky_vars="${afb_libpsml_tricky_vars} CFGFLAGS"
+  else
+    AC_MSG_NOTICE([CFGFLAGS_LIBPSML set => skipping libPSML config tricks])
+  fi
+
+  dnl C tricks
+  if test "${afb_libpsml_cflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying libPSML tricks (vendor: $1, version: $2, flags: C)])
+    case "$1" in
+      ibm)
+        if test "${ac_cv_prog_cc_c99}" != "no"; then
+          CFLAGS_LIBPSML="${CFLAGS_LIBPSML} ${ac_cv_prog_cc_c99}"
+        fi
+        ;;
+    esac
+
+    dnl Finish
+    tmp_libpsml_cnt_tricks=`expr ${tmp_libpsml_cnt_tricks} \+ 1`
+    afb_libpsml_tricky_vars="${afb_libpsml_tricky_vars} CFLAGS"
+  else
+    AC_MSG_NOTICE([CFLAGS_LIBPSML set => skipping libPSML C tricks])
+  fi
 
   dnl Count applied tricks
   case "${tmp_libpsml_cnt_tricks}" in
