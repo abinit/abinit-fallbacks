@@ -214,6 +214,22 @@ FC_LIBS="${FC_LIBS} ${LIBS}"
 
 # HDF5 significantly enhances NetCDF4
 AFB_CHECK_HDF5
+
+# Extract the compiler command wo args
+CC_wo_arg=`echo ${CC}|cut -d' ' -f1`
+if test "mpi" = $(echo "${CC_wo_arg}"|cut -c -3); then
+    CC_wo_arg=$(eval $CC_wo_arg -show|cut -d' ' -f1)
+fi
+
+# CHECK if the compiler detected is identical to the one requested
+# TODO check also the version
+if test "${HDF5_CC}" != "${CC_wo_arg}"; then
+   AC_MSG_WARN([
+HDF5 (${HDF5_CC}) is not compiled with one requested (${CC_wo_arg})
+])
+   afb_hdf5_ok="no"
+fi
+
 if test "${afb_hdf5_ok}" = "yes" -a "${enable_hdf5}" = "yes"; then
   AC_MSG_NOTICE([enabling advanced NetCDF4 I/O features])
   AC_MSG_NOTICE([please note that HDF5 must be compiled with
