@@ -147,6 +147,12 @@ AFB_PATCHES_SETUP
 AC_PROG_CC
 AC_PROG_CPP
 
+# extract C compiler if mpi wrapper
+ac_cc_req=${CC}
+if test "mpi" = $(echo "${CC}"|cut -c -3); then
+    ac_cc_req=$(eval $ac_cc_req -show|cut -d' ' -f1)
+fi
+
 # LibXC sometimes requires C99
 # Note: if problem, set ac_cv_prog_cc_c99="no"
 AC_PROG_CC_C99
@@ -155,6 +161,7 @@ AC_PROG_CC_C99
 AFB_PROG_CC(${CC})
 ref_cc_vendor="${afb_cc_vendor}"
 ref_cc_version="${afb_cc_version}"
+ref_cc_cmd="${ac_cc_req}"
 
 # ---------------------------------------------------------------------------- #
 
@@ -215,17 +222,10 @@ FC_LIBS="${FC_LIBS} ${LIBS}"
 # HDF5 significantly enhances NetCDF4
 AFB_CHECK_HDF5
 
-# Extract the compiler command wo args
-CC_wo_arg=`echo ${CC}|cut -d' ' -f1`
-if test "mpi" = $(echo "${CC_wo_arg}"|cut -c -3); then
-    CC_wo_arg=$(eval $CC_wo_arg -show|cut -d' ' -f1)
-fi
-
-# CHECK if the compiler detected is identical to the one requested
-# TODO check also the version
-if test "${HDF5_CC}" != "${CC_wo_arg}"; then
+# CHECK if the HDF5_CC compiler detected is identical to the one requested
+if test "${HDF5_CC}" != "${ref_cc_cmd}"; then
    AC_MSG_WARN([
-HDF5 (${HDF5_CC}) is not compiled with one requested (${CC_wo_arg})
+HDF5 (${HDF5_CC}) is not compiled with one requested (${ref_cc_cmd})
 ])
    afb_hdf5_ok="no"
 fi
