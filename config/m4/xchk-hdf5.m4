@@ -67,6 +67,8 @@ AC_DEFUN([AFB_CHECK_HDF5],[
   if test "${with_hdf5}" = "yes"; then
     AC_MSG_CHECKING([which HDF5 version we have])
     AC_MSG_RESULT([${HDF5_VERSION}])
+    AC_MSG_CHECKING([which HDF5 type we have])
+    AC_MSG_RESULT([${HDF5_TYPE}])
     afb_hdf5_ok="yes"
   else
     afb_hdf5_ok="no"

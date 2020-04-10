@@ -222,12 +222,18 @@ FC_LIBS="${FC_LIBS} ${LIBS}"
 # HDF5 significantly enhances NetCDF4
 AFB_CHECK_HDF5
 
-# CHECK if the HDF5_CC compiler detected is identical to the one requested
-if test "${HDF5_CC}" != "${ref_cc_cmd}"; then
-   AC_MSG_WARN([
-HDF5 (${HDF5_CC}) is not compiled with one requested (${ref_cc_cmd})
-])
-   afb_hdf5_ok="no"
+# CHECK if the HDF5_CC wrapper detected is the same as our current compiler
+if test "${afb_hdf5_ok}" = "yes" -a "${enable_hdf5}" = "yes"; then
+   hdf5_cc=${HDF5_CC}
+   if test "${HDF5_CC}" != "" -a "mpi" = $(echo "${HDF5_CC}"|cut -c -3); then
+       hdf5_cc=$(eval ${HDF5_CC} -show|cut -d' ' -f1)
+   fi
+   if test "${hdf5_cc}" != "${ref_cc_cmd}"; then
+      AC_MSG_WARN([
+   HDF5 copiler wrapper (${hdf5_cc}) is not ame as our current compiler (${ref_cc_cmd})
+   ])
+      afb_hdf5_ok="no"
+   fi
 fi
 
 if test "${afb_hdf5_ok}" = "yes" -a "${enable_hdf5}" = "yes"; then

@@ -37,7 +37,11 @@ AC_DEFUN([AFB_TRICKS_NETCDF4],[
     dnl Internal NetCDF4 parameters
     CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-dap --disable-examples --disable-hdf4 --disable-v2 --disable-shared"
     if test "${afb_hdf5_ok}" = "yes"; then
-      CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --enable-parallel-tests"
+      if test "${HDF5_TYPE}" = "serial"; then
+         CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4}"
+      else
+         CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --enable-parallel-tests"
+      fi
     else
       CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-netcdf-4"
     fi
