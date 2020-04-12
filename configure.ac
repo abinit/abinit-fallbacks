@@ -230,7 +230,7 @@ if test "${afb_hdf5_ok}" = "yes" -a "${enable_hdf5}" = "yes"; then
    fi
    if test "${hdf5_cc}" != "${ref_cc_cmd}"; then
       AC_MSG_WARN([
-   HDF5 copiler wrapper (${hdf5_cc}) is not ame as our current compiler (${ref_cc_cmd})
+   HDF5 compiler wrapper (${hdf5_cc}) is not ame as our current compiler (${ref_cc_cmd})
    ])
       afb_hdf5_ok="no"
    fi

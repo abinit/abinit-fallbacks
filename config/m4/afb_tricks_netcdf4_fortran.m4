@@ -36,11 +36,12 @@ AC_DEFUN([AFB_TRICKS_NETCDF4_FORTRAN],[
 
     dnl Internal NetCDF4 Fortran parameters
     CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --enable-large-file-tests --disable-shared"
+
     if test "${afb_hdf5_ok}" = "yes"; then
-      if test "${HDF5_TYPE}" = "serial"; then
-          CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN}"
-      else
+      if test "${afb_hdf5_has_par}" != "no"; then
           CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN} --enable-parallel-tests"
+      else
+          CFGFLAGS_NETCDF4_FORTRAN="${CFGFLAGS_NETCDF4_FORTRAN}"
       fi
     fi
 

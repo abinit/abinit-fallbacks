@@ -19,6 +19,7 @@ AC_DEFUN([AFB_CHECK_HDF5],[
   afb_hdf5_default_libs="-lhdf5_hl -lhdf5"
   afb_hdf5_has_par="unknown"
   afb_hdf5_ok="unknown"
+  afb_hdf5_type="unknown"
 
   dnl Prepare environment
   tmp_saved_with_hdf5="${with_hdf5}"
@@ -57,6 +58,8 @@ AC_DEFUN([AFB_CHECK_HDF5],[
   dnl prefers serial
   AX_LIB_HDF5([parallel])
   if test "${with_hdf5}" = "no"; then
+    afb_hdf5_has_par="no"
+    afb_hdf5_type="serial"
     AC_MSG_NOTICE([no parallel HDF5 found, looking for a serial one])
     with_hdf5="${tmp_saved_with_hdf5}"
     AX_LIB_HDF5([serial])
@@ -69,6 +72,7 @@ AC_DEFUN([AFB_CHECK_HDF5],[
     AC_MSG_RESULT([${HDF5_VERSION}])
     AC_MSG_CHECKING([which HDF5 type we have])
     AC_MSG_RESULT([${HDF5_TYPE}])
+    afb_hdf5_type="${HDF5_TYPE}"
     afb_hdf5_ok="yes"
   else
     afb_hdf5_ok="no"
