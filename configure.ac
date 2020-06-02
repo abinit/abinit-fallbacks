@@ -231,6 +231,8 @@ if test "${enable_hdf5}" = "yes"; then
       AC_MSG_NOTICE([
 Building the HDF5 parallel version... ${afb_hdf5_build_par}
     ])
+   fi
+fi
 
 # Check that the NetCDF4 compiler wrapper is the same as our current compiler
 if test "${CC_NETCDF4}" = ""; then
