@@ -25,7 +25,7 @@
 
 # Initialize Autoconf
 AC_PREREQ(2.68)
-AC_INIT([ABINIT-Fallbacks],[9.0.2],
+AC_INIT([ABINIT-Fallbacks],[9.1],
   [https://bugs.launchpad.net/abinit-fallbacks/],[abinit-fallbacks])
 AC_REVISION([Autotools support for the ABINIT Fallbacks])
 AC_CONFIG_AUX_DIR([config/gnu])
@@ -148,9 +148,11 @@ AC_PROG_CC
 AC_PROG_CPP
 
 # extract C compiler if mpi wrapper
+has_mpi="no"
 ac_cc_req=${CC}
 if test "mpi" = $(echo "${CC}"|cut -c -3); then
     ac_cc_req=$(eval $ac_cc_req -show|cut -d' ' -f1)
+    afb_has_mpi="yes"
 fi
 
 # LibXC sometimes requires C99
@@ -220,38 +222,15 @@ FC_LIBS="${FC_LIBS} ${LIBS}"
 #
 
 # HDF5 significantly enhances NetCDF4
-AFB_CHECK_HDF5
+enable_hdf5="yes"
+afb_hdf5_build_par="no"
 
-# CHECK if the HDF5_CC wrapper detected is the same as our current compiler
-if test "${afb_hdf5_ok}" = "yes" -a "${enable_hdf5}" = "yes"; then
-   hdf5_cc=${HDF5_CC}
-   if test "${HDF5_CC}" != "" -a "mpi" = $(echo "${HDF5_CC}"|cut -c -3); then
-       hdf5_cc=$(eval ${HDF5_CC} -show|cut -d' ' -f1)
-   fi
-   if test "${hdf5_cc}" != "${ref_cc_cmd}"; then
-      AC_MSG_WARN([
-   HDF5 copiler wrapper (${hdf5_cc}) is not ame as our current compiler (${ref_cc_cmd})
-   ])
-      afb_hdf5_ok="no"
-   fi
-fi
-
-if test "${afb_hdf5_ok}" = "yes" -a "${enable_hdf5}" = "yes"; then
-  AC_MSG_NOTICE([enabling advanced NetCDF4 I/O features])
-  AC_MSG_NOTICE([please note that HDF5 must be compiled with
-           the same compiler as now for this to work])
-  CC_NETCDF4="${HDF5_CC}"
-  test -z "${CPPFLAGS_NETCDF4}" && \
-    CPPFLAGS_NETCDF4="${CPPFLAGS} ${HDF5_CPPFLAGS}"
-  test -z "${CFLAGS_NETCDF4}" && \
-    CFLAGS_NETCDF4="${CFLAGS} ${HDF5_CFLAGS}"
-  test -z "${LDFLAGS_NETCDF4}" && \
-    LDFLAGS_NETCDF4="${LDFLAGS} ${HDF5_LDFLAGS}"
-  test -z "${LIBS_NETCDF4}" && \
-    LIBS_NETCDF4="${LIBS} ${HDF5_LIBS}"
-else
-  AC_MSG_NOTICE([enabling minimal NetCDF4 features only])
-fi
+if test "${enable_hdf5}" = "yes"; then
+   if test "${afb_has_mpi}" = "yes"; then
+      afb_hdf5_build_par="yes"
+      AC_MSG_NOTICE([
+Building the HDF5 parallel version... ${afb_hdf5_build_par}
+    ])
 
 # Check that the NetCDF4 compiler wrapper is the same as our current compiler
 if test "${CC_NETCDF4}" = ""; then

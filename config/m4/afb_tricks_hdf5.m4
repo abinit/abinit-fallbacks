@@ -35,6 +35,9 @@ AC_DEFUN([AFB_TRICKS_HDF5],[
     AC_MSG_NOTICE([applying HDF5 tricks (vendor: $1, version: $2, flags: config)])
     dnl Internal HDF5 parameters
     CFGFLAGS_HDF5="--enable-static --disable-shared"
+    if test "${afb_hdf5_build_par}" = "yes"; then
+         CFGFLAGS_HDF5="--enable-parallel --enable-static --disable-shared"
+    fi
 
     dnl Finish
     tmp_hdf5_cnt_tricks=`expr ${tmp_hdf5_cnt_tricks} \+ 1`
