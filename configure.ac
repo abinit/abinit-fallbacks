@@ -148,9 +148,11 @@ AC_PROG_CC
 AC_PROG_CPP
 
 # extract C compiler if mpi wrapper
+# TODO : check better for mpi wrapper in CC
 has_mpi="no"
 ac_cc_req=${CC}
-if test "mpi" = $(echo "${CC}"|cut -c -3); then
+tmp_cc=$(echo "${CC}"|grep -o '[[^/]]*$')
+if test "mpi" = $(echo "${tmp_cc}"|cut -c -3); then
     ac_cc_req=$(eval $ac_cc_req -show|cut -d' ' -f1)
     afb_has_mpi="yes"
 fi
