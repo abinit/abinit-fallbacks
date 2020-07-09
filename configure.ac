@@ -227,13 +227,11 @@ FC_LIBS="${FC_LIBS} ${LIBS}"
 enable_hdf5="yes"
 afb_hdf5_build_par="no"
 
-if test "${enable_hdf5}" = "yes"; then
-   if test "${afb_has_mpi}" = "yes"; then
-      afb_hdf5_build_par="yes"
-      AC_MSG_NOTICE([
+if test "${afb_has_mpi}" = "yes"; then
+   afb_hdf5_build_par="yes"
+   AC_MSG_NOTICE([
 Building the HDF5 parallel version... ${afb_hdf5_build_par}
-    ])
-   fi
+   ])
 fi
 
 # Check that the NetCDF4 compiler wrapper is the same as our current compiler
