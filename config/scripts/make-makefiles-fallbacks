@@ -59,6 +59,7 @@ fbk_dist_files = [
   "config/specs/options.conf",
   "config/specs/wannier90.cfg",
   "config/specs/xmlf90.cfg",
+  "BUILD_W90v3.sh"
 ]
 
 # ---------------------------------------------------------------------------- #
