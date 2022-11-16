@@ -34,7 +34,7 @@ AC_DEFUN([AFB_TRICKS_LIBXC],[
   if test "${afb_libxc_cfgflags_custom}" = "no"; then
     AC_MSG_NOTICE([applying LibXC tricks (vendor: $1, version: $2, flags: config)])
     dnl Internal LibXC parameters
-    CFGFLAGS_LIBXC="--enable-fortran --enable-static --disable-shared"
+    CFGFLAGS_LIBXC="--enable-kxc --enable-fortran --enable-static --disable-shared"
     case "$1" in
       intel)
         dnl trick for zenobe
