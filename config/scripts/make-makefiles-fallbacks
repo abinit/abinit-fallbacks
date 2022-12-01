@@ -226,7 +226,7 @@ stamps/%(name)s-config-stamp: stamps/%(name)s-patch-stamp
 	  LDFLAGS="$(FC_LDFLAGS) $(LDFLAGS_%(NAME)s)" \\
 	  LIBS="$(LIBS_%(NAME)s) %(dep_libs)s" \\
 	  AR="$(AR)" \\
-	  ARFLAGS="$(ARFLAGS) $(ARFLAGS_CMD)" \\
+	  ARFLAGS="$(ARFLAGS_CMD)" \\
 	  RANLIB="$(RANLIB)" \\
 	  ac_fc_srcext="F90" \\
 %(cfg_cmd)s
