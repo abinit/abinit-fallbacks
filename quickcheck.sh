@@ -1,11 +1,9 @@
 #!/bin/bash
 
 # Init build environment
-. /usr/share/lmod/lmod/init/bash
-module use /home/pouillon/retos/hpc/modules/all
+#. /usr/share/module/init/bash
 module purge
-module load foss/2018b
-module load HDF5/1.10.2-foss-2018b
+module load eos_gnu_13.2_openmpi
 
 # Stop at first error
 set -e
@@ -15,26 +13,12 @@ cmd="${1}"
 ./wipeout.sh
 ./autogen.sh
 
-# Build using external linear algebra
-mkdir tmp
-cd tmp
-../configure \
-  --enable-local-build \
-  --with-linalg-libs="-lopenblas" \
-  CC="gcc" \
-  FC="gfortran"
-
-test "${cmd}" != "no-make" && make dist
-test "${cmd}" != "no-make" && make -j4
-test "${cmd}" != "no-make" && make install
-
-# Build only internal linear algebra
-cd ..
+# Build only external linear algebra
 mkdir tmp-linalg
 cd tmp-linalg
 ../configure \
   --enable-local-build \
-  --enable-linalg \
+  --with-linalg-libs="-L${MKLROOT}/lib/intel64 -Wl,--start-group  -lmkl_gf_lp64 -lmkl_sequential -lmkl_core -Wl,--end-group" \
   --disable-atompaw \
   --disable-bigdft \
   --disable-libpsml \
