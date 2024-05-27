@@ -159,7 +159,8 @@ fi
 
 # LibXC sometimes requires C99
 # Note: if problem, set ac_cv_prog_cc_c99="no"
-AC_PROG_CC_C99
+#AC_PROG_CC_C99 is obsolete starting from autoconf 2.70 
+AC_PROG_CC
 
 # Store information on C compiler
 AFB_PROG_CC(${CC})

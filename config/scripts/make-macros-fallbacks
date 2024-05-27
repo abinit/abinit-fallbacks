@@ -289,7 +289,7 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
       chk_args = "(%d,%d,%d)" % (chk_api["maj"],chk_api["min"],chk_api["max"])
     if ( bins ):
       with_opts += "\n    AC_ARG_WITH([@pkg_opt@-bins],\n"
-      dnl with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-bins],\n"
+      # with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-bins],\n"
       with_opts += "    AS_HELP_STRING([--with-@pkg_opt@-bins],\n"
       with_opts += "      [Path to external %s executables]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_bins)\n"
@@ -298,7 +298,7 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
       pkg_xfer += "    afb_@pkg_nick@_bins=\"${with_@pkg_nick@_bins}\"\n"
     if ( include ):
       with_opts += "  AC_ARG_WITH([@pkg_opt@-incs],\n"
-      dnl with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-incs],\n"
+      # with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-incs],\n"
       with_opts += "    AS_HELP_STRING([--with-@pkg_opt@-incs],\n"
       with_opts += "      [Include flags for an external %s]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_incs)\n"
@@ -307,7 +307,7 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
       pkg_xfer += "    afb_@pkg_nick@_incs=\"${with_@pkg_nick@_incs}\"\n"
     if ( libs ):
       with_opts += "  AC_ARG_WITH([@pkg_opt@-libs],\n"
-      dnl with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-libs],\n"
+      # with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-libs],\n"
       with_opts += "    AS_HELP_STRING([--with-@pkg_opt@-libs],\n"
       with_opts += "      [Library flags for an external %s]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_libs)\n"
