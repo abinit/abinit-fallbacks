@@ -98,11 +98,6 @@ all-local:%s
 	@if test -x "${DESTDIR}${bindir}/abinit-fallbacks-config"; then \\
 	  echo "The fallbacks are now ready to use."; \\
 	  echo ""; \\
-	  #echo "You may point Abinit to them through one of the following choices:"; \\
-	  #echo ""; \\
-          #echo "  - set with_fallbacks_prefix='${DESTDIR}${prefix}' in your Abinit config file;"; \\
-	  #echo ""; \\
-	  #echo "  - use the --with-fallbacks-prefix='${DESTDIR}${prefix}' option of Abinit's configure."; \\
 	else \\
 	  echo "All requested fallbacks have been built."; \\
 	  echo "you may now type 'make install' to finish the installation."; \\
