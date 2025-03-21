@@ -52,6 +52,9 @@ aclocal -I config/m4
 echo "[fbkbuild]   Generating configure script"
 autoconf
 
+# Fix compatibility with automake 1.17 version (by tsaihsiaoyi)
+sed -i '/^am__api_version/c\am__api_version=`automake --version 2>/dev/null | sed -nE '\''s/.* ([0-9]+\.[0-9]+)(\.[0-9]+)?$/\1/p'\''`' configure
+
 # Generate libtool scripts
 #echo "[fbkbuild]   Generating libtool scripts"
 #my_libtoolize="libtoolize"
