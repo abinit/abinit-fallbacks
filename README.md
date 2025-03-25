@@ -21,7 +21,7 @@ since the process has been automated and would stop at the first error. Unfortun
 ## Project home 
 
 The Abinit Fallbacks project is stored on Github. Previously (prior to 25 March 2025) it was hosted on the internal ABINIT Gitlab.
-The following links might still be temperarily useful to get information about the project and its status:
+The following links might still be temprarily useful to get information about the project and its status:
   * [issues](https://gitlab.abinit.org/buildbot/abinit-fallbacks/issues)
   * [milestones](https://gitlab.abinit.org/buildbot/abinit-fallbacks/milestones)
 
