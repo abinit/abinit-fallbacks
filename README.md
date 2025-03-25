@@ -48,8 +48,8 @@ Since the fallbacks evolve at a very different pace from Abinit and have very di
 Typically, in one year, there will be 2 minor releases of Abinit, while 1 or 2 of the fallbacks at most will be upgraded asynchronously, mainly during active development phases. 
 In parallel, the build system that wraps their installation will be refactored, upgraded, and tested.
 
-The independent fallbacks can be downloaded either from the [Abinit website](https://abinit.github.io/abinit_web/fallbacks.html). You can either download the source 
-tarballs released with Abinit or clone one of the Git repositories directly.
+The independent fallbacks can be downloaded from the [Abinit website](https://abinit.github.io/abinit_web/fallbacks.html). 
+You can either download the source tarball released with Abinit or clone one of the Git repositories directly.
 
 ## Requirements
 
