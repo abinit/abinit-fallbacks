@@ -22,6 +22,7 @@ since the process has been automated and would stop at the first error. Unfortun
 
 The Abinit Fallbacks project is stored on Github. Previously (prior to 25 March 2025) it was hosted on the internal ABINIT Gitlab.
 The following links might still be temprarily useful to get information about the project and its status:
+
   * [issues](https://gitlab.abinit.org/buildbot/abinit-fallbacks/issues)
   * [milestones](https://gitlab.abinit.org/buildbot/abinit-fallbacks/milestones)
 
@@ -78,7 +79,7 @@ usually package a snapshot of the fallbacks and distribute it as a source
 tarball. This file is called _abinit-fallbacks-X.Y.Z.tar.gz_, where X and Y 
 correspond to the highest X.Y Abinit version for which compatibility has 
 been tested, and Z is a patch level starting from 0. Please note that Z is used exclusively by the fallbacks and has nothing to do with Abinit. 
-For instance, the tarball _abinit-falbacks-9.8.tar.gz_ contains fallbacks compatible with all 9.8.* versions of Abinit, as well as 10.0.* and 10.2.* version.
+For instance, the tarball _abinit-falbacks-9.8.tar.gz_ contains fallbacks compatible with all 9.8.* versions of Abinit, as well as 10.0.* and 10.2.* versions.
 
 > <span style="color:gray;">💡 Since Abinit dependencies evolve slowly, a fallbacks bundle with version X.Y.Z is often compatible with the X.(Y-1).* and X.(Y+1).* versions of Abinit.</span>
 
@@ -125,10 +126,12 @@ name suits you best.
 ## Building the fallbacks with Abinit 
 
 For convenience, a release of the fallbacks comes with the source tarball of Abinit.
-It is possible to build it along with Abinit, although much more efficient to build it and install it separately, since you do not have to rebuild the fallbacks each time you wish to make a new build of Abinit.\\ 
+It is possible to build it along with Abinit, although much more efficient to build it and install it separately, since you do not have to rebuild the fallbacks each time you wish to make a new build of Abinit.
 
-Building the fallbacks within Abinit is mainly of interest to developers who want to experiment with compile flags and explore issues related to compilers and portability. It can also help - to a reduced extent only - users who are stuck within very rigid configurations and restricted build environments.\\
+Building the fallbacks within Abinit is mainly of interest to developers who want to experiment with compile flags and explore issues related to compilers and portability. It can also help - to a reduced extent only - users who are stuck within very rigid configurations and restricted build environments.
+
 Here is the way to proceed:
+
 ```bash
 tar xvzf abinit-x.y.z.tar.gz
 cd abinit-x.y.z
@@ -163,7 +166,8 @@ Once the information is available to the configure script of the fallbacks, we c
 Next, Abinit uses them during its own build and we can install it normally after checking that everything is fine.\\
 In further builds with the same compiler, the same fallbacks can be reused, i.e. no need to rebuild them.
 
-By default, the fallbacks are installed in "/WORKSPACE_PREFIX/abinit-x.y.z/tmp-build/fallbacks/install_fb".\\
+By default, the fallbacks are installed in "/WORKSPACE_PREFIX/abinit-x.y.z/tmp-build/fallbacks/install_fb".
+
 The variable _fallbacks_prefix_ can be changed in the 
 _fallbacks/build-abinit-fallbacks.sh_ script if you want to change the 
 installation folder.
@@ -267,6 +271,7 @@ standard does not have any specification regarding preprocessing, most packages 
 ## The program complains about invalid instructions at run-time ##
 
 Among run-time errors, the complaint of invalid instructions by the system is quite typical on heterogeneous clusters. What usually happens is that the front-end node where the program has been compiled has a slightly different architecture than that of the nodes where the program runs. In this case, the solution is:
+
   * either to ask the system administrator to provide you with the characteristics of the processors of all types of nodes and/or the optimization flags compatible with them all;
   * or restrict the execution of the program to the nodes which are compatible with the optimization flags the program has been built with.
 
@@ -286,15 +291,14 @@ If the compiler vendor and version are strictly identical, you may manage to use
 
 ## Who is in charge of fixing the fallbacks? 
 
-If you encounter an issue which is obviously a defect related to how the packages are built and/or installed, it should be reported to us through the [[https://gitlab.abinit.org/buildbot/abinit-fallbacks/issues|Gitlab Issue Tracker of Abinit]].
+If you encounter an issue which is obviously a defect related to how the packages are built and/or installed, it should be reported to us through the 
+[abinit-fallback gitHub issue tracker](https://github.com/abinit/abinit-fallbacks/issues).
 
 If the problem is related to one or more packages, the only way to resolve it is that you collaborate with their respective upstream developers. Always remember that only complaining is counter-productive. Be kind and polite, provide as many details as possible in your description of the problem, and do your best to propose solutions. Even if they are sometimes overwhelmed, the developers of these packages will be grateful to be informed of possibly important issues related to their projects. Once the issues are solved, we will gladly upgrade the fallbacks to include the fixed versions of these packages.
 
 ## Contributing to the fallbacks 
 
-Advanced developers may contribute to the Abinit Fallbacks. Please read our 
-_[Hacking the Fallbacks]([build:fallbacks_contrib)_ page if you are 
-interested.
+Advanced developers may contribute to the Abinit Fallbacks. Please contact us at [info@abinit.org](mailto:info@abinit.org) if you are interested.
 
 ## No warranty
 
