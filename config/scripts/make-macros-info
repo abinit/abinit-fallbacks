@@ -86,8 +86,6 @@ applied to their build parameters.
 
 @FBK_STATUS@
 
-Note: HDF5 support is ${tmp_s_hdf5} in NetCDF4.
-
 Full information about the current configuration can be found in the
 fallbacks.dump file.
 

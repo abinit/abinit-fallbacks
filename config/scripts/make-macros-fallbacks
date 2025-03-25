@@ -136,7 +136,8 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
 
   dnl Define options associated to the package
   AC_ARG_ENABLE([@pkg_opt@],
-    AC_HELP_STRING([--disable-@pkg_opt@],
+    dnl AC_HELP_STRING([--disable-@pkg_opt@],
+    AS_HELP_STRING([--disable-@pkg_opt@],
       [Disable @PKG_DESC@ support]))
   AC_SUBST(enable_@pkg_nick@)@WITH_OPTS@
 
@@ -288,7 +289,8 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
       chk_args = "(%d,%d,%d)" % (chk_api["maj"],chk_api["min"],chk_api["max"])
     if ( bins ):
       with_opts += "\n    AC_ARG_WITH([@pkg_opt@-bins],\n"
-      with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-bins],\n"
+      # with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-bins],\n"
+      with_opts += "    AS_HELP_STRING([--with-@pkg_opt@-bins],\n"
       with_opts += "      [Path to external %s executables]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_bins)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_bins}\" = \"\""
@@ -296,7 +298,8 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
       pkg_xfer += "    afb_@pkg_nick@_bins=\"${with_@pkg_nick@_bins}\"\n"
     if ( include ):
       with_opts += "  AC_ARG_WITH([@pkg_opt@-incs],\n"
-      with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-incs],\n"
+      # with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-incs],\n"
+      with_opts += "    AS_HELP_STRING([--with-@pkg_opt@-incs],\n"
       with_opts += "      [Include flags for an external %s]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_incs)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_incs}\" = \"\""
@@ -304,7 +307,8 @@ AC_DEFUN([_AFB_SETUP_@PKG_NICK@],[
       pkg_xfer += "    afb_@pkg_nick@_incs=\"${with_@pkg_nick@_incs}\"\n"
     if ( libs ):
       with_opts += "  AC_ARG_WITH([@pkg_opt@-libs],\n"
-      with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-libs],\n"
+      # with_opts += "    AC_HELP_STRING([--with-@pkg_opt@-libs],\n"
+      with_opts += "    AS_HELP_STRING([--with-@pkg_opt@-libs],\n"
       with_opts += "      [Library flags for an external %s]))\n" % nick
       with_opts += "  AC_SUBST(with_@pkg_nick@_libs)\n"
       with_tcon += " -a \\\n            \"${with_@pkg_nick@_libs}\" = \"\""

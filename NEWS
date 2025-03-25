@@ -1,4 +1,14 @@
 Latest news
 ===========
 
-- add support of HDF5 serial (JMB, 200324)
+release 9.2 : 200324 (JMB)
+  - add support of HDF5 serial
+
+release 9.4 : 210101 (JMB)
+  - add support of HDF5 paral
+  - update xmlf90 1.5.4
+
+release 9.6 :  210810 (JMB)
+  - update versions of all fallbacks
+  - add a external script to build Wannier90 v3 (no longer uses the ./configure)
+    ( adopts the conventions for the installation of the fallback )

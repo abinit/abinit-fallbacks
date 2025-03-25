@@ -59,6 +59,7 @@ fbk_dist_files = [
   "config/specs/options.conf",
   "config/specs/wannier90.cfg",
   "config/specs/xmlf90.cfg",
+  "BUILD_W90v3.sh"
 ]
 
 # ---------------------------------------------------------------------------- #
@@ -97,11 +98,6 @@ all-local:%s
 	@if test -x "${DESTDIR}${bindir}/abinit-fallbacks-config"; then \\
 	  echo "The fallbacks are now ready to use."; \\
 	  echo ""; \\
-	  echo "You may point Abinit to them through one of the following choices:"; \\
-	  echo ""; \\
-          echo "  - set with_fallbacks_prefix='${DESTDIR}${prefix}' in your Abinit config file;"; \\
-	  echo ""; \\
-	  echo "  - use the --with-fallbacks-prefix='${DESTDIR}${prefix}' option of Abinit's configure."; \\
 	else \\
 	  echo "All requested fallbacks have been built."; \\
 	  echo "you may now type 'make install' to finish the installation."; \\
@@ -225,7 +221,7 @@ stamps/%(name)s-config-stamp: stamps/%(name)s-patch-stamp
 	  LDFLAGS="$(FC_LDFLAGS) $(LDFLAGS_%(NAME)s)" \\
 	  LIBS="$(LIBS_%(NAME)s) %(dep_libs)s" \\
 	  AR="$(AR)" \\
-	  ARFLAGS="$(ARFLAGS) $(ARFLAGS_CMD)" \\
+	  ARFLAGS="$(ARFLAGS_CMD)" \\
 	  RANLIB="$(RANLIB)" \\
 	  ac_fc_srcext="F90" \\
 %(cfg_cmd)s
