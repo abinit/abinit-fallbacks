@@ -20,10 +20,8 @@ since the process has been automated and would stop at the first error. Unfortun
 
 ## Project home 
 
-The Abinit Fallbacks project is stored on the main Abinit Forge and is owned by the Test Farm Team. Read-only access is provided by default.
-
-Here are the most relevant links to get useful information about the project and its status:
-  * [sources](https://gitlab.abinit.org/buildbot/abinit-fallbacks)
+The Abinit Fallbacks project is stored on Github. Previously (prior to 25 March 2025) it was hosted on the internal ABINIT Gitlab.
+The following links might still be temperarily useful to get information about the project and its status:
   * [issues](https://gitlab.abinit.org/buildbot/abinit-fallbacks/issues)
   * [milestones](https://gitlab.abinit.org/buildbot/abinit-fallbacks/milestones)
 
@@ -46,9 +44,11 @@ To build the fallbacks, you will also need a working development environment, in
 
 ## Overview 
 
-Since the fallbacks evolve at a very different pace from Abinit and have very different objectives, they are available as a separate package. Typically, in one year, there will be 3 minor releases of Abinit, while 2 or 3 of the fallbacks at most will be upgraded asynchronously, mainly during active development phases. In parallel, the build system that wraps their installation will be refactored, upgraded, and tested.
+Since the fallbacks evolve at a very different pace from Abinit and have very different objectives, they are available as a separate package. 
+Typically, in one year, there will be 2 minor releases of Abinit, while 1 or 2 of the fallbacks at most will be upgraded asynchronously, mainly during active development phases. 
+In parallel, the build system that wraps their installation will be refactored, upgraded, and tested.
 
-The independent fallbacks can be downloaded either from the [Abinit website](https://www.abinit.org/fallbacks). You can either download the source 
+The independent fallbacks can be downloaded either from the [Abinit website](https://abinit.github.io/abinit_web/fallbacks.html). You can either download the source 
 tarballs released with Abinit or clone one of the Git repositories directly.
 
 ## Requirements
@@ -61,7 +61,7 @@ Since the recommended way of getting the Abinit Fallbacks is by cloning its repo
 
 ## Getting the source code from the Abinit Website
 
-The official Abinit Fallbacks project page is [here](https://gitlab.abinit.org/buildbot/abinit-fallbacks|)
+The official Abinit Fallbacks project page is [here](https://github.com/abinit/abinit-fallbacks)
 
 If you are an active Abinit Developer, we highly recommend you to [configure 
 your access](developers:git:access_config) before anything else. We will suppose this is the case from now on.
@@ -69,7 +69,7 @@ your access](developers:git:access_config) before anything else. We will suppose
 To get the latest version, just type the following:
 
 ```bash
-git clone abinit-forge:buildbot/abinit-fallbacks.git
+git clone git@github.com:abinit/abinit-fallbacks.git
 ```
 ## Downloading a source tarball 
 
@@ -77,7 +77,8 @@ When a new major or minor version of Abinit is about to be released, we
 usually package a snapshot of the fallbacks and distribute it as a source 
 tarball. This file is called _abinit-fallbacks-X.Y.Z.tar.gz_, where X and Y 
 correspond to the highest X.Y Abinit version for which compatibility has 
-been tested, and Z is a patch level starting from 0. Please note that Z is used exclusively by the fallbacks and has nothing to do with Abinit. For instance, the tarball _abinit-falbacks-8.4.2.tar.gz_ contains fallbacks compatible with all 8.4.* versions of Abinit.
+been tested, and Z is a patch level starting from 0. Please note that Z is used exclusively by the fallbacks and has nothing to do with Abinit. 
+For instance, the tarball _abinit-falbacks-9.8.tar.gz_ contains fallbacks compatible with all 9.8.* versions of Abinit, as well as 10.0.* and 10.2.* version.
 
 > <span style="color:gray;">💡 Since Abinit dependencies evolve slowly, a fallbacks bundle with version X.Y.Z is often compatible with the X.(Y-1).* and X.(Y+1).* versions of Abinit.</span>
 
