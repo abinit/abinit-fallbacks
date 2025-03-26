@@ -20,11 +20,11 @@ since the process has been automated and would stop at the first error. Indeed, 
 
 ## Project home 
 
-The Abinit Fallbacks project is stored on Github, [https://github.com/abinit/abinit-fallbacks].
+The Abinit Fallbacks project is stored on Github, https://github.com/abinit/abinit-fallbacks.
 
 Previously (prior to 25 March 2025) it was hosted on the internal ABINIT Gitlab. Through git, there is a seamless continuity between these two hosting solutions.
 However, the [Gitlab issues](https://gitlab.abinit.org/buildbot/abinit-fallbacks/issues) have not been transferred from the internal ABINIT Gitlab to Gihub (these were rather old at transfer time, though).
-Please use [https://github.com/abinit/abinit-fallbacks/issues] for the new issues.
+Please use https://github.com/abinit/abinit-fallbacks/issues for the new issues.
 
 
 ## Minimum requirements 
