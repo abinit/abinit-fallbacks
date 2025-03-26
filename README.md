@@ -2,29 +2,30 @@
 
 ## In brief 
 
-Abinit Fallbacks is a package builder for the external dependencies of Abinit,
-in development environments lacking these components. They do not provide full
+Abinit-fallbacks is a package builder for the external dependencies (e.g. external libraries) of Abinit,
+in development environments lacking these. Usage of Abinit-fallbacks does not provide full
 support for the advanced features of Abinit nor HPC-grade calculation
-capabilities. They are designed to let developers quickly test new versions of
+capabilities. Abinit-fallbacks is designed to let developers quickly test new versions of
 these external dependencies in various situations before proposing upgrades, as
-well as to allow end-users to run calculations on their favorite PCs.
+well as to help end-users to build abinit (and run calculations) on their favorite PCs.
 
 ## Objectives 
 
-In case some dependencies are missing on your computers, Abinit provides fallback libraries that you can build and install from their sources before compiling Abinit itself. Note however that they do not offer the same level of reliability and performance as packages that a skilled administrator would build, test, and install, 
+In case some external dependencies are missing on your computers, Abinit-fallbaks will help you to download external libraries that you can build and install from their sources before compiling Abinit itself. Note however that this procedure does not offer the same level of reliability and performance as libraries that a skilled administrator would build, test, and install.
 
 Fallbacks are also useful for developers who want to test a new version of an external dependency before setting it as a default for future releases of Abinit and have it deployed on the Abinit Test Farm. Except when this new version fixes a bug affecting significantly the accuracy and/or stability of production calculations, such an operation is always performed on a __**development version**__ of Abinit and tested by several developers before being made available to the users.
 
-**IMPORTANT NOTE** We do not perform any _make check_ during the build, 
-since the process has been automated and would stop at the first error. Unfortunately, the packages wrapped by the fallbacks system do not provide complete nor fully reliable test suites, and failures are often difficult to analyze. This is why the fallbacks should not be used for production calculations.</WRAP>
+**IMPORTANT NOTE** Abinit-fallbacks does not perform any _make check_ of these external dependencies during the build, 
+since the process has been automated and would stop at the first error. Indeed, generally speaking, the packages wrapped by the fallbacks system do not provide complete nor fully reliable test suites, and failures are often difficult to analyze. This is why the fallbacks should not be used for production calculations.</WRAP>
 
 ## Project home 
 
-The Abinit Fallbacks project is stored on Github. Previously (prior to 25 March 2025) it was hosted on the internal ABINIT Gitlab.
-The following links might still be temporarily useful to get information about the project and its status:
+The Abinit Fallbacks project is stored on Github, [https://github.com/abinit/abinit-fallbacks].
 
-  * [issues](https://gitlab.abinit.org/buildbot/abinit-fallbacks/issues)
-  * [milestones](https://gitlab.abinit.org/buildbot/abinit-fallbacks/milestones)
+Previously (prior to 25 March 2025) it was hosted on the internal ABINIT Gitlab. Through git, there is a seamless continuity between these two hosting solutions.
+However, the [Gitlab issues](https://gitlab.abinit.org/buildbot/abinit-fallbacks/issues) have not been transferred from the internal ABINIT Gitlab to Gihub (these were rather old at transfer time, though).
+Please use [https://github.com/abinit/abinit-fallbacks/issues] for the new issues.
+
 
 ## Minimum requirements 
 
@@ -45,12 +46,16 @@ To build the fallbacks, you will also need a working development environment, in
 
 ## Overview 
 
-Since the fallbacks evolve at a very different pace from Abinit and have very different objectives, they are available as a separate package. 
-Typically, in one year, there will be 2 minor releases of Abinit, while 1 or 2 of the fallbacks at most will be upgraded asynchronously, mainly during active development phases. 
-In parallel, the build system that wraps their installation will be refactored, upgraded, and tested.
+Since the different external libraries are developed at their own pace, independent from Abinit, and have very different objectives, they are not available in the Abinit package, but come in separate packages. 
+Typically, over a one-year period, there will be 2 minor releases of Abinit, while 1 or 2 among the set of external libraries at most will be upgraded asynchronously, mainly during their active development phases. 
+In parallel, the build system that wraps their installation will be refactored, upgraded, and tested. 
 
-The independent fallbacks can be downloaded from the [Abinit website](https://abinit.github.io/abinit_web/fallbacks.html). 
-You can either download the source tarball released with Abinit or clone one of the Git repositories directly.
+We (developers of Abinit) follow the releases of the different abinit dependencies, and check their compatibility with Abinit. We also check different compilation options.
+
+The list of versions of the different fallbacks compatible with different Abinit versions can be found on the [Fallbacks page of the Abinit website](https://abinit.github.io/abinit_web/fallbacks.html). 
+Their URLs are given on this page. These URLs are also stored in the Abinit-fallbacks package, for their possible download thanks to Abinit-fallbacks.
+
+Obtaining the Abinit-fallbacks source tarball can be done either by download it from this Fallbacks page of the Abinit website](https://abinit.github.io/abinit_web/fallbacks.html), or by cloning from the present Git repository directly.
 
 ## Requirements
 
@@ -78,8 +83,8 @@ When a new major or minor version of Abinit is about to be released, we
 usually package a snapshot of the fallbacks and distribute it as a source 
 tarball. This file is called _abinit-fallbacks-X.Y.Z.tar.gz_, where X and Y 
 correspond to the highest X.Y Abinit version for which compatibility has 
-been tested, and Z is a patch level starting from 0. Please note that Z is used exclusively by the fallbacks and has nothing to do with Abinit. 
-For instance, the tarball _abinit-falbacks-9.8.tar.gz_ contains fallbacks compatible with all 9.8.* versions of Abinit, as well as 10.0.* and 10.2.* versions.
+been tested, and Z is a patch level starting from 0. Please note that Z is used exclusively by the Abinit-fallbacks package and has nothing to do with Abinit versioning. Even the Y is not always aligned between Abinit-fallbaks and Abinit. 
+For instance, the tarball _abinit-falbacks-9.8.tar.gz_ contains URLs of fallbacks compatible with all 9.8.* versions of Abinit, but also compatible with the 10.0.* and 10.2.* versions of Abinit.
 
 > <span style="color:gray;">💡 Since Abinit dependencies evolve slowly, a fallbacks bundle with version X.Y.Z is often compatible with the X.(Y-1).* and X.(Y+1).* versions of Abinit.</span>
 
