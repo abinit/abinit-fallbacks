@@ -67,7 +67,7 @@ Since the recommended way of getting the Abinit Fallbacks is by cloning its repo
 
 ## Getting the source code from the Abinit Website
 
-The official Abinit Fallbacks project page is [here](https://github.com/abinit/abinit-fallbacks)
+The official Abinit Fallbacks project Web site is [here](https://github.com/abinit/abinit-fallbacks), and the present README.md file belongs to this Web site.
 
 If you are an active Abinit Developer, we highly recommend you to [configure 
 your access](developers:git:access_config) before anything else. We will suppose this is the case from now on.
