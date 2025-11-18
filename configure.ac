@@ -252,6 +252,10 @@ fi
 # Configure all fallbacks
 AFB_SETUP_PACKAGES
 
+# Extra dependency checks for netcdf4_fortran
+AX_CHECK_ZLIB
+AX_CHECK_CURL
+
 # ---------------------------------------------------------------------------- #
 
 #
