@@ -13,6 +13,40 @@
 
 
 
+# _AFB_CHECK_CC_ARM(COMPILER)
+# ---------------------------
+#
+# Checks whether the specified C compiler is the ARMClang compiler.
+# If yes, tries to determine its version number and sets the afb_cc_vendor
+# and afb_cc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_CC_ARM],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the ARM C compiler])
+  cc_info_string=`$1 --version 2>/dev/null | head -n 1`
+  afb_result=`echo "${cc_info_string}" | grep '^Arm C/C++/Fortran Compiler'`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    cc_info_string=""
+    afb_cc_vendor="unknown"
+    afb_cc_version="unknown"
+  else
+    AC_DEFINE([CC_ARM],1,
+      [Define to 1 if you are using the ARM C compiler.])
+    afb_cc_vendor="arm"
+    afb_cc_version=`echo ${afb_result} | sed -e 's/.*ersion //; s/ .*//'`
+    if test "${afb_cc_version}" = "${afb_result}"; then
+      afb_cc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_CC_ARM
+
+
+
 # _AFB_CHECK_CC_COMPAQ(COMPILER)
 # ------------------------------
 #
@@ -44,6 +78,40 @@ AC_DEFUN([_AFB_CHECK_CC_COMPAQ],[
   fi
   dnl AC_MSG_RESULT(${afb_result})
 ]) # _AFB_CHECK_CC_COMPAQ
+
+
+
+# _AFB_CHECK_CC_CRAY(COMPILER)
+# ----------------------------
+#
+# Checks whether the specified C compiler is the CRAY Clang compiler.
+# If yes, tries to determine its version number and sets the afb_cc_vendor
+# and afb_cc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_CC_CRAY],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the CRAY Clang C compiler])
+  cc_info_string=`$1 --version 2>/dev/null | head -n 1`
+  afb_result=`echo "${cc_info_string}" | grep 'Cray clang'`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    cc_info_string=""
+    afb_cc_vendor="unknown"
+    afb_cc_version="unknown"
+  else
+    AC_DEFINE([CC_CRAY],1,
+      [Define to 1 if you are using the CRAY Clang C compiler.])
+    afb_cc_vendor="cray"
+    afb_cc_version=`echo ${afb_result} | sed -e 's/.*ersion //; s/ .*//'`
+    if test "${afb_cc_version}" = "${afb_result}"; then
+      afb_cc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_CC_CRAY
 
 
 
@@ -132,6 +200,39 @@ AC_DEFUN([_AFB_CHECK_CC_IBM],[
 
 
 
+# _AFB_CHECK_CC_INTEL_oneAPI(COMPILER)
+# ------------------------------------
+#
+# Checks whether the specified C compiler is the Intel oneAPI C compiler.
+# If yes, tries to determine its version number and sets the afb_cc_vendor
+# and afb_cc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_CC_INTEL_ONEAPI],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the Intel C compiler])
+  cc_info_string=`$1 -V 2>&1 | head -n 1`
+  afb_result=`echo "${cc_info_string}" | grep '^Intel(R) oneAPI'`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    cc_info_string=""
+    afb_cc_vendor="unknown"
+    afb_cc_version="unknown"
+  else
+    AC_DEFINE([CC_INTEL_ONEAPI],1,[Define to 1 if you are using the Intel oneAPI C compiler.])
+    afb_cc_vendor="intel"
+    afb_cc_version=`echo "${afb_result}" | sed -e 's/.*Version //; s/ .*//'`
+    if test "${afb_cc_version}" = "${afb_result}"; then
+      afb_cc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_CC_INTEL_oneAPI
+
+
+
 # _AFB_CHECK_CC_INTEL(COMPILER)
 # -----------------------------
 #
@@ -162,6 +263,73 @@ AC_DEFUN([_AFB_CHECK_CC_INTEL],[
   fi
   dnl AC_MSG_RESULT(${afb_result})
 ]) # _AFB_CHECK_CC_INTEL
+
+
+
+# _AFB_CHECK_CC_LLVM(COMPILER)
+# ----------------------------
+#
+# Checks whether the specified C compiler is the LLVM Clang compiler.
+# If yes, tries to determine its version number and sets the afb_cc_vendor
+# and afb_cc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_CC_LLVM],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], [], [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the LLVM Clang C compiler])
+  cc_info_string=`$1 --version 2>/dev/null | head -n 1`
+  afb_result=`echo "${cc_info_string}" | grep '[[Cc]]lang'`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    cc_info_string=""
+    afb_cc_vendor="unknown"
+    afb_cc_version="unknown"
+  else
+    AC_DEFINE([CC_LLVM],1,
+      [Define to 1 if you are using the LLVM Clang C compiler.])
+    afb_cc_vendor="llvm"
+    afb_cc_version=`echo ${afb_result} | sed -e 's/.*ersion //; s/ .*//'`
+    if test "${afb_cc_version}" = "${afb_result}"; then
+      afb_cc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_CC_LLVM
+
+
+
+# _AFB_CHECK_CC_NVHPC(COMPILER)
+# ---------------------------
+#
+# Checks whether the specified C compiler is the NVIDIA HPC SDK C compiler.
+# If yes, tries to determine its version number and sets the afb_cc_vendor
+# and afb_cc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_CC_NVHPC],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the NVHPC C compiler])
+  cc_info_string=`$1 -V 2> /dev/null | grep "^nvc"`
+  afb_result=`echo "${cc_info_string}"`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    cc_info_string=""
+    afb_cc_vendor="unknown"
+    afb_cc_version="unknown"
+  else
+    AC_DEFINE([CC_NVHPC],1,[Define to 1 if you are using the NVIDIA HPC SDK C compiler.])
+    afb_cc_vendor="nvhpc"
+    afb_cc_version=`echo "${afb_result}" | cut -f2 -d" "`
+    if test "${afb_cc_version}" = ""; then
+      afb_cc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_CC_NVHPC
 
 
 
@@ -197,6 +365,7 @@ AC_DEFUN([_AFB_CHECK_CC_PATHSCALE],[
 ]) # _AFB_CHECK_CC_PATHSCALE
 
 
+
 # _AFB_CHECK_CC_OPEN64(COMPILER)
 # ---------------------------------
 #
@@ -227,6 +396,8 @@ AC_DEFUN([_AFB_CHECK_CC_OPEN64],[
   fi
   dnl AC_MSG_RESULT(${afb_result})
 ]) # _AFB_CHECK_CC_OPEN64
+
+
 
 # _AFB_CHECK_CC_PGI(COMPILER)
 # ---------------------------
@@ -318,10 +489,25 @@ AC_DEFUN([AFB_PROG_CC],[
   fi
 
   if test "${afb_cc_vendor}" = "unknown"; then
-    _AFB_CHECK_CC_COMPAQ($1)
+    _AFB_CHECK_CC_NVHPC($1)
+  fi
+  if test "${afb_cc_vendor}" = "unknown"; then
+    _AFB_CHECK_CC_CRAY($1)
+  fi
+  if test "${afb_cc_vendor}" = "unknown"; then
+    _AFB_CHECK_CC_LLVM($1)
+  fi
+  if test "${afb_cc_vendor}" = "unknown"; then
+    _AFB_CHECK_CC_ARM($1)
+  fi
+  if test "${afb_cc_vendor}" = "unknown"; then
+    _AFB_CHECK_CC_INTEL_oneAPI($1)
   fi
   if test "${afb_cc_vendor}" = "unknown"; then
     _AFB_CHECK_CC_INTEL($1)
+  fi
+  if test "${afb_cc_vendor}" = "unknown"; then
+    _AFB_CHECK_CC_COMPAQ($1)
   fi
   if test "${afb_cc_vendor}" = "unknown"; then
     _AFB_CHECK_CC_PATHSCALE($1)

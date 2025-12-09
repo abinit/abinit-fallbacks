@@ -47,6 +47,74 @@ AC_DEFUN([_AFB_CHECK_FC_ABSOFT],[
 
 
 
+# _AFB_CHECK_FC_AOCC(COMPILER)
+# -------------------------------------
+#
+# Checks whether the specified Fortran compiler is the AOCC Flang compiler.
+# If yes, tries to determine its version number and sets the afb_fc_vendor
+# and afb_fc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_FC_AOCC],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the LLVM Flang Fortran compiler])
+  fc_info_string=`$1 --version 2>/dev/null | head -n 1`
+  afb_result=`echo "${fc_info_string}" | grep -e 'AOCC_'`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    fc_info_string=""
+    afb_fc_vendor="unknown"
+    afb_fc_version="unknown"
+  else
+    AC_DEFINE([FC_AOCC],1,
+      [Define to 1 if you are using the LLVM Flang Fortran AOCC compiler.])
+    afb_fc_vendor="AMD Flang"
+    afb_fc_version=`echo "${afb_result}" | sed -e 's/.*AOCC_//' | sed -e 's/-.*//'`
+    if test "${afb_fc_version}" = "${afb_result}"; then
+      afb_fc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_FC_AOCC
+
+
+
+# _AFB_CHECK_FC_ARM(COMPILER)
+# ---------------------------
+#
+# Checks whether the specified Fortran compiler is the ARMFlang Fortran compiler.
+# If yes, tries to determine its version number and sets the afb_fc_vendor
+# and afb_fc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_FC_ARM],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the ARM Fortran compiler])
+  fc_info_string=`$1 --version 2>/dev/null | head -n 1`
+  afb_result=`echo "${fc_info_string}" | grep '^Arm C/C++/Fortran Compiler'`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    fc_info_string=""
+    afb_fc_vendor="unknown"
+    afb_fc_version="unknown"
+  else
+    AC_DEFINE([FC_ARM],1,
+      [Define to 1 if you are using the ARM Fortran compiler.])
+    afb_fc_vendor="arm"
+    afb_fc_version=`echo ${afb_result} | sed -e 's/.*ersion //; s/ .*//'`
+    if test "${afb_fc_version}" = "${afb_result}"; then
+      afb_fc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_FC_ARM
+
+
+
 # _AFB_CHECK_FC_COMPAQ(COMPILER)
 # ----------------------------------------
 #
@@ -82,6 +150,41 @@ AC_DEFUN([_AFB_CHECK_FC_COMPAQ],[
   fi
   dnl AC_MSG_RESULT(${afb_result})
 ]) # _AFB_CHECK_FC_COMPAQ
+
+
+
+# _AFB_CHECK_FC_CRAY(COMPILER)
+# -------------------------------------
+#
+# Checks whether the specified Fortran compiler is the Cray PE Fortran compiler.
+# If yes, tries to determine its version number and sets the afb_fc_vendor
+# and afb_fc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_FC_CRAY],[
+  dnl Do some sanity checking of the arguments
+  m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the CRAY PE Fortran compiler])
+  fc_info_string=`$1 --version 2>/dev/null | head -n 1`
+
+  afb_result=`echo "${fc_info_string}" | grep '^Cray Fortran'`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    fc_info_string=""
+    afb_fc_vendor="unknown"
+    afb_fc_version="unknown"
+  else
+    AC_DEFINE([FC_CRAY],1,
+      [Define to 1 if you are using the Cray Fortran compiler.])
+    AC_DEFINE([HAVE_FORTRAN2003],1,
+      [Define to 1 if your Fortran compiler supports Fortran 2003.])
+    afb_fc_vendor="cray"
+    dnl Cray Fortran : Version 12.0.2
+    afb_fc_version=`echo ${afb_result} | cut -d' ' -f5`
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_FC_CRAY
 
 
 
@@ -266,36 +369,88 @@ AC_DEFUN([_AFB_CHECK_FC_IBM],[
 
 
 # _AFB_CHECK_FC_INTEL(COMPILER)
-# ---------------------------------------
+# -----------------------------
 #
 # Checks whether the specified Fortran compiler is the Intel Fortran compiler.
 # If yes, tries to determine its version number and sets the afb_fc_vendor
 # and afb_fc_version variables accordingly.
 #
-AC_DEFUN([_AFB_CHECK_FC_INTEL],[
-  dnl Do some sanity checking of the arguments
+AC_DEFUN([_AFB_CHECK_FC_INTEL], [
+  # Do some sanity checking of the arguments
   m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
 
-  dnl AC_MSG_CHECKING([if we are using the Intel Fortran compiler])
-  fc_info_string=`$1 -V 2>&1 | head -n 1`
-  afb_result=`echo "${fc_info_string}" | grep '^Intel(R) Fortran'`
+  AC_MSG_CHECKING([if we are using the Intel Fortran compiler])
+
+  fc_command="$1"
+  fc_output=`$fc_command -V 2>&1 | head -n 1`
+  intel_check=`echo "${fc_output}" | grep '^Intel(R) Fortran'`
+  # If using mpiifx, it may crash with "usage: mpiifort"
+  #
+  if test "${intel_check}" = ""; then
+    fc_output=`$fc_command -V 2>&1`
+    usage_line=`echo "${fc_output}" | grep '^usage:'`
+    if test "${usage_line}" != ""; then
+      fallback_fc=`echo "${usage_line}" | cut -d " " -f 2`
+      if command -v "${fallback_fc}" >/dev/null 2>&1; then
+        fc_output=`${fallback_fc} -V 2>&1 | head -n 1`
+        intel_check=`echo "${fc_output}" | grep '^Intel(R) Fortran'`
+        fc_command="${fallback_fc}"
+      fi
+    fi
+  fi
+
+  if test "${intel_check}" = ""; then
+    afb_result="no"
+    fc_output=""
+    afb_fc_vendor="unknown"
+    afb_fc_version="unknown"
+  else
+    AC_DEFINE([FC_INTEL], 1,
+      [Define to 1 if you are using the Intel Fortran compiler.])
+    afb_fc_vendor="intel"
+    afb_fc_version=`echo "${fc_output}" | sed -e 's/.*Version //;s/ .*//'`
+    if test "${afb_fc_version}" = ""; then
+      afb_fc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+
+  AC_MSG_RESULT([${afb_result}])
+]) # _AFB_CHECK_FC_INTEL
+
+
+
+# _AFB_CHECK_FC_LLVM(COMPILER)
+# ----------------------------
+#
+# Checks whether the specified Fortran compiler is the LLVM Flang compiler.
+# If yes, tries to determine its version number and sets the afb_fc_vendor
+# and afb_fc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_FC_LLVM],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the LLVM Flang Fortran compiler])
+  fc_info_string=`$1 --version 2>/dev/null | head -n 1`
+  afb_result=`echo "${fc_info_string}" | grep -e '[[CcFf]]lang'`
   if test "${afb_result}" = ""; then
     afb_result="no"
     fc_info_string=""
     afb_fc_vendor="unknown"
     afb_fc_version="unknown"
   else
-    AC_DEFINE([FC_INTEL],1,
-      [Define to 1 if you are using the Intel Fortran compiler.])
-    afb_fc_vendor="intel"
-    afb_fc_version=`echo "${fc_info_string}" | sed -e 's/.*Version //;s/ .*//'`
-    if test "${afb_fc_version}" = ""; then
+    AC_DEFINE([FC_LLVM],1,
+      [Define to 1 if you are using the LLVM Flang Fortran compiler.])
+    afb_fc_vendor="llvm"
+    afb_fc_version=`echo ${afb_result} | sed -e 's/.*ersion //; s/ .*//'`
+    if test "${afb_fc_version}" = "${afb_result}"; then
       afb_fc_version="unknown"
     fi
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _AFB_CHECK_FC_INTEL
+]) # _AFB_CHECK_FC_LLVM
 
 
 
@@ -365,6 +520,41 @@ AC_DEFUN([_AFB_CHECK_FC_NAG],[
   fi
   dnl AC_MSG_RESULT(${afb_result})
 ]) # _AFB_CHECK_FC_NAG
+
+
+
+# _AFB_CHECK_FC_NVHPC(COMPILER)
+# ---------------------------
+#
+# Checks whether the specified Fortran compiler is the NVIDIA HPC SDK
+# Fortran compiler.
+# If yes, tries to determine its version number and sets the afb_fc_vendor
+# and afb_fc_version variables accordingly.
+#
+AC_DEFUN([_AFB_CHECK_FC_NVHPC],[
+  # Do some sanity checking of the arguments
+  m4_if([$1], , [AC_FATAL([$0: missing argument 1])])dnl
+
+  dnl AC_MSG_CHECKING([if we are using the NVIDIA HPC SDK Fortran compiler])
+  fc_info_string=`$1 -V 2> /dev/null | grep "^nvfortran"`
+  afb_result=`echo "${fc_info_string}"`
+  if test "${afb_result}" = ""; then
+    afb_result="no"
+    fc_info_string=""
+    afb_fc_vendor="unknown"
+    afb_fc_version="unknown"
+  else
+    AC_DEFINE([FC_NVHPC],1,
+      [Define to 1 if you are using the NVIDIA HPC SDK Fortran compiler.])
+    afb_fc_vendor="nvhpc"
+    afb_fc_version=`echo "${afb_result}" | cut -f2 -d" "`
+    if test "${afb_fc_version}" = "${afb_result}"; then
+      afb_fc_version="unknown"
+    fi
+    afb_result="yes"
+  fi
+  dnl AC_MSG_RESULT(${afb_result})
+]) # _AFB_CHECK_FC_NVHPC
 
 
 
@@ -663,6 +853,26 @@ AC_DEFUN([AFB_PROG_FC],[
 
   if test "${afb_fc_vendor}" = "unknown"; then
     _AFB_CHECK_FC_G95(${FC})
+  fi
+
+  if test "${afb_fc_vendor}" = "unknown"; then
+    _AFB_CHECK_FC_LLVM(${FC})
+  fi
+
+  if test "${afb_fc_vendor}" = "unknown"; then
+    _AFB_CHECK_FC_NVHPC(${FC})
+  fi
+
+  if test "${afb_fc_vendor}" = "unknown"; then
+    _AFB_CHECK_FC_CRAY(${FC})
+  fi
+
+  if test "${afb_fc_vendor}" = "unknown"; then
+    _AFB_CHECK_FC_AOCC(${FC})
+  fi
+
+  if test "${afb_fc_vendor}" = "unknown"; then
+    _AFB_CHECK_FC_ARM(${FC})
   fi
 
   if test "${afb_fc_vendor}" = "unknown"; then
