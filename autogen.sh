@@ -52,8 +52,19 @@ aclocal -I config/m4
 echo "[fbkbuild]   Generating configure script"
 autoconf
 
-# Fix compatibility with automake 1.17 version (by tsaihsiaoyi)
-sed -i '/^am__api_version/c\am__api_version=`automake --version 2>/dev/null | sed -nE '\''s/.* ([0-9]+\.[0-9]+)(\.[0-9]+)?$/\1/p'\''`' configure
+# Fix compatibility with automake 1.17 version (by tsaihsiaoyi, BSD sed by MT)
+is_gnu_sed() {
+  sed --version >/dev/null 2>&1
+}
+if is_gnu_sed; then
+  sed -i '/^am__api_version/c\am__api_version=`automake --version 2>/dev/null | sed -nE '\''s/.* ([0-9]+\.[0-9]+)(\.[0-9]+)?$/\1/p'\''`' configure
+else
+  cat > tempsed << 'EOF'
+/^am__api_version/c\
+am__api_version=`automake --version 2>/dev/null | sed -nE 's/.* ([0-9]+\.[0-9]+)(\.[0-9]+)?$/\1/p'`
+EOF
+  sed -i '' -f tempsed configure && rm tempsed
+fi
 
 # Generate libtool scripts
 #echo "[fbkbuild]   Generating libtool scripts"
