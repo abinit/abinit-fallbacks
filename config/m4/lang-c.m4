@@ -200,7 +200,7 @@ AC_DEFUN([_AFB_CHECK_CC_IBM],[
 
 
 
-# _AFB_CHECK_CC_INTEL_oneAPI(COMPILER)
+# _AFB_CHECK_CC_INTEL_ONEAPI(COMPILER)
 # ------------------------------------
 #
 # Checks whether the specified C compiler is the Intel oneAPI C compiler.
@@ -229,7 +229,7 @@ AC_DEFUN([_AFB_CHECK_CC_INTEL_ONEAPI],[
     afb_result="yes"
   fi
   dnl AC_MSG_RESULT(${afb_result})
-]) # _AFB_CHECK_CC_INTEL_oneAPI
+]) # _AFB_CHECK_CC_INTEL_ONEAPI
 
 
 
@@ -501,7 +501,7 @@ AC_DEFUN([AFB_PROG_CC],[
     _AFB_CHECK_CC_ARM($1)
   fi
   if test "${afb_cc_vendor}" = "unknown"; then
-    _AFB_CHECK_CC_INTEL_oneAPI($1)
+    _AFB_CHECK_CC_INTEL_ONEAPI($1)
   fi
   if test "${afb_cc_vendor}" = "unknown"; then
     _AFB_CHECK_CC_INTEL($1)

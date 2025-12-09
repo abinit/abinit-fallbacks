@@ -52,8 +52,16 @@ AC_DEFUN([AFB_TRICKS_HDF5],[
     case "$1" in
       ibm)
         if test "${ac_cv_prog_cc_c99}" != "no"; then
-          CFLAGS_HDF5="${CFLAGS_HDF5} ${ac_cv_prog_cc_c99}"
+          CFLAGS_HDF5=" ${ac_cv_prog_cc_c99}"
         fi
+        ;;
+      nvhpc)
+        case "$2" in
+          23.1|23.5|23.9|23.11|24.1|24.5)
+            CFLAGS_HDF5="-O1 -fPIE"
+            CFGFLAGS_HDF5="${CFGFLAGS_HDF5} --enable-optimization=\"-O1 -fPIE\""
+            ;;
+        esac
         ;;
     esac
 
