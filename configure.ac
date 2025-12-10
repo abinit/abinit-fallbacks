@@ -225,7 +225,8 @@ FC_LIBS="${FC_LIBS} ${LIBS}"
 #
 
 # HDF5 significantly enhances NetCDF4
-enable_hdf5="yes"
+# but we should allow fallback without hdf5
+# enable_hdf5="yes"
 afb_hdf5_build_par="no"
 
 if test "${afb_has_mpi}" = "yes"; then
