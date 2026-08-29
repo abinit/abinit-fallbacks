@@ -126,7 +126,7 @@ if test "${WGET}" != ""; then
   afb_dlopts="--timeout=15 --tries=1 -q -O"
 elif test "${CURL}" != ""; then
   afb_downloader="${CURL}"
-  afb_dlopts="--connect-time 15 --retry 1 -s -S -o"
+  afb_dlopts="--connect-timeout 15 --retry 1 -s -S -o"
 fi
 
 # ---------------------------------------------------------------------------- #
