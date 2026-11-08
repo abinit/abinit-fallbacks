@@ -27,7 +27,7 @@ AC_DEFUN([AFB_TRICKS_WANNIER90],[
   dnl Init
   afb_wannier90_tricks="no"
   afb_wannier90_tricky_vars=""
-  tmp_wannier90_num_tricks=2
+  tmp_wannier90_num_tricks=3
   tmp_wannier90_cnt_tricks=0
 
   dnl Configure tricks
@@ -44,6 +44,25 @@ AC_DEFUN([AFB_TRICKS_WANNIER90],[
     afb_wannier90_tricky_vars="${afb_wannier90_tricky_vars} CFGFLAGS"
   else
     AC_MSG_NOTICE([CFGFLAGS_WANNIER90 set => skipping Wannier90 config tricks])
+  fi
+
+  dnl Fortran compiler tricks
+  if test "${afb_wannier90_fcflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying Wannier90 tricks (vendor: $1, version: $2, flags: Fortran compiler)])
+    
+    dnl GCC >= 10 rejects argument mismatches by default (other compilers
+    dnl do not know this option, e.g. Cray Fortran stops with an error)
+    if test "$1" = "gnu"; then
+      if test "`echo "$2" | cut -d. -f1`" -ge 10 2>/dev/null; then
+        FCFLAGS_WANNIER90="${FCFLAGS_WANNIER90} -fallow-argument-mismatch"
+      fi
+    fi
+
+    dnl Finish
+    tmp_wannier90_cnt_tricks=`expr ${tmp_wannier90_cnt_tricks} \+ 1`
+    afb_wannier90_tricky_vars="${afb_wannier90_tricky_vars} FCFLAGS"
+  else
+    AC_MSG_NOTICE([FCFLAGS_WANNIER90 set => skipping Wannier90 Fortran compiler tricks])
   fi
 
   dnl Libraries tricks

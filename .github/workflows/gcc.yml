@@ -1,0 +1,51 @@
+name: Build abinit-fallbacks with gcc+openmpi
+
+on:
+  push:
+    branches: [actions]
+    paths-ignore: ["**/*.md"]
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build:
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout abinit-fallbacks repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y autoconf automake m4
+        sudo apt install -y libxml2-dev
+        sudo apt install -y build-essential gfortran
+        sudo apt install -y openmpi-bin libopenmpi-dev
+        sudo apt install -y liblapack-dev libopenblas-dev libscalapack-openmpi-dev
+
+    - name: Run autogen
+      run: ./autogen.sh
+
+    - name: Run configure
+      run: |
+        mkdir -p build
+        cd build
+        ../configure --prefix=$HOME
+
+    - name: Run make
+      run: |
+        cd build
+        make

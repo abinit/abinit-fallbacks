@@ -39,8 +39,8 @@ AC_DEFUN([AFB_CHECK_HDF5],[
   AC_LANG_PUSH([C])
   AC_CHECK_HEADERS([zlib.h curl/curl.h],
     [afb_hdf5_has_preh="yes"],[afb_hdf5_has_preh="no"])
-  AC_SEARCH_LIBS([deflateInit], [z],
-    [afb_hdf5_has_zlib="yes"], [afb_hdf5_has_prel="no"])
+  AC_SEARCH_LIBS([deflateInit_], [z],
+    [afb_hdf5_has_zlib="yes"], [afb_hdf5_has_zlib="no"])
   AC_SEARCH_LIBS([curl_easy_init], [curl],
     [afb_hdf5_has_prel="yes"], [afb_hdf5_has_prel="no"])
   AC_LANG_POP([C])

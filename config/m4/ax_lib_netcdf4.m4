@@ -226,8 +226,7 @@ NetCDF4 support is being disabled (equivalent to --with-netcdf4=no).
         CC=$ax_lib_netcdf4_save_CC
         CFLAGS=$ax_lib_netcdf4_save_CFLAGS
         LIBS=$ax_lib_netcdf4_save_LIBS
-        LDFLAGS=$ax_lib_hdf5_save_LDFLAGS
-
+        LDFLAGS=$ax_lib_netcdf4_save_LDFLAGS
 
         AC_MSG_CHECKING([for matching NetCDF4 Fortran libraries])
         NF_CONFIG="${NETCDF4_PREFIX}/bin/nf-config"

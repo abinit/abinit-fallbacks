@@ -382,8 +382,9 @@ AC_DEFUN([_AFB_CHECK_FC_INTEL], [
   AC_MSG_CHECKING([if we are using the Intel Fortran compiler])
 
   fc_command="$1"
-  fc_output=`$fc_command -V 2>&1 | head -n 1`
-  intel_check=`echo "${fc_output}" | grep '^Intel(R) Fortran'`
+  # MPI wrappers such as mpiifx print their own banner first
+  fc_output=`$fc_command -V 2>&1 | grep '^Intel(R) Fortran' | head -n 1`
+  intel_check="${fc_output}"
   # If using mpiifx, it may crash with "usage: mpiifort"
   #
   if test "${intel_check}" = ""; then

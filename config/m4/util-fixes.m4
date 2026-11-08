@@ -47,6 +47,26 @@ fi
 ]) # AX_CHECK_ZLIB
 
 
+# AX_CHECK_SZIP()
+# ----------------
+#
+# Check that szip is usable and add flags to LIBS_NETCDF4_FORTRAN.
+#
+AC_DEFUN([AX_CHECK_SZIP],
+[
+if test "${enable_netcdf4_fortran}" = "yes"; then
+    AC_CHECK_LIB(sz, SZ_Compress,
+    [
+        LIBS_NETCDF4_FORTRAN="$LIBS_NETCDF4_FORTRAN -lsz"
+    ],
+    [
+        AC_MSG_WARN([szip is not usable. Compilation will continue but netcdf4_fortran may fail.
+                    It is suggested that you specify szip library flags, for example
+                    LIBS_NETCDF4_FORTRAN="-L/usr/local/lib -lsz"])
+    ])
+fi
+]) # AX_CHECK_SZIP
+
 # AX_CHECK_CURL()
 # ---------------
 #

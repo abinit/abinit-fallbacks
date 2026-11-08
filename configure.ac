@@ -141,26 +141,85 @@ AFB_PATCHES_SETUP
 # ---------------------------------------------------------------------------- #
 
 #
+# Compiler search order
+#
+# When CC/CXX/FC are not set by the user, prefer MPI wrappers over serial
+# compilers (and Intel oneAPI over GNU), so that e.g. loading an Intel MPI
+# toolchain is enough to get mpiicx/mpiicpx/mpiifx picked up automatically.
+# Explicit CC=..., CXX=..., FC=... on the command line still take precedence.
+#
+m4_define([afb_cc_search_list],
+  [mpiicx mpiicc mpicc icx icc gcc cc])
+m4_define([afb_cxx_search_list],
+  [mpiicpx mpiicpc mpicxx mpic++ mpiCC icpx icpc g++ c++])
+m4_define([afb_fc_search_list],
+  [mpiifx mpiifort mpif90 mpifort ifx ifort gfortran f95 f90])
+
+# On a Cray Programming Environment, the cc/CC/ftn wrappers already include
+# MPI (cray-mpich) and the selected PrgEnv compiler, so they must win over
+# anything else. They cannot simply be put in the lists above, since "cc"
+# and "CC" exist on most systems, hence the explicit detection.
+AC_MSG_CHECKING([for a Cray Programming Environment])
+afb_cray_pe="no"
+if test "${CRAYPE_VERSION}" != "" -o "${PE_ENV}" != ""; then
+  if command -v ftn >/dev/null 2>&1 && command -v cc >/dev/null 2>&1; then
+    afb_cray_pe="yes"
+  fi
+fi
+AC_MSG_RESULT([${afb_cray_pe}])
+if test "${afb_cray_pe}" = "yes"; then
+  test "${CC}" = "" && CC="cc"
+  test "${CXX}" = "" && CXX="CC"
+  test "${FC}" = "" && FC="ftn"
+fi
+# Whether the Fortran compiler is the Cray wrapper, which links Cray LibSci
+# and MPICH automatically (it might not be, if FC has been set explicitly)
+afb_cray_wrappers="no"
+if test "${afb_cray_pe}" = "yes"; then
+  tmp_fc_cmd=`echo ${FC} | cut -d' ' -f1`
+  test "`basename ${tmp_fc_cmd}`" = "ftn" && afb_cray_wrappers="yes"
+  unset tmp_fc_cmd
+  if test "${afb_cray_wrappers}" = "yes"; then
+    AC_MSG_NOTICE([using Cray compiler wrappers: CC=${CC} CXX=${CXX} FC=${FC}])
+  else
+    AC_MSG_NOTICE([not using the Cray compiler wrappers, as requested: CC=${CC} CXX=${CXX} FC=${FC}])
+  fi
+fi
+
+# ---------------------------------------------------------------------------- #
+
+#
 # C support
 #
 
-AC_PROG_CC
+AC_PROG_CC(afb_cc_search_list)
 AC_PROG_CPP
 
-# extract C compiler if mpi wrapper
-# TODO : check better for mpi wrapper in CC
+# Detect MPI support like arch-mpi from the main ABINIT tree
+# Instead of guessing from the wrapper name, try compiling tiny MPI programs.
 has_mpi="no"
+afb_mpi_cc_ok="no"
+afb_mpi_fc_ok="no"
+afb_has_mpi="no"
 ac_cc_req=${CC}
+AFB_MPI_CHECK_CC
 tmp_cc=$(echo "${CC}"|grep -o '[[^/]]*$')
-if test "mpi" = $(echo "${tmp_cc}"|cut -c -3); then
-    ac_cc_req=$(eval $ac_cc_req -show|cut -d' ' -f1)
-    afb_has_mpi="yes"
+if test "${afb_mpi_cc_ok}" = "yes"; then
+  # If CC is an MPI wrapper, try to recover the underlying compiler
+  if test "mpi" = $(echo "${tmp_cc}"|cut -c -3); then
+    ac_cc_req=$(eval $ac_cc_req -show 2>/dev/null |cut -d' ' -f1)
+    if test "x${ac_cc_req}" = "x"; then
+      ac_cc_req=${CC}
+    fi
+  fi
+else
+  AC_MSG_WARN([C compiler failed to link a simple MPI program; MPI fallbacks will stay disabled])
 fi
 
 # LibXC sometimes requires C99
 # Note: if problem, set ac_cv_prog_cc_c99="no"
 #AC_PROG_CC_C99 is obsolete starting from autoconf 2.70 
-AC_PROG_CC
+AC_PROG_CC(afb_cc_search_list)
 
 # Store information on C compiler
 AFB_PROG_CC(${CC})
@@ -174,7 +233,7 @@ ref_cc_cmd="${ac_cc_req}"
 # C++ support
 #
 
-AC_PROG_CXX
+AC_PROG_CXX(afb_cxx_search_list)
 
 # ---------------------------------------------------------------------------- #
 
@@ -182,8 +241,37 @@ AC_PROG_CXX
 # Fortran support
 #
 
-AC_PROG_FC
+AC_PROG_FC(afb_fc_search_list)
+
+# AC_PROG_FC does not check that the Fortran compiler works, since Autoconf
+# only does it for the first compiler (C). A broken one, e.g. an MPI wrapper
+# around a compiler missing from the PATH, would otherwise silently disable
+# MPI, ELPA and the vendor-specific detection of linear algebra (e.g. MKL)
+AC_MSG_CHECKING([whether the Fortran compiler works])
+AC_LANG_PUSH([Fortran])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], [afb_fc_ok="yes"], [afb_fc_ok="no"])
+AC_LANG_POP([Fortran])
+AC_MSG_RESULT([${afb_fc_ok}])
+if test "${afb_fc_ok}" != "yes"; then
+  AC_MSG_FAILURE([the Fortran compiler '${FC}' cannot create executables])
+fi
+
+AFB_MPI_CHECK_FC
+if test "${afb_mpi_fc_ok}" != "yes"; then
+  AC_MSG_WARN([Fortran compiler failed to link a simple MPI program; MPI fallbacks will stay disabled])
+fi
+if test "${afb_mpi_cc_ok}" = "yes" -a "${afb_mpi_fc_ok}" = "yes"; then
+  afb_has_mpi="yes"
+fi
 AFB_PROG_FC
+
+# Cray Fortran names module files MODULENAME.mod (uppercase) by default,
+# while the fallbacks (e.g. netcdf-fortran) install them as modulename.mod;
+# -ef makes the compiler write lowercase module file names
+if test "${afb_fc_vendor}" = "cray"; then
+  AC_MSG_NOTICE([Cray Fortran: adding -ef to get lowercase module file names])
+  FCFLAGS_FREEFORM="${FCFLAGS_FREEFORM} -ef"
+fi
 
 # ---------------------------------------------------------------------------- #
 
@@ -250,11 +338,21 @@ else
   fi
 fi
 
+# Look for external linear algebra as Abinit does
+AFB_LINALG_DETECT
+
+# ELPA requires MPI (and ScaLAPACK): do not build it by default without MPI
+if test "${afb_has_mpi}" != "yes" -a "${enable_elpa}" = ""; then
+  AC_MSG_NOTICE([MPI is not available => disabling the ELPA fallback])
+  enable_elpa="no"
+fi
+
 # Configure all fallbacks
 AFB_SETUP_PACKAGES
 
 # Extra dependency checks for netcdf4_fortran
 AX_CHECK_ZLIB
+AX_CHECK_SZIP
 AX_CHECK_CURL
 
 # ---------------------------------------------------------------------------- #

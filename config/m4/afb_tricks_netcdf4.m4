@@ -35,7 +35,9 @@ AC_DEFUN([AFB_TRICKS_NETCDF4],[
     AC_MSG_NOTICE([applying NetCDF4 tricks (vendor: $1, version: $2, flags: config)])
 
     dnl Internal NetCDF4 parameters
-    CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-dap --enable-netcdf4 --disable-shared"
+    dnl Use the XML parser bundled with NetCDF instead of an external libxml2
+    dnl (which would otherwise be required)
+    CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --disable-dap --enable-netcdf4 --disable-shared --disable-libxml2"
     if test "${afb_hdf5_ok}" = "yes"; then
       if test "${afb_hdf5_build_par}" != "no"; then
          CFGFLAGS_NETCDF4="${CFGFLAGS_NETCDF4} --enable-parallel-tests"

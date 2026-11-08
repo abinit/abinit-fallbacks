@@ -27,7 +27,7 @@ AC_DEFUN([AFB_TRICKS_XMLF90],[
   dnl Init
   afb_xmlf90_tricks="no"
   afb_xmlf90_tricky_vars=""
-  tmp_xmlf90_num_tricks=2
+  tmp_xmlf90_num_tricks=3
   tmp_xmlf90_cnt_tricks=0
 
   dnl Configure tricks
@@ -59,6 +59,25 @@ AC_DEFUN([AFB_TRICKS_XMLF90],[
     afb_xmlf90_tricky_vars="${afb_xmlf90_tricky_vars} CFLAGS"
   else
     AC_MSG_NOTICE([CFLAGS_XMLF90 set => skipping xmlf90 C tricks])
+  fi
+
+  dnl Fortran tricks
+  if test "${afb_xmlf90_fcflags_custom}" = "no"; then
+    AC_MSG_NOTICE([applying xmlf90 tricks (vendor: $1, version: $2, flags: Fortran)])
+
+    dnl The examples of xmlf90 only look for the modules they use directly,
+    dnl while some compilers (e.g. AOCC and other Flang/PGI-based ones)
+    dnl also need the modules used by these modules
+    for tmp_xmlf90_dir in wxml cml sax xpath dom; do
+      FCFLAGS_XMLF90="${FCFLAGS_XMLF90} -I\$(abs_top_builddir)/sources/\$(xmlf90_pkg_name)/tmp-build/src/${tmp_xmlf90_dir}"
+    done
+    unset tmp_xmlf90_dir
+
+    dnl Finish
+    tmp_xmlf90_cnt_tricks=`expr ${tmp_xmlf90_cnt_tricks} \+ 1`
+    afb_xmlf90_tricky_vars="${afb_xmlf90_tricky_vars} FCFLAGS"
+  else
+    AC_MSG_NOTICE([FCFLAGS_XMLF90 set => skipping xmlf90 Fortran tricks])
   fi
 
   dnl Count applied tricks

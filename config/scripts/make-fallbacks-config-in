@@ -33,7 +33,7 @@ class MyConfigParser(ConfigParser):
 
 # Script template
 def config_script(name,stamp,fbk_versions,fbk_items,fbk_order,fbk_vars,fbk_deps,
-  fbk_libs,fbk_prqs):
+  fbk_libs,fbk_prqs,fbk_instdirs):
 
   # Init
   ret = """\
@@ -202,7 +202,7 @@ exit 0
   fbk_dump = ""
 
   for pkg in fbk_order:
-    fbk_inst  = "%s/%s" % (pkg, fbk_versions[pkg])
+    fbk_inst  = fbk_instdirs[pkg]
     fbk_init += "\nenable_%s='@enable_%s@'" % (pkg,pkg)
     fbk_init += "\nafb_%s_version='%s'" % (pkg, fbk_versions[pkg])
     fbk_init += "\nafb_%s_status='disabled'" % pkg
@@ -337,6 +337,7 @@ fbk_deps = {}
 fbk_libs = {}
 fbk_vars = {}
 fbk_versions = {}
+fbk_instdirs = {}
 
 # Define recognized items
 fbk_items = [
@@ -356,6 +357,18 @@ pkg_num = {}
 i = 0
 for pkg in abinit_fallbacks:
   fbk_versions[pkg] = cnf.get(pkg,"name").split("-")[-1]
+  # Installation directory, computed as in make-makefiles-fallbacks
+  # (e.g. bigdft-abinit-1.7.1.33 is installed in bigdft/abinit-1.7.1.33)
+  pkg_name = cnf.get(pkg,"name")
+  pkg_instver = re.sub(pkg+"-", "", pkg_name, flags=re.IGNORECASE)
+  if ( pkg_instver == pkg_name ):
+    pkg_instver = re.sub(".*-([0-9])", "\\1", pkg_name, flags=re.IGNORECASE)
+  if ( pkg_instver == pkg_name ):
+    pkg_instver = pkg_name.split("-")[-1]
+  if ( cnf.has_option(pkg,"install") ):
+    fbk_instdirs[pkg] = "%s/%s" % (cnf.get(pkg,"install"), pkg_instver)
+  else:
+    fbk_instdirs[pkg] = "%s/%s" % (pkg, pkg_instver)
   fbk_prqs[pkg] = False
   pkg_num[pkg] = i
   i += 1
@@ -408,4 +421,4 @@ for pkg in abinit_fallbacks:
 if ( not os.path.exists("src") ):
   os.mkdir("src")
 open(my_output,"w").write(config_script(my_name,now,fbk_versions,fbk_items,fbk_order,
-  fbk_vars,fbk_deps,fbk_libs,fbk_prqs))
+  fbk_vars,fbk_deps,fbk_libs,fbk_prqs,fbk_instdirs))

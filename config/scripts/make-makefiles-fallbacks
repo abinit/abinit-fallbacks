@@ -191,13 +191,13 @@ if DO_BUILD_%(NAME)s
 %(name)s: stamps/%(name)s-install-stamp
 
 stamps/%(name)s-install-stamp: stamps/%(name)s-build-stamp
-	cd sources/$(%(name)s_pkg_name)/tmp-build && $(MAKE) install @SET_MAKE@
+	cd sources/$(%(name)s_pkg_name)/tmp-build && $(MAKE) install $(MAKEARGS_%(NAME)s) @SET_MAKE@
 	rm -f $(DESTDIR)@prefix@/%(installdir)s/default
 	$(LN_S) %(version)s $(DESTDIR)@prefix@/%(name)s/default
 	@touch stamps/%(name)s-install-stamp
 
 stamps/%(name)s-build-stamp: stamps/%(name)s-config-stamp
-	cd sources/$(%(name)s_pkg_name)/tmp-build && $(MAKE) -j %(threads)s @SET_MAKE@
+	cd sources/$(%(name)s_pkg_name)/tmp-build && $(MAKE) -j %(threads)s $(MAKEARGS_%(NAME)s) @SET_MAKE@
 	@touch stamps/%(name)s-build-stamp
 
 stamps/%(name)s-config-stamp: stamps/%(name)s-patch-stamp

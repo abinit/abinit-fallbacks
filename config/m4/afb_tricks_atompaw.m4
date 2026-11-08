@@ -33,7 +33,15 @@ AC_DEFUN([AFB_TRICKS_ATOMPAW],[
     AC_MSG_NOTICE([applying AtomPAW tricks (vendor: $1, version: $2, flags: config)])
 
     dnl Linear algebra
-    tmpflags_atompaw='--with-linalg-libs="$(afb_linalg_libs)"'
+    dnl When linear algebra is provided implicitly by the compiler (e.g. Cray
+    dnl LibSci through cc/ftn), afb_linalg_libs is empty, and AtomPAW would
+    dnl then hard-code "-lblas -llapack" and fail: pass a harmless non-empty
+    dnl value instead so that it only tests linking with the compiler as is
+    if test "`echo ${afb_linalg_libs}`" = ""; then
+      tmpflags_atompaw='--with-linalg-libs="-lm"'
+    else
+      tmpflags_atompaw='--with-linalg-libs="$(afb_linalg_libs)"'
+    fi
     CFGFLAGS_ATOMPAW="${CFGFLAGS_ATOMPAW} ${tmpflags_atompaw}"
 
     dnl LibXC
